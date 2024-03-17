@@ -1,0 +1,9 @@
+[submodule "include/thirdparty/libpqxx"]
+	path = include/thirdparty/libpqxx
+	url = https://github.com/jtv/libpqxx.git
+[submodule "include/thirdparty/simdjson"]
+	path = include/thirdparty/simdjson
+	url = https://github.com/simdjson/simdjson.git
+[submodule "include/thirdparty/quill"]
+	path = include/thirdparty/quill
+	url = https://github.com/odygrd/quill.git

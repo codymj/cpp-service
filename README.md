@@ -1,8 +1,9 @@
 # cpp-service
 
-A template for building a C++ microservice.
+A template for building a C++ web service.
 
-## Dependencies
-- cpp-httplib `v0.15.3`
-- simdjson `v3.8.0`
-- quill `v3.6.0`
+## Dependencies (included)
+- cpp-httplib
+- simdjson
+- quill
+- libpqxx

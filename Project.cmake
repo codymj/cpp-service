@@ -4,36 +4,37 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(
     Threads REQUIRED
+    libpqxx REQUIRED
+    libquill REQUIRED
+    libsimdjson REQUIRED
 )
 
-add_executable(
-    ${PROJECT_NAME}
-    ${SOURCE_DIR}/app.cpp
-)
+add_executable(${PROJECT_NAME} ${SOURCE_DIR}/app.cpp)
 
 target_compile_options(
     ${PROJECT_NAME} PRIVATE
-    "-D_GLIBCXX_USE_CXX11_ABI=0"
-    "-DNO_ZMQ_SUPPORT"
+    ${MY_COMPILE_OPTIONS}
 )
 
 target_include_directories(
     ${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson
+    ${PROJECT_SOURCE_DIR}/include/thirdparty
     ${PROJECT_SOURCE_DIR}/include/thirdparty/cpp-httplib
+    ${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson/include/**
+    ${PROJECT_SOURCE_DIR}/include/thirdparty/quill/quill/include/quill/**
+    ${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx/include/pqxx/**
 )
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/quill)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx)
 
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
     ${CMAKE_THREAD_LIBS_INIT}
-    # dl
+    pqxx
+    quill
+    simdjson
 )
-
-# add_subdirectory(test)
-
-# add_custom_command(
-#     TARGET ${PROJECT_NAME} POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/${AppConfig}" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/
-# )
