@@ -7,3 +7,6 @@
 [submodule "include/thirdparty/quill"]
 	path = include/thirdparty/quill
 	url = https://github.com/odygrd/quill.git
+[submodule "include/thirdparty/cpp-httplib"]
+	path = include/thirdparty/cpp-httplib
+	url = https://github.com/yhirose/cpp-httplib.git

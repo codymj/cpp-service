@@ -30,6 +30,7 @@ target_include_directories(
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/quill)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/cpp-httplib)
 
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
