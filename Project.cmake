@@ -22,20 +22,25 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/include/thirdparty
     ${PROJECT_SOURCE_DIR}/include/thirdparty/cpp-httplib
-    ${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson/include/**
-    ${PROJECT_SOURCE_DIR}/include/thirdparty/quill/quill/include/quill/**
-    ${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx/include/pqxx/**
+    ${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson/include
+    ${PROJECT_SOURCE_DIR}/include/thirdparty/quill/quill/include/quill
+#    ${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx/include/pqxx
+)
+
+target_sources(
+    ${PROJECT_NAME} PRIVATE
+    ${PROJECT_SOURCE_DIR}/include/settings.cpp
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/quill)
-add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx)
+#add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/cpp-httplib)
 
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
     ${CMAKE_THREAD_LIBS_INIT}
-    pqxx
+#    pqxx
     quill
     simdjson
 )

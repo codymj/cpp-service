@@ -34,4 +34,6 @@
 # Directories
 build/
 bin/
+cmake-build-debug/
 .cache/
+.idea/
