@@ -1,8 +1,8 @@
 {
     "service": {
         "namespace": "cpp-service",
-        "name": "starter",
-        "verson": "0.0.1"
+        "name": "gateway",
+        "version": "0.0.1"
     },
     "server": {
         "port": 8080,
@@ -14,7 +14,7 @@
         "host": "192.168.1.101",
         "port": 5432,
         "user": "postgres",
-        "password": "<env>",
+        "password": "POSTGRES_PASS",
         "name": "cpp-service-db",
         "connection_max_lifetime": 180,
         "max_open_connections": 10,
