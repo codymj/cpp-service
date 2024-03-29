@@ -24,8 +24,8 @@ target_include_directories(
 
 target_sources(
 	${PROJECT_NAME} PRIVATE
+	${SOURCE_DIR}/properties.cpp
 	${SOURCE_DIR}/service.cpp
-	${SOURCE_DIR}/settings.cpp
 )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson)

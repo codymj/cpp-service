@@ -16,7 +16,7 @@
         "user": "postgres",
         "password": "POSTGRES_PASS",
         "name": "cpp-service-db",
-        "connection_max_lifetime": 180,
+        "connection_timeout": 180,
         "max_open_connections": 10,
         "max_idle_connections": 10
     }

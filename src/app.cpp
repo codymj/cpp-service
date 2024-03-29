@@ -1,7 +1,8 @@
 #include <quill/Quill.h>
-#include "settings.hpp"
+#include <string>
+#include "properties.hpp"
 
-class Settings;
+class Properties;
 
 int main(/*int argc, char *argv[]*/) {
 	// init logger
@@ -14,11 +15,15 @@ int main(/*int argc, char *argv[]*/) {
 
 	// load application settings
 	// todo: pass settings file as application arg
-	std::string app_cfg_file = "../../settings.json";
+	std::string app_cfg_file = "../../properties.json";
+
 	try {
-		Settings::load(app_cfg_file);
-	} catch (const std::exception& e) {
+		Properties::load(app_cfg_file);
+	} catch (std::invalid_argument& e) {
 		LOG_CRITICAL(logger, "Error loading settings: {}", e.what());
+		exit(1);
+	} catch (std::exception& e) {
+		LOG_CRITICAL(logger, "Internal error: {}", e.what());
 		exit(1);
 	}
 
