@@ -91,6 +91,4 @@ public:
 	 * connections to the database.
 	 */
 	inline static int database_max_idle_connections;
-
-private:
 };
