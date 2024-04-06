@@ -1,6 +1,6 @@
 {
-    "service": {
-        "namespace": "cpp-service",
+    "application": {
+        "domain": "cpp-service",
         "name": "gateway",
         "version": "0.0.1"
     },
@@ -13,7 +13,7 @@
     "database": {
         "host": "192.168.1.101",
         "port": 5432,
-        "user": "postgres",
+        "username": "postgres",
         "password": "POSTGRES_PASS",
         "name": "cpp-service-db",
         "connection_timeout": 180,

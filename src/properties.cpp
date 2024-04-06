@@ -1,75 +1,97 @@
 #include "properties.hpp"
 
-void Properties::load(const std::string& config_file) {
+void Properties::Loader::load(std::string json_file) {
+	m_log = quill::create_logger("properties");
+
 	// load configuration settings from file
-	simdjson::ondemand::parser json_parser;
-	const simdjson::padded_string json= simdjson::padded_string::load(config_file);
-	simdjson::ondemand::document doc = json_parser.iterate(json);
+	parser json_parser;
+	const auto json = padded_string::load(json_file);
+	if (json.error()) {
+		LOG_CRITICAL(m_log, "Error loading configuration file: {}", json_file);
+		throw std::invalid_argument(simdjson::error_message(json.error()));
+	}
+	document doc = json_parser.iterate(json);
 
-	// validate properties in file and store in Properties class
+	load_application_props(doc);
+	load_server_props(doc);
+	load_database_props(doc);
+}
+
+void Properties::Loader::load_application_props(document& doc) {
 	std::string_view tmpStr{};
-	int64_t tmpInt{};
 
-	simdjson::error_code err = doc["service"]["namespace"].get(tmpStr);
+	application = std::make_unique<Application>();
+	simdjson::error_code err = doc["application"]["domain"].get(tmpStr);
 	if (err) {
-		throw std::invalid_argument("Invalid service.namespace");
+		throw std::invalid_argument("Invalid application.domain");
 	}
-	service_namespace = std::string(tmpStr);
+	application->domain = std::string(tmpStr);
 
-	err = doc["service"]["name"].get(tmpStr);
+	err = doc["application"]["name"].get(tmpStr);
 	if (err) {
-		throw std::invalid_argument("Invalid service.name");
+		throw std::invalid_argument("Invalid application.name");
 	}
-	service_name = std::string(tmpStr);
+	application->name = std::string(tmpStr);
 
 	// todo: should have format <int>.<int>.<int>
-	err = doc["service"]["version"].get(tmpStr);
+	err = doc["application"]["version"].get(tmpStr);
 	if (err) {
-		throw std::invalid_argument("Invalid service.version");
+		throw std::invalid_argument("Invalid application.version");
 	}
-	service_version = std::string(tmpStr);
+	application->version = std::string(tmpStr);
+}
 
-	err = doc["server"]["port"].get(tmpInt);
+void Properties::Loader::load_server_props(document& doc) {
+	uint64_t tmpInt{};
+
+	server = std::make_unique<Server>();
+	simdjson::error_code err = doc["server"]["port"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid server.port");
 	}
-	server_port = static_cast<int>(tmpInt);
+	server->port = static_cast<uint16_t>(tmpInt);
 
 	err = doc["server"]["read_timeout"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid server.read_timeout");
 	}
-	server_read_timeout = static_cast<int>(tmpInt);
+	server->read_timeout = static_cast<uint8_t>(tmpInt);
 
 	err = doc["server"]["write_timeout"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid server.write_timeout");
 	}
-	server_write_timeout = static_cast<int>(tmpInt);
+	server->write_timeout = static_cast<uint8_t>(tmpInt);
 
 	err = doc["server"]["idle_timeout"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid server.idle_timeout");
 	}
-	server_idle_timeout = static_cast<int>(tmpInt);
+	server->idle_timeout = static_cast<uint8_t>(tmpInt);
+}
 
-	err = doc["database"]["host"].get(tmpStr);
+void Properties::Loader::load_database_props(document &doc) {
+	std::string_view tmpStr{};
+	uint64_t tmpInt{};
+
+	database = std::make_unique<Database>();
+	simdjson::error_code err = doc["database"]["host"].get(tmpStr);
 	if (err) {
 		throw std::invalid_argument("Invalid database.host");
 	}
-	database_host = std::string(tmpStr);
+	database->host = std::string(tmpStr);
 
 	err = doc["database"]["port"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid database.port");
 	}
-	database_port = static_cast<int>(tmpInt);
+	database->port = static_cast<uint16_t>(tmpInt);
 
-	err = doc["database"]["user"].get(tmpStr);
+	err = doc["database"]["username"].get(tmpStr);
 	if (err) {
-		throw std::invalid_argument("Invalid database.user");
+		throw std::invalid_argument("Invalid database.username");
 	}
-	database_user = std::string(tmpStr);
+	database->username = std::string(tmpStr);
 
 	// todo: maybe generalize this for all environment variables?
 	err = doc["database"]["password"].get(tmpStr);
@@ -86,29 +108,29 @@ void Properties::load(const std::string& config_file) {
 		};
 		throw std::invalid_argument(msg);
 	}
-	database_password = password;
+	database->password = password;
 
 	err = doc["database"]["name"].get(tmpStr);
 	if (err) {
 		throw std::invalid_argument("Invalid database.name");
 	}
-	database_name = std::string(tmpStr);
+	database->name = std::string(tmpStr);
 
 	err = doc["database"]["connection_timeout"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid database.connection_timeout");
 	}
-	database_connection_timeout = static_cast<int>(tmpInt);
+	database->connection_timeout = static_cast<uint8_t>(tmpInt);
 
 	err = doc["database"]["max_open_connections"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid database.max_open_connections");
 	}
-	database_max_open_connections = static_cast<int>(tmpInt);
+	database->max_open_connections = static_cast<uint8_t>(tmpInt);
 
 	err = doc["database"]["max_idle_connections"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid database.max_idle_connections");
 	}
-	database_max_idle_connections = static_cast<int>(tmpInt);
+	database->max_idle_connections = static_cast<uint8_t>(tmpInt);
 }
