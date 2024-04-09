@@ -20,78 +20,75 @@ void Properties::Loader::load(std::string json_file) {
 void Properties::Loader::load_application_props(document& doc) {
 	std::string_view tmpStr{};
 
-	application = std::make_unique<Application>();
 	simdjson::error_code err = doc["application"]["domain"].get(tmpStr);
 	if (err) {
 		throw std::invalid_argument("Invalid application.domain");
 	}
-	application->domain = std::string(tmpStr);
+	application.domain = std::string(tmpStr);
 
 	err = doc["application"]["name"].get(tmpStr);
 	if (err) {
 		throw std::invalid_argument("Invalid application.name");
 	}
-	application->name = std::string(tmpStr);
+	application.name = std::string(tmpStr);
 
 	// todo: should have format <int>.<int>.<int>
 	err = doc["application"]["version"].get(tmpStr);
 	if (err) {
 		throw std::invalid_argument("Invalid application.version");
 	}
-	application->version = std::string(tmpStr);
+	application.version = std::string(tmpStr);
 }
 
 void Properties::Loader::load_server_props(document& doc) {
 	uint64_t tmpInt{};
 
-	server = std::make_unique<Server>();
 	simdjson::error_code err = doc["server"]["port"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid server.port");
 	}
-	server->port = static_cast<uint16_t>(tmpInt);
+	server.port = static_cast<uint16_t>(tmpInt);
 
 	err = doc["server"]["read_timeout"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid server.read_timeout");
 	}
-	server->read_timeout = static_cast<uint8_t>(tmpInt);
+	server.read_timeout = static_cast<uint8_t>(tmpInt);
 
 	err = doc["server"]["write_timeout"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid server.write_timeout");
 	}
-	server->write_timeout = static_cast<uint8_t>(tmpInt);
+	server.write_timeout = static_cast<uint8_t>(tmpInt);
 
 	err = doc["server"]["idle_timeout"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid server.idle_timeout");
 	}
-	server->idle_timeout = static_cast<uint8_t>(tmpInt);
+	server.idle_timeout = static_cast<uint8_t>(tmpInt);
 }
 
 void Properties::Loader::load_database_props(document &doc) {
 	std::string_view tmpStr{};
 	uint64_t tmpInt{};
 
-	database = std::make_unique<Database>();
 	simdjson::error_code err = doc["database"]["host"].get(tmpStr);
 	if (err) {
 		throw std::invalid_argument("Invalid database.host");
 	}
-	database->host = std::string(tmpStr);
+	database.host = std::string(tmpStr);
 
 	err = doc["database"]["port"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid database.port");
 	}
-	database->port = static_cast<uint16_t>(tmpInt);
+	database.port = static_cast<uint16_t>(tmpInt);
 
 	err = doc["database"]["username"].get(tmpStr);
 	if (err) {
 		throw std::invalid_argument("Invalid database.username");
 	}
-	database->username = std::string(tmpStr);
+	database.username = std::string(tmpStr);
 
 	// todo: maybe generalize this for all environment variables?
 	err = doc["database"]["password"].get(tmpStr);
@@ -108,29 +105,29 @@ void Properties::Loader::load_database_props(document &doc) {
 		};
 		throw std::invalid_argument(msg);
 	}
-	database->password = password;
+	database.password = password;
 
 	err = doc["database"]["name"].get(tmpStr);
 	if (err) {
 		throw std::invalid_argument("Invalid database.name");
 	}
-	database->name = std::string(tmpStr);
+	database.name = std::string(tmpStr);
 
 	err = doc["database"]["connection_timeout"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid database.connection_timeout");
 	}
-	database->connection_timeout = static_cast<uint8_t>(tmpInt);
+	database.connection_timeout = static_cast<uint8_t>(tmpInt);
 
 	err = doc["database"]["max_open_connections"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid database.max_open_connections");
 	}
-	database->max_open_connections = static_cast<uint8_t>(tmpInt);
+	database.max_open_connections = static_cast<uint8_t>(tmpInt);
 
 	err = doc["database"]["max_idle_connections"].get(tmpInt);
 	if (err) {
 		throw std::invalid_argument("Invalid database.max_idle_connections");
 	}
-	database->max_idle_connections = static_cast<uint8_t>(tmpInt);
+	database.max_idle_connections = static_cast<uint8_t>(tmpInt);
 }

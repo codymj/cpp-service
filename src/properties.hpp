@@ -38,17 +38,17 @@ public:
 	/**
 	 * Used to store application-related configuration parameters.
 	 */
-	std::unique_ptr<Application> application;
+	Application application{};
 
 	/**
 	 * Used to store server-related configuration parameters.
 	 */
-	std::unique_ptr<Server> server;
+	Server server{};
 
 	/**
 	 * Used to store database-related configuration parameters.
 	 */
-	std::unique_ptr<Database> database;
+	Database database{};
 
 private:
 	quill::Logger* m_log;
