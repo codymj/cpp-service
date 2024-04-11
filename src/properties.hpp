@@ -51,7 +51,7 @@ public:
 	Database database{};
 
 private:
-	quill::Logger* m_log;
+	quill::Logger* m_log{};
 
 	void load_application_props(document& doc);
 	void load_server_props(document& doc);
