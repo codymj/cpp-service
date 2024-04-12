@@ -1,5 +1,6 @@
 #include <quill/Quill.h>
 #include <string>
+#include "database.hpp"
 #include "properties.hpp"
 
 int main(/*int argc, char *argv[]*/) {
@@ -25,6 +26,10 @@ int main(/*int argc, char *argv[]*/) {
 		LOG_CRITICAL(log, "Internal error: {}", e.what());
 		exit(1);
 	}
+
+	// init database
+	Database db(props.database);
+	db.connect();
 
 	return 0;
 }

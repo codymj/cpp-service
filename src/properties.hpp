@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <quill/Quill.h>
 #include <simdjson.h>
 

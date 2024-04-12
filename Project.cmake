@@ -24,6 +24,7 @@ target_include_directories(
 
 target_sources(
 	${PROJECT_NAME} PRIVATE
+	${SOURCE_DIR}/database.cpp
 	${SOURCE_DIR}/properties.cpp
 	${SOURCE_DIR}/service.cpp
 )
