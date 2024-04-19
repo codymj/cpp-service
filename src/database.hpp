@@ -5,11 +5,10 @@
 
 class Database {
 public:
-	pqxx::connection connection;
-
 	explicit Database(Properties::Database& db_props) : m_props(db_props) {};
-
 	void connect();
+
+	pqxx::connection connection;
 
 private:
 	Properties::Database m_props;
