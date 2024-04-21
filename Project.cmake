@@ -22,7 +22,7 @@ target_sources(
 	${SOURCE_DIR}/service.cpp
 )
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/beast-boost)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/beast)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/quill)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson)
