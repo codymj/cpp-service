@@ -2,13 +2,6 @@ set(PROJECT_NAME cpp-service)
 set(CMAKE_CXX_FLAGS_DEBUG "-O -ggdb")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-find_package(
-	Threads REQUIRED
-	libpqxx REQUIRED
-	libquill REQUIRED
-	libsimdjson REQUIRED
-)
-
 add_executable(${PROJECT_NAME} ${SOURCE_DIR}/app.cpp)
 
 target_compile_options(
@@ -29,10 +22,10 @@ target_sources(
 	${SOURCE_DIR}/service.cpp
 )
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson)
-add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/quill)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/beast-boost)
 add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/libpqxx)
-add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/cpp-httplib)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/quill)
+add_subdirectory(${PROJECT_SOURCE_DIR}/include/thirdparty/simdjson)
 
 target_link_libraries(
 	${PROJECT_NAME} PRIVATE
