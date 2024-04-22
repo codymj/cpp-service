@@ -3,7 +3,8 @@
 A template for building a C++ web service.
 
 ## Dependencies (included)
-- boost-beast `v1.85.0`
+- boost-asio `v1.85.0`
+- Crow `v1.1.0`
 - libpqxx `v7.9.0` (requires PostgreSQL)
 - quill `v3.6.0`
 - simdjson `v3.8.0`
