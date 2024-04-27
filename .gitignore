@@ -35,5 +35,6 @@
 build/
 bin/
 cmake-build-debug/
+cmake-build-release/
 .cache/
 .idea/
