@@ -1,12 +1,12 @@
 #include "app.hpp"
 #include "request_handler_factory.hpp"
 
-void App::initialize(Poco::Util::Application &self) {
+[[maybe_unused]] void App::initialize(Poco::Util::Application &self) {
     loadConfiguration();
     ServerApplication::initialize(self);
 }
 
-void App::uninitialize() {
+[[maybe_unused]] void App::uninitialize() {
     ServerApplication::uninitialize();
 }
 
