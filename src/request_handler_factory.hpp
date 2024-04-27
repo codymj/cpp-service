@@ -11,13 +11,7 @@ using Poco::Net::HTTPServerRequest;
 
 class RequestHandlerFactory : public HTTPRequestHandlerFactory {
 public:
-    HTTPRequestHandler* createRequestHandler(HTTPServerRequest const& req) override {
-        if (req.getURI() == "/hello") {
-            return hello_handler();
-        } else {
-            return nullptr;
-        }
-    }
+    HTTPRequestHandler* createRequestHandler(HTTPServerRequest const& req) override;
 
 private:
     static HTTPRequestHandler* hello_handler();
