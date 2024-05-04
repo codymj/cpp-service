@@ -11,7 +11,5 @@ using Poco::Net::ServerSocket;
 
 class App : public Poco::Util::ServerApplication {
 protected:
-    [[maybe_unused]] void initialize(Application& self) override;
-    [[maybe_unused]] void uninitialize() override;
     int main(const std::vector<std::string>& args) override;
 };

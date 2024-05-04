@@ -1,21 +1,22 @@
 #pragma once
 
+#include <iostream>
+#include <memory>
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerRequest.h>
-#include <Poco/Net/HTTPRequestHandlerFactory.h>
 #include <Poco/Net/HTTPServerResponse.h>
-#include <Poco/Util/ServerApplication.h>
+#include "core/router.hpp"
 
-using Poco::Net::HTTPRequestHandlerFactory;
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
-using Poco::Util::Application;
 
-class HelloRequestHandler : public HTTPRequestHandler {
+class UsersGetHandler : public HTTPRequestHandler {
 public:
+    /**
+     * Handler for GET /users.
+     * @param req HTTPServerRequest&
+     * @param res HTTPServerResponse&
+     */
     void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
-
-private:
-    void static handleGet(HTTPServerRequest &req, HTTPServerResponse &res);
 };
