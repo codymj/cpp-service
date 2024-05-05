@@ -1,6 +1,6 @@
 #include "router.hpp"
-#include "handlers/misc/not_found.hpp"
-#include "handlers/users/users_get.hpp"
+#include "handler/misc/not_found.hpp"
+#include "handler/users/users_get.hpp"
 
 Router::Router() {
     m_routes = {

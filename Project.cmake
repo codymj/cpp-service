@@ -16,8 +16,11 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}/core/app.cpp
     ${SOURCE_DIR}/core/handler_factory.cpp
     ${SOURCE_DIR}/core/router.cpp
-    ${SOURCE_DIR}/handlers/misc/not_found.cpp
-    ${SOURCE_DIR}/handlers/users/users_get.cpp
+    ${SOURCE_DIR}/handler/misc/not_found.cpp
+    ${SOURCE_DIR}/handler/users/users_get.cpp
+    ${SOURCE_DIR}/service/users/user_service.cpp
+    ${SOURCE_DIR}/store/users/user_model.cpp
+    ${SOURCE_DIR}/store/users/user_store.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
