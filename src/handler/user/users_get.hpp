@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/router.hpp"
-#include "../../service/users/user_service.hpp"
+#include "../../service/user/user_service.hpp"
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>

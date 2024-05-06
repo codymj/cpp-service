@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../store/users/user_store.hpp"
+#include "../../store/user/user_store.hpp"
 #include <memory>
 #include <vector>
 
@@ -10,7 +10,7 @@ public:
         m_userStore = std::make_shared<UserStore>();
     }
 
-    [[nodiscard]] std::vector<UserModel> getUsers() const;
+    [[nodiscard]] std::vector<User> getUsers() const;
 
 private:
     std::shared_ptr<UserStore> m_userStore;
