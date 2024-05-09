@@ -16,6 +16,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}/core/app.cpp
     ${SOURCE_DIR}/core/handler_factory.cpp
     ${SOURCE_DIR}/core/router.cpp
+    ${SOURCE_DIR}/core/service_registry.cpp
+    ${SOURCE_DIR}/core/store_registry.cpp
     ${SOURCE_DIR}/handler/misc/not_found.cpp
     ${SOURCE_DIR}/handler/user/users_get.cpp
     ${SOURCE_DIR}/service/user/user_service.cpp

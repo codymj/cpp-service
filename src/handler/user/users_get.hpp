@@ -6,6 +6,7 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <memory>
+#include <utility>
 
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPServerRequest;
@@ -14,9 +15,9 @@ using Poco::Net::HTTPResponse;
 
 class UsersGetHandler : public HTTPRequestHandler {
 public:
-    UsersGetHandler() {
-        m_userService = std::make_shared<UserService>();
-    }
+    explicit UsersGetHandler(std::shared_ptr<UserService> userService) :
+    m_userService(std::move(userService))
+    {}
 
     /**
      * Handler for GET /users.
@@ -26,5 +27,8 @@ public:
     void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
 
 private:
+    /**
+     * Service layer for User.
+     */
     std::shared_ptr<UserService> m_userService;
 };

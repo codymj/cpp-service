@@ -2,13 +2,14 @@
 
 #include "../../store/user/user_store.hpp"
 #include <memory>
+#include <utility>
 #include <vector>
 
 class UserService {
 public:
-    UserService() {
-        m_userStore = std::make_shared<UserStore>();
-    }
+    explicit UserService(std::shared_ptr<UserStore> store) :
+    m_userStore(std::move(store))
+    {}
 
     [[nodiscard]] std::vector<User> getUsers() const;
 
