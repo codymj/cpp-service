@@ -4,7 +4,4 @@ A template for building a C++ web service.
 
 ## Dependencies
 
-- PocoData
-- PocoFoundation
-- PocoNet
-- PocoUtil
+- Poco `v1.13.3`
