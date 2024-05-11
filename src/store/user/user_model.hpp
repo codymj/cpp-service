@@ -34,9 +34,6 @@ public:
     , m_createdAt(createdAt)
     , m_modifiedAt(modifiedAt) {}
 
-    User() = default;
-    ~User() = default;
-
     [[nodiscard]] uint64_t getUserId() const {
         return m_userId;
     }
