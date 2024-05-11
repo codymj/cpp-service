@@ -52,7 +52,6 @@ private:
 
     std::mutex m_mutex;
     std::condition_variable m_condition;
-    std::shared_ptr<pqxx::connection>  m_connection;
     std::queue<std::shared_ptr<pqxx::connection>> m_pool;
 };
 
