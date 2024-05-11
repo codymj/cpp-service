@@ -21,13 +21,17 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}/handler/misc/not_found.cpp
     ${SOURCE_DIR}/handler/user/users_get.cpp
     ${SOURCE_DIR}/service/user/user_service.cpp
+    ${SOURCE_DIR}/store/db/connection_pool.cpp
     ${SOURCE_DIR}/store/user/user_model.cpp
     ${SOURCE_DIR}/store/user/user_store.cpp
 )
 
+add_subdirectory(
+    ${INCLUDE_DIR}/libpqxx
+)
+
 target_link_libraries(${PROJECT_NAME} PUBLIC
-    PocoData
-    PocoDataPostgreSQL
+    pqxx
     PocoFoundation
     PocoNet
     PocoUtil

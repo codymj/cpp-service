@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(http-cpp-service)
 
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
+set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 set(CMAKE_CXX_STANDARD 20)
