@@ -26,10 +26,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}/store/user/user_store.cpp
 )
 
-add_subdirectory(
-    ${INCLUDE_DIR}/libpqxx
-)
-
 target_link_libraries(${PROJECT_NAME} PUBLIC
     pqxx
     PocoFoundation

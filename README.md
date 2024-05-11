@@ -4,4 +4,5 @@ A template for building a C++ web service.
 
 ## Dependencies
 
-- Poco `v1.13.3`
+- poco `v1.13.3`
+- libpqxx `v7.9.0`
