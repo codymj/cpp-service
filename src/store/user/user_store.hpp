@@ -1,23 +1,19 @@
 #pragma once
 
 #include "user_model.hpp"
-#include <Poco/Data/SessionFactory.h>
-#include <Poco/Data/Session.h>
-#include <Poco/Data/Statement.h>
-#include <Poco/Data/PostgreSQL/Connector.h>
+#include "../db/connection_pool.hpp"
+#include <utility>
 #include <vector>
 
-using namespace Poco::Data::Keywords;
-using Poco::Data::Session;
-using Poco::Data::SessionFactory;
-using Poco::Data::Statement;
+using cppservice::database::ConnectionPool;
 
 class UserStore {
 public:
-    UserStore();
+    explicit UserStore(std::shared_ptr<ConnectionPool> connectionPool)
+    : m_connectionPool(std::move(connectionPool)) {}
 
-    std::vector<User> getUsers();
+    [[nodiscard]] std::unique_ptr<std::vector<User>> getUsers() const;
 
 private:
-    std::vector<User> m_users;
+    std::shared_ptr<ConnectionPool> m_connectionPool;
 };

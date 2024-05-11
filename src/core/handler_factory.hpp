@@ -11,7 +11,10 @@ using Poco::Net::HTTPServerRequest;
 
 class HandlerFactory : public HTTPRequestHandlerFactory {
 public:
-    HandlerFactory();
+    HandlerFactory() = delete;
+    HandlerFactory(HandlerFactory&) = delete;
+    explicit HandlerFactory(std::unique_ptr<Router> router)
+    : m_router(std::move(router)) {};
 
     /**
      * Generates a RouteKey from the HTTPServerRequest which is used in m_router

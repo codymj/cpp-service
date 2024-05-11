@@ -11,7 +11,7 @@ public:
     m_userStore(std::move(store))
     {}
 
-    [[nodiscard]] std::vector<User> getUsers() const;
+    [[nodiscard]] std::unique_ptr<std::vector<User>> getUsers() const;
 
 private:
     std::shared_ptr<UserStore> m_userStore;
