@@ -13,25 +13,33 @@ void App::uninitialize() {
 
 std::shared_ptr<ConnectionPool> App::createDatabaseConnectionPool() {
     // Get environment variable database password.
-    std::string password{};
+    std::string password = Poco::Environment::get(
+        config().getString("database.password")
+    );
+
+    std::string host{}, username{}, name{};
+    uint16_t port{};
+    uint8_t connTimeout{}, connPoolSize{};
     try {
-        password = Poco::Environment::get(
-            config().getString("database.password")
-        );
+        host = config().getString("database.host");
+        port = config().getInt("database.port");
+        username = config().getString("database.username");
+        name = config().getString("database.name");
+        connTimeout = config().getInt("database.connection_timeout");
+        connPoolSize = config().getInt("database.connection_pool_size");
     } catch (Poco::NotFoundException& nfe) {
-        // TODO: When logging is implemented.
-        std::cerr << nfe.what() << '\n';
-        EXIT_FAILURE;
+        std::cerr << nfe.what() << ": " << nfe.message() << '\n';
+        std::exit(EXIT_FAILURE);
     }
 
     return std::make_shared<ConnectionPool>(
-        config().getString("database.host"),
-        config().getInt("database.port"),
-        config().getString("database.username"),
+        host,
+        port,
+        username,
         password,
-        config().getString("database.name"),
-        config().getInt("database.connection_timeout"),
-        config().getInt("database.connection_pool_size")
+        name,
+        connTimeout,
+        connPoolSize
     );
 }
 

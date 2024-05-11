@@ -23,10 +23,10 @@ public:
         uint8_t connectionPoolSize = 8
     )
     : m_host(std::move(host))
-    , m_port(port)
     , m_username(std::move(username))
     , m_password(std::move(password))
     , m_name(std::move(name))
+    , m_port(port)
     , m_connectionTimeout(connectionTimeout)
     , m_connectionPoolSize(connectionPoolSize) {
         create();
@@ -42,17 +42,17 @@ private:
      */
     void create();
 
+    std::queue<std::shared_ptr<pqxx::connection>> m_pool;
+    std::condition_variable m_condition;
+    std::mutex m_mutex;
+
     std::string m_host;
-    uint16_t m_port;
     std::string m_username;
     std::string m_password;
     std::string m_name;
+    uint16_t m_port;
     uint8_t m_connectionTimeout;
     uint8_t m_connectionPoolSize;
-
-    std::mutex m_mutex;
-    std::condition_variable m_condition;
-    std::queue<std::shared_ptr<pqxx::connection>> m_pool;
 };
 
 }

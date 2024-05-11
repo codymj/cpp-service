@@ -26,11 +26,11 @@ public:
         uint64_t createdAt,
         uint64_t modifiedAt
     )
-    : m_userId(userId)
-    , m_email(std::move(email))
+    : m_email(std::move(email))
     , m_password(std::move(password))
     , m_firstName(std::move(firstName))
     , m_lastName(std::move(lastName))
+    , m_userId(userId)
     , m_createdAt(createdAt)
     , m_modifiedAt(modifiedAt) {}
 
@@ -84,11 +84,11 @@ public:
     }
 
 private:
-    uint64_t m_userId{};
     std::string m_email;
     std::string m_password;
     std::string m_firstName;
     std::string m_lastName;
+    uint64_t m_userId{};
     uint64_t m_createdAt;
     uint64_t m_modifiedAt;
 };
