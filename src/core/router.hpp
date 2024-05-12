@@ -11,8 +11,6 @@
 using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPRequestHandler;
 
-
-// TODO: Clean this up into a namespace or something.
 using HttpMethod = std::string const;
 using RoutePath = std::string const;
 using RouteKey = std::pair<HttpMethod, RoutePath>;
