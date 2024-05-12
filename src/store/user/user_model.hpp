@@ -88,7 +88,7 @@ private:
     std::string m_password;
     std::string m_firstName;
     std::string m_lastName;
-    uint64_t m_userId{};
+    uint64_t m_userId;
     uint64_t m_createdAt;
     uint64_t m_modifiedAt;
 };
