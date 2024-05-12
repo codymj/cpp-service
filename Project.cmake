@@ -20,9 +20,12 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}/core/router.cpp
     ${SOURCE_DIR}/core/service_registry.cpp
     ${SOURCE_DIR}/core/store_registry.cpp
+
     ${SOURCE_DIR}/handler/misc/not_found.cpp
     ${SOURCE_DIR}/handler/user/users_get.cpp
+
     ${SOURCE_DIR}/service/user/user_service.cpp
+
     ${SOURCE_DIR}/store/user/user_model.cpp
     ${SOURCE_DIR}/store/user/user_store.cpp
 )
