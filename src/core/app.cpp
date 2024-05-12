@@ -38,7 +38,7 @@ App::createDatabaseConnectionPool()
     catch (Poco::NotFoundException& nfe)
     {
         std::cerr << nfe.what() << ": " << nfe.message() << '\n';
-        std::exit(EXIT_FAILURE);
+        std::exit(EXIT_CONFIG);
     }
 
     return std::make_shared<ConnectionPool>

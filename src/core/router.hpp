@@ -3,7 +3,6 @@
 #include "service_registry.hpp"
 #include <functional>
 #include <map>
-#include <utility>
 #include <string>
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPRequestHandler.h>
