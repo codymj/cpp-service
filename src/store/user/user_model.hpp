@@ -14,9 +14,12 @@
  *     created_at timestamp without time zone default (now() at time zone 'utc'),
  *     modified_at timestamp without time zone default (now() at time zone 'utc')
  * );
+ *
+ * created_at and modified_at are stored at microsecond precision in PostGreSQL.
  */
 class User {
 public:
+    User() = default;
     User(
         uint64_t userId,
         std::string email,
@@ -84,11 +87,11 @@ public:
     }
 
 private:
-    std::string m_email;
-    std::string m_password;
-    std::string m_firstName;
-    std::string m_lastName;
-    uint64_t m_userId;
-    uint64_t m_createdAt;
-    uint64_t m_modifiedAt;
+    std::string m_email{};
+    std::string m_password{};
+    std::string m_firstName{};
+    std::string m_lastName{};
+    uint64_t m_userId{};
+    uint64_t m_createdAt{};
+    uint64_t m_modifiedAt{};
 };
