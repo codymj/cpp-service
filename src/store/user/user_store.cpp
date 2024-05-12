@@ -1,9 +1,9 @@
 #include "user_store.hpp"
-#include "../util.hpp"
-
 #include <iostream>
 
-std::unique_ptr<std::vector<User>> UserStore::getUsers() const {
+std::unique_ptr<std::vector<User>>
+UserStore::getUsers() const
+{
     // Get connection from pool.
     auto cxn = m_connectionPool->getConnection();
 
@@ -11,7 +11,8 @@ std::unique_ptr<std::vector<User>> UserStore::getUsers() const {
     pqxx::work txn{*cxn, std::string{"txn"}};
 
     // Query to get all users.
-    std::string query{
+    std::string query
+    {
         "select "
         "user_id, "
         "email, "
@@ -26,7 +27,8 @@ std::unique_ptr<std::vector<User>> UserStore::getUsers() const {
     // Execute query and build users container.
     pqxx::result res = txn.exec(query);
     auto users = std::make_unique<std::vector<User>>();
-    for (auto&& row : res) {
+    for (auto&& row : res)
+    {
         User u{};
         try {
             u = {
@@ -38,7 +40,9 @@ std::unique_ptr<std::vector<User>> UserStore::getUsers() const {
                 row[5].as<uint64_t>(),
                 row[6].as<uint64_t>()
             };
-        } catch (std::exception& e) {
+        }
+        catch (std::exception& e)
+        {
             // TODO: logging
             std::cerr << e.what() << '\n';
             return nullptr;

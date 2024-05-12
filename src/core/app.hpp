@@ -11,25 +11,30 @@ using Poco::Net::HTTPServer;
 using Poco::Net::HTTPServerParams;
 using Poco::Net::ServerSocket;
 
-class App : public Poco::Util::ServerApplication {
+class App
+: public Poco::Util::ServerApplication
+{
 protected:
     /**
      * Initializes application.
      * @param self
      */
-    void initialize(Application& self) override;
+    void
+    initialize(Application& self) override;
 
     /**
      * Uninitializes application (not useful yet).
      */
-    void uninitialize() override;
+    void
+    uninitialize() override;
 
     /**
      * Main application loop for the HTTP server.
      * @param args
      * @return Exit code.
      */
-    int main(const std::vector<std::string>& args) override;
+    int
+    main(const std::vector<std::string>& args) override;
 
 private:
     /**
@@ -39,5 +44,6 @@ private:
      * in the application.
      * @return
      */
-    std::shared_ptr<ConnectionPool> createDatabaseConnectionPool();
+    std::shared_ptr<ConnectionPool>
+    createDatabaseConnectionPool();
 };

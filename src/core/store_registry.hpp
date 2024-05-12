@@ -4,16 +4,26 @@
 #include <memory>
 #include <utility>
 
-class StoreRegistry {
+class StoreRegistry
+{
 public:
     StoreRegistry() = delete;
+
+    StoreRegistry(StoreRegistry&) = delete;
+
     explicit StoreRegistry(std::shared_ptr<ConnectionPool> connectionPool)
-    : m_connectionPool(std::move(connectionPool)) {
-        // UserStore
+    : m_connectionPool(std::move(connectionPool))
+    {
+        // Data stores get created here.
         m_userStore = std::make_shared<UserStore>(m_connectionPool);
     };
 
-    std::shared_ptr<UserStore> getUserStore();
+    /**
+     * Returns a shared pointer to the UserStore.
+     * @return Shared pointer to UserStore.
+     */
+    std::shared_ptr<UserStore>
+    getUserStore();
 
 private:
     /**

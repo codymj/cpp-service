@@ -18,12 +18,16 @@ using RoutePath = std::string const;
 using RouteKey = std::pair<HttpMethod, RoutePath>;
 using NewHandlerFunc = std::function<HTTPRequestHandler*()>;
 
-class Router {
+class Router
+{
 public:
     Router() = delete;
+
     Router(Router&) = delete;
+
     explicit Router(std::unique_ptr<ServiceRegistry> serviceRegistry)
-    : m_serviceRegistry(std::move(serviceRegistry)) {
+    : m_serviceRegistry(std::move(serviceRegistry))
+    {
         createRoutes();
     };
 
@@ -32,13 +36,15 @@ public:
      * calls that function to return the provided HTTPRequestHandler*.
      * @return HTTPRequestHandler* to handle the request.
      */
-    HTTPRequestHandler* lookupHandler(RouteKey const&);
+    HTTPRequestHandler*
+    lookupHandler(RouteKey const&);
 
 private:
     /**
      * Adds HTTP routes to the m_routes map.
      */
-    void createRoutes();
+    void
+    createRoutes();
 
     /**
      * A map which uses a RouteKey as the key to a function that returns a new

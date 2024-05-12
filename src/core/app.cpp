@@ -3,15 +3,21 @@
 #include <Poco/Environment.h>
 #include <iostream>
 
-void App::initialize(Application&) {
+void
+App::initialize(Application&)
+{
     loadConfiguration("app.properties");
 }
 
-void App::uninitialize() {
+void
+App::uninitialize()
+{
     ServerApplication::uninitialize();
 }
 
-std::shared_ptr<ConnectionPool> App::createDatabaseConnectionPool() {
+std::shared_ptr<ConnectionPool>
+App::createDatabaseConnectionPool()
+{
     // Get environment variable database password.
     std::string password = Poco::Environment::get(
         config().getString("database.password")
@@ -20,19 +26,23 @@ std::shared_ptr<ConnectionPool> App::createDatabaseConnectionPool() {
     std::string host{}, username{}, name{};
     uint16_t port{};
     uint8_t connTimeout{}, connPoolSize{};
-    try {
+    try
+    {
         host = config().getString("database.host");
         port = config().getInt("database.port");
         username = config().getString("database.username");
         name = config().getString("database.name");
         connTimeout = config().getInt("database.connection_timeout");
         connPoolSize = config().getInt("database.connection_pool_size");
-    } catch (Poco::NotFoundException& nfe) {
+    }
+    catch (Poco::NotFoundException& nfe)
+    {
         std::cerr << nfe.what() << ": " << nfe.message() << '\n';
         std::exit(EXIT_FAILURE);
     }
 
-    return std::make_shared<ConnectionPool>(
+    return std::make_shared<ConnectionPool>
+    (
         host,
         port,
         username,
@@ -43,7 +53,9 @@ std::shared_ptr<ConnectionPool> App::createDatabaseConnectionPool() {
     );
 }
 
-int App::main(const std::vector<std::string>&) {
+int
+App::main(const std::vector<std::string>&)
+{
     auto port = config().getInt("server.port", 9000);
     ServerSocket ss(port);
 
@@ -52,19 +64,22 @@ int App::main(const std::vector<std::string>&) {
 
     // Create registries and inject into router.
     auto storeRegistry = std::make_unique<StoreRegistry>(connectionPool);
-    auto serviceRegistry = std::make_unique<ServiceRegistry>(
+    auto serviceRegistry = std::make_unique<ServiceRegistry>
+    (
         std::move(storeRegistry)
     );
     auto router = std::make_unique<Router>(std::move(serviceRegistry));
 
     // Create and start the HTTP server.
-    HTTPServer server(
+    HTTPServer server
+    (
         new HandlerFactory(std::move(router)),
         ss,
         new HTTPServerParams
     );
     server.start();
 
+    // Waiting for interrupts.
     waitForTerminationRequest();
     server.stop();
 

@@ -3,18 +3,29 @@
 #include "store_registry.hpp"
 #include "../service/user/user_service.hpp"
 
-class ServiceRegistry {
+class ServiceRegistry
+{
 public:
     ServiceRegistry() = delete;
+
     ServiceRegistry(ServiceRegistry&) = delete;
+
     explicit ServiceRegistry(std::unique_ptr<StoreRegistry> storeRegistry)
-    : m_storeRegistry(std::move(storeRegistry)) {
-        m_userService = std::make_shared<UserService>(
+    : m_storeRegistry(std::move(storeRegistry))
+    {
+        // Service registries get created here.
+        m_userService = std::make_shared<UserService>
+        (
             m_storeRegistry->getUserStore()
         );
     };
 
-    std::shared_ptr<UserService> getUserService();
+    /**
+     * Returns a shared pointer to the UserService.
+     * @return Shared pointer to the UserService.
+     */
+    std::shared_ptr<UserService>
+    getUserService();
 
 private:
     /**

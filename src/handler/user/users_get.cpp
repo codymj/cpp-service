@@ -1,6 +1,12 @@
 #include "users_get.hpp"
 
-void UsersGetHandler::handleRequest(HTTPServerRequest & /*req*/, HTTPServerResponse &res) {
+void
+UsersGetHandler::handleRequest
+(
+    HTTPServerRequest& /*req*/,
+    HTTPServerResponse &res
+)
+{
     // Call to service to get some data.
     std::unique_ptr<std::vector<User>> users = m_userService->getUsers();
 
@@ -12,11 +18,16 @@ void UsersGetHandler::handleRequest(HTTPServerRequest & /*req*/, HTTPServerRespo
     os << "<html>";
     os << "<h1>GET /users</h1>";
 
-    if (!users) {
+    // nullptr returned if there was an error.
+    if (!users)
+    {
         os << "<h3>Error getting users.</h3>";
         return;
     }
-    for (auto const &u: *users) {
+
+    // Build response.
+    for (auto const &u: *users)
+    {
         os << "<h3>" << u.getUserId() << "</h3>";
         os << "<ul>";
         os << "<li>" << u.getFirstName() << "</li>";

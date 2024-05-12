@@ -7,13 +7,19 @@
 #include <string>
 #include <pqxx/pqxx>
 
-namespace cppservice::database {
+namespace cppservice::database
+{
 
-class ConnectionPool {
+// TODO: Separate connection and pool logic.
+class ConnectionPool
+{
 public:
     ConnectionPool() = delete;
+
     ConnectionPool(ConnectionPool&) = delete;
-    ConnectionPool(
+
+    ConnectionPool
+    (
         std::string host,
         uint16_t port,
         std::string username,
@@ -28,19 +34,31 @@ public:
     , m_name(std::move(name))
     , m_port(port)
     , m_connectionTimeout(connectionTimeout)
-    , m_connectionPoolSize(connectionPoolSize) {
+    , m_connectionPoolSize(connectionPoolSize)
+    {
         create();
     }
 
-    [[nodiscard]] std::shared_ptr<pqxx::connection> getConnection();
-    void freeConnection(const std::shared_ptr<pqxx::connection>&);
+    /**
+     * Returns a database connection from the connection pool.
+     * @return Database connection from connection pool.
+     */
+    [[nodiscard]] std::shared_ptr<pqxx::connection>
+    getConnection();
+
+    /**
+     * Frees the database connection back into the connection pool.
+     */
+    void
+    freeConnection(std::shared_ptr<pqxx::connection> const&);
 
 private:
     /**
      * Creates the connection pool with as many connections as
      * m_connectionPoolSize.
      */
-    void create();
+    void
+    create();
 
     std::queue<std::shared_ptr<pqxx::connection>> m_pool;
     std::condition_variable m_condition;
@@ -55,4 +73,4 @@ private:
     uint8_t m_connectionPoolSize;
 };
 
-}
+} // namespace cppservice::database

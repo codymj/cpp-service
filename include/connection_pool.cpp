@@ -1,12 +1,16 @@
 #include "connection_pool.hpp"
 
-namespace cppservice::database {
+namespace cppservice::database
+{
 
-void ConnectionPool::create() {
+void
+ConnectionPool::create()
+{
     std::lock_guard<std::mutex> lock(m_mutex);
 
     // Build connection string to database.
-    std::string cs{
+    std::string cs
+    {
         "postgresql://" +
         m_username + ":" + m_password + "@" +
         m_host + ":" +
@@ -16,18 +20,23 @@ void ConnectionPool::create() {
     };
 
     // Populate the connection pool.
-    for (auto i=0; i<m_connectionPoolSize; ++i) {
-        m_pool.emplace(
+    for (auto i=0; i<m_connectionPoolSize; ++i)
+    {
+        m_pool.emplace
+        (
             std::make_shared<pqxx::connection>(pqxx::connection{cs})
         );
     }
 }
 
-std::shared_ptr<pqxx::connection> ConnectionPool::getConnection() {
+std::shared_ptr<pqxx::connection>
+ConnectionPool::getConnection()
+{
     std::unique_lock<std::mutex> lock(m_mutex);
 
     // If all connections are busy, wait until we can get a connection.
-    while (m_pool.empty()) {
+    while (m_pool.empty())
+    {
         m_condition.wait(lock);
     }
 
@@ -38,15 +47,19 @@ std::shared_ptr<pqxx::connection> ConnectionPool::getConnection() {
     return cxn;
 }
 
-void ConnectionPool::freeConnection(
-std::shared_ptr<pqxx::connection> const& connection
-) {
+void
+ConnectionPool::freeConnection
+(
+    std::shared_ptr<pqxx::connection> const& cxn
+)
+{
     std::unique_lock<std::mutex> lock(m_mutex);
 
-    m_pool.push(connection);
+    // Return connection to pool.
+    m_pool.push(cxn);
 
     lock.unlock();
     m_condition.notify_one();
 }
 
-}
+} // namespace cppservice::database

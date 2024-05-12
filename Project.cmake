@@ -8,11 +8,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     ${MY_COMPILE_OPTIONS}
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${SOURCE_DIR}
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${INCLUDE_DIR}
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
+    ${INCLUDE_DIR}/connection_pool.cpp
+
     ${SOURCE_DIR}/core/app.cpp
     ${SOURCE_DIR}/core/handler_factory.cpp
     ${SOURCE_DIR}/core/router.cpp
@@ -21,7 +23,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}/handler/misc/not_found.cpp
     ${SOURCE_DIR}/handler/user/users_get.cpp
     ${SOURCE_DIR}/service/user/user_service.cpp
-    ${SOURCE_DIR}/store/db/connection_pool.cpp
     ${SOURCE_DIR}/store/user/user_model.cpp
     ${SOURCE_DIR}/store/user/user_store.cpp
 )

@@ -1,6 +1,12 @@
 #include "not_found.hpp"
 
-void NotFoundHandler::handleRequest(HTTPServerRequest& /*req*/, HTTPServerResponse& res) {
+void
+NotFoundHandler::handleRequest
+(
+    HTTPServerRequest& /*req*/,
+    HTTPServerResponse& res
+)
+{
     res.setChunkedTransferEncoding(true);
     res.setContentType("text/html");
     res.setStatus(HTTPResponse::HTTP_NOT_FOUND);

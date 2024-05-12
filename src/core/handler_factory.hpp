@@ -9,12 +9,17 @@ using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPRequestHandlerFactory;
 using Poco::Net::HTTPServerRequest;
 
-class HandlerFactory : public HTTPRequestHandlerFactory {
+class HandlerFactory
+: public HTTPRequestHandlerFactory
+{
 public:
     HandlerFactory() = delete;
+
     HandlerFactory(HandlerFactory&) = delete;
+
     explicit HandlerFactory(std::unique_ptr<Router> router)
-    : m_router(std::move(router)) {};
+    : m_router(std::move(router))
+    {};
 
     /**
      * Generates a RouteKey from the HTTPServerRequest which is used in m_router
@@ -22,7 +27,8 @@ public:
      * @param req HTTP request into the server.
      * @return HTTPRequestHandler* to handle the request.
      */
-    HTTPRequestHandler* createRequestHandler(HTTPServerRequest const& req) override;
+    HTTPRequestHandler*
+    createRequestHandler(HTTPServerRequest const& req) override;
 
 private:
     /**

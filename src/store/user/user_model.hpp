@@ -14,13 +14,14 @@
  *     created_at timestamp without time zone default (now() at time zone 'utc'),
  *     modified_at timestamp without time zone default (now() at time zone 'utc')
  * );
- *
- * created_at and modified_at are stored at microsecond precision in PostGreSQL.
  */
-class User {
+class User
+{
 public:
     User() = default;
-    User(
+
+    User
+    (
         uint64_t userId,
         std::string email,
         std::string password,
@@ -35,54 +36,90 @@ public:
     , m_lastName(std::move(lastName))
     , m_userId(userId)
     , m_createdAt(createdAt)
-    , m_modifiedAt(modifiedAt) {}
+    , m_modifiedAt(modifiedAt)
+    {}
 
-    [[nodiscard]] uint64_t getUserId() const {
+    [[nodiscard]] inline uint64_t
+    getUserId() const
+    {
         return m_userId;
     }
-    void setUserId(uint64_t uid) {
+
+    inline void
+    setUserId(uint64_t uid)
+    {
         m_userId = uid;
     }
 
-    [[nodiscard]] std::string getEmail() const {
+    [[nodiscard]] inline std::string
+    getEmail() const
+    {
         return m_email;
     }
-    void setEmail(std::string email) {
+
+    inline void
+    setEmail(std::string email)
+    {
         m_email = std::move(email);
     }
 
-    [[nodiscard]] std::string getPassword() const {
+    [[nodiscard]] inline std::string
+    getPassword() const
+    {
         return m_password;
     }
-    void setPassword(std::string password) {
+
+    inline void
+    setPassword(std::string password)
+    {
         m_password = std::move(password);
     }
 
-    [[nodiscard]] std::string getFirstName() const {
+    [[nodiscard]] inline std::string
+    getFirstName() const
+    {
         return m_firstName;
     }
-    void setFirstName(std::string firstName) {
+
+    inline void
+    setFirstName(std::string firstName)
+    {
         m_firstName = std::move(firstName);
     }
 
-    [[nodiscard]] std::string getLastName() const {
+    [[nodiscard]] inline std::string
+    getLastName() const
+    {
         return m_lastName;
     }
-    void setLastName(std::string lastName) {
+
+    inline void
+    setLastName(std::string lastName)
+    {
         m_lastName = std::move(lastName);
     }
 
-    [[nodiscard]] uint64_t getCreatedAt() const {
+    [[nodiscard]] inline uint64_t
+    getCreatedAt() const
+    {
         return m_createdAt;
     }
-    void setCreatedAt(uint64_t createdAt) {
+
+    inline void
+    setCreatedAt(uint64_t createdAt)
+    {
         m_createdAt = createdAt;
     }
 
-    [[nodiscard]] uint64_t getModifiedAt() const {
+    [[nodiscard]] inline uint64_t
+    getModifiedAt() const
+    {
         return m_modifiedAt;
     }
-    void setModifiedAt(uint64_t modifiedAt) {
+
+    inline void
+    setModifiedAt(uint64_t modifiedAt)
+    {
         m_modifiedAt = modifiedAt;
     }
 
