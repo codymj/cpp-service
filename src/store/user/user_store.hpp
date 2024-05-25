@@ -1,7 +1,7 @@
 #pragma once
 
 #include "user_model.hpp"
-#include <connection_pool.hpp>
+#include "postgres_connection.hpp"
 #include <utility>
 #include <vector>
 
@@ -14,8 +14,11 @@ public:
 
     UserStore(UserStore&) = delete;
 
-    explicit UserStore(std::shared_ptr<ConnectionPool> connectionPool)
-    : m_connectionPool(std::move(connectionPool))
+    explicit UserStore
+    (
+        ConnectionPool<PostgresConnectionPtr>* connectionPool
+    )
+    : m_connectionPool(connectionPool)
     {}
 
     /**
@@ -27,5 +30,5 @@ public:
     getUsers() const;
 
 private:
-    std::shared_ptr<ConnectionPool> m_connectionPool;
+    ConnectionPool<PostgresConnectionPtr>* m_connectionPool;
 };

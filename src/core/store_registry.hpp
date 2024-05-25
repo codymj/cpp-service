@@ -1,5 +1,6 @@
 #pragma once
 
+#include "postgres_connection.hpp"
 #include "../store/user/user_store.hpp"
 #include <memory>
 #include <utility>
@@ -11,8 +12,11 @@ public:
 
     StoreRegistry(StoreRegistry&) = delete;
 
-    explicit StoreRegistry(std::shared_ptr<ConnectionPool> connectionPool)
-    : m_connectionPool(std::move(connectionPool))
+    explicit StoreRegistry
+    (
+        ConnectionPool<PostgresConnectionPtr>* connectionPool
+    )
+    : m_connectionPool(connectionPool)
     {
         // Data stores get created here.
         m_userStore = std::make_shared<UserStore>(m_connectionPool);
@@ -29,7 +33,7 @@ private:
     /**
      * Connection pool shared pointer which gets copied to each data store.
      */
-    std::shared_ptr<ConnectionPool> m_connectionPool;
+    ConnectionPool<PostgresConnectionPtr>* m_connectionPool;
 
     /**
      * Data store for User logic.

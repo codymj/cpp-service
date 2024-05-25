@@ -13,7 +13,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
-    ${INCLUDE_DIR}/connection_pool.cpp
+    ${INCLUDE_DIR}/postgres_connection.cpp
 
     ${SOURCE_DIR}/core/app.cpp
     ${SOURCE_DIR}/core/handler_factory.cpp

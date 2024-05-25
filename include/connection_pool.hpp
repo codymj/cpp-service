@@ -5,12 +5,12 @@
 #include <mutex>
 #include <queue>
 #include <string>
-#include <pqxx/pqxx>
+#include <iostream>
 
 namespace cppservice::database
 {
 
-// TODO: Separate connection and pool logic.
+template <typename T>
 class ConnectionPool
 {
 public:
@@ -18,59 +18,60 @@ public:
 
     ConnectionPool(ConnectionPool&) = delete;
 
-    ConnectionPool
-    (
-        std::string host,
-        uint16_t port,
-        std::string username,
-        std::string password,
-        std::string name,
-        uint8_t connectionTimeout = 180,
-        uint8_t connectionPoolSize = 8
-    )
-    : m_host(std::move(host))
-    , m_username(std::move(username))
-    , m_password(std::move(password))
-    , m_name(std::move(name))
-    , m_port(port)
-    , m_connectionTimeout(connectionTimeout)
-    , m_connectionPoolSize(connectionPoolSize)
+    explicit ConnectionPool(std::vector<T> connections)
     {
-        create();
+        std::lock_guard<std::mutex> lock(m_mutex);
+
+        // Populate the connection pool.
+        for (auto&& cxn : connections)
+        {
+            m_pool.emplace(std::move(cxn));
+        }
     }
 
     /**
      * Returns a database connection from the connection pool.
      * @return Database connection from connection pool.
      */
-    [[nodiscard]] std::shared_ptr<pqxx::connection>
-    getConnection();
+    [[nodiscard]] T
+    rentConnection()
+    {
+        std::unique_lock<std::mutex> lock(m_mutex);
+
+        // If all connections are busy, wait until we can get a connection.
+        while (m_pool.empty())
+        {
+            m_condition.wait(lock);
+        }
+
+        // Connection is ready, grab one.
+        auto cxn = std::move(m_pool.front());
+        m_pool.pop();
+
+        std::cout << "renting connection: " << cxn << '\n';
+
+        return cxn;
+    }
 
     /**
      * Frees the database connection back into the connection pool.
      */
     void
-    freeConnection(std::shared_ptr<pqxx::connection> const&);
+    freeConnection(T connection)
+    {
+        std::unique_lock<std::mutex> lock(m_mutex);
+
+        // Return connection to pool.
+        m_pool.push(std::move(connection));
+
+        lock.unlock();
+        m_condition.notify_one();
+    }
 
 private:
-    /**
-     * Creates the connection pool with as many connections as
-     * m_connectionPoolSize.
-     */
-    void
-    create();
-
-    std::queue<std::shared_ptr<pqxx::connection>> m_pool;
+    std::queue<T> m_pool;
     std::condition_variable m_condition;
     std::mutex m_mutex;
-
-    std::string m_host;
-    std::string m_username;
-    std::string m_password;
-    std::string m_name;
-    uint16_t m_port;
-    uint8_t m_connectionTimeout;
-    uint8_t m_connectionPoolSize;
 };
 
 } // namespace cppservice::database

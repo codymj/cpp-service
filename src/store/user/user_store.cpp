@@ -4,8 +4,8 @@
 std::unique_ptr<std::vector<User>>
 UserStore::getUsers() const
 {
-    // Get connection from pool.
-    auto cxn = m_connectionPool->getConnection();
+    // Rent a connection from pool.
+    auto cxn = m_connectionPool->rentConnection();
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
@@ -52,7 +52,7 @@ UserStore::getUsers() const
     }
 
     // Free connection (IMPORTANT!)
-    m_connectionPool->freeConnection(cxn);
+    m_connectionPool->freeConnection(std::move(cxn));
 
     return users;
 }

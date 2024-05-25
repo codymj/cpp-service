@@ -5,6 +5,7 @@
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Util/ServerApplication.h>
 #include <memory>
+#include "postgres_connection.hpp"
 #include "store_registry.hpp"
 
 using Poco::Net::HTTPServer;
@@ -39,11 +40,9 @@ protected:
 private:
     /**
      * Creates the connection pool for the database with parameters from
-     * the app.properties file. The pool gets injected into the StoreRegistry
-     * which copies of the shared pointer are injected into all of the stores
-     * in the application.
-     * @return
+     * the app.properties file. The pool gets injected into the StoreRegistry.
+     * @return Shared pointer of the connection pool.
      */
-    std::shared_ptr<ConnectionPool>
+    ConnectionPool<PostgresConnectionPtr>*
     createDatabaseConnectionPool();
 };

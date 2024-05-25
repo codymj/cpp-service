@@ -15,17 +15,17 @@ App::uninitialize()
     ServerApplication::uninitialize();
 }
 
-std::shared_ptr<ConnectionPool>
+ConnectionPool<PostgresConnectionPtr>*
 App::createDatabaseConnectionPool()
 {
     // Get environment variable database password.
-    std::string password = Poco::Environment::get(
+    std::string password = Poco::Environment::get
+    (
         config().getString("database.password")
     );
 
     std::string host{}, username{}, name{};
-    uint16_t port{};
-    uint8_t connTimeout{}, connPoolSize{};
+    int port{}, connTimeout{}, poolSize{};
     try
     {
         host = config().getString("database.host");
@@ -33,24 +33,36 @@ App::createDatabaseConnectionPool()
         username = config().getString("database.username");
         name = config().getString("database.name");
         connTimeout = config().getInt("database.connection_timeout");
-        connPoolSize = config().getInt("database.connection_pool_size");
+        poolSize = config().getInt("database.connection_pool_size");
     }
     catch (Poco::NotFoundException& nfe)
     {
         std::cerr << nfe.what() << ": " << nfe.message() << '\n';
         std::exit(EXIT_CONFIG);
     }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        std::exit(EXIT_CONFIG);
+    }
+    std::cout << "host : " << host << '\n';
+    std::cout << "port : " << port << '\n';
+    std::cout << "username : " << username << '\n';
+    std::cout << "connTimeout : " << connTimeout << '\n';
 
-    return std::make_shared<ConnectionPool>
+    // Build database connections.
+    std::vector<PostgresConnectionPtr> connections;
+    auto cxn = PostgresConnection
     (
-        host,
-        port,
-        username,
-        password,
-        name,
-        connTimeout,
-        connPoolSize
+        host, port, username, password, name, connTimeout
     );
+    for (auto i=0; i<poolSize; ++i)
+    {
+        std::cout << "building connection : " << i << '\n';
+        connections.emplace_back(cxn.build());
+    }
+
+    return new ConnectionPool<PostgresConnectionPtr>(std::move(connections));
 }
 
 int
@@ -82,6 +94,7 @@ App::main(const std::vector<std::string>&)
     // Waiting for interrupts.
     waitForTerminationRequest();
     server.stop();
+    delete connectionPool;
 
     return Application::EXIT_OK;
 }
