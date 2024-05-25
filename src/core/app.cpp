@@ -25,7 +25,7 @@ App::createDatabaseConnectionPool()
     );
 
     std::string host{}, username{}, name{};
-    int port{}, connTimeout{}, poolSize{};
+    uint16_t port{}, connTimeout{}, poolSize{};
     try
     {
         host = config().getString("database.host");
@@ -45,10 +45,6 @@ App::createDatabaseConnectionPool()
         std::cerr << e.what() << '\n';
         std::exit(EXIT_CONFIG);
     }
-    std::cout << "host : " << host << '\n';
-    std::cout << "port : " << port << '\n';
-    std::cout << "username : " << username << '\n';
-    std::cout << "connTimeout : " << connTimeout << '\n';
 
     // Build database connections.
     std::vector<PostgresConnectionPtr> connections;
@@ -58,7 +54,6 @@ App::createDatabaseConnectionPool()
     );
     for (auto i=0; i<poolSize; ++i)
     {
-        std::cout << "building connection : " << i << '\n';
         connections.emplace_back(cxn.build());
     }
 

@@ -48,8 +48,6 @@ public:
         auto cxn = std::move(m_pool.front());
         m_pool.pop();
 
-        std::cout << "renting connection: " << cxn << '\n';
-
         return cxn;
     }
 

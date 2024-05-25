@@ -17,7 +17,7 @@ public:
         std::string username,
         std::string password,
         std::string name,
-        uint8_t connectionTimeout = 180
+        uint16_t connectionTimeout = 180
     )
     : m_host(std::move(host))
     , m_username(std::move(username))
@@ -39,5 +39,5 @@ private:
     std::string m_password;
     std::string m_name;
     uint16_t m_port;
-    uint8_t m_connectionTimeout;
+    uint16_t m_connectionTimeout;
 };
