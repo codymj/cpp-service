@@ -12,17 +12,17 @@ PostgresUserStore::getUsers() const
 
     // Query to get all users.
     std::string query
-        {
-            "select "
-            "user_id, "
-            "email, "
-            "password, "
-            "first_name, "
-            "last_name, "
-            "floor(extract(epoch FROM created_at)*1000000) as created_at, "
-            "floor(extract(epoch FROM modified_at)*1000000) as modified_at "
-            "from users"
-        };
+    {
+        "select "
+        "user_id, "
+        "email, "
+        "password, "
+        "first_name, "
+        "last_name, "
+        "floor(extract(epoch FROM created_at)*1000000) as created_at, "
+        "floor(extract(epoch FROM modified_at)*1000000) as modified_at "
+        "from users"
+    };
 
     // Execute query and build users container.
     pqxx::result res = txn.exec(query);
@@ -30,7 +30,8 @@ PostgresUserStore::getUsers() const
     for (auto&& row : res)
     {
         User u{};
-        try {
+        try
+        {
             u = {
                 row[0].as<uint64_t>(),
                 row[1].as<std::string>(),
@@ -55,4 +56,45 @@ PostgresUserStore::getUsers() const
     m_connectionPool->freeConnection(std::move(cxn));
 
     return users;
+}
+
+void
+PostgresUserStore::saveUser(const User &user)
+{
+    // Rent a connection from pool.
+    auto cxn = m_connectionPool->rentConnection();
+
+    // Open a transaction.
+    pqxx::work txn{*cxn, std::string{"txn"}};
+
+    // Command to save a user.
+    std::string command
+    {
+        "insert into "
+        "users (email, password, first_name, last_name) "
+        "values ("
+        "'" + user.getEmail() + "', "
+        "'" + user.getPassword() + "', "
+        "'" + user.getFirstName() + "', "
+        "'" + user.getLastName() + "')"
+    };
+
+    // Execute and commit transaction.
+    try
+    {
+        txn.exec(command);
+        txn.commit();
+    }
+    catch (pqxx::sql_error& e)
+    {
+        // TODO: logging
+        std::cerr << e.what() << '\n' << "Query: " << command << '\n';
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << '\n' << "Query: " << command << '\n';
+    }
+
+    // Free connection (IMPORTANT!)
+    m_connectionPool->freeConnection(std::move(cxn));
 }

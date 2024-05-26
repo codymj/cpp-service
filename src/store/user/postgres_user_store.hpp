@@ -1,9 +1,10 @@
 #pragma once
 
-#include "connection_pool.hpp"
-#include "postgres_connection.hpp"
 #include "user_model.hpp"
+#include <connection_pool.hpp>
+#include <postgres_connection.hpp>
 #include <vector>
+#include <pqxx/except>
 
 using cppservice::database::ConnectionPool;
 
@@ -31,6 +32,9 @@ public:
      */
     [[nodiscard]] std::unique_ptr<std::vector<User>>
     getUsers() const;
+
+    void
+    saveUser(User const& user);
 
 private:
     ConnectionPool<PqxxPtr>* m_connectionPool;

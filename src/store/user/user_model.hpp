@@ -39,6 +39,19 @@ public:
     , m_modifiedAt(modifiedAt)
     {}
 
+    User
+    (
+        std::string email,
+        std::string password,
+        std::string firstName,
+        std::string lastName
+    )
+    : m_email(std::move(email))
+    , m_password(std::move(password))
+    , m_firstName(std::move(firstName))
+    , m_lastName(std::move(lastName))
+    {}
+
     [[maybe_unused]] [[nodiscard]] inline uint64_t
     getUserId() const
     {

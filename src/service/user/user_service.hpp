@@ -29,6 +29,9 @@ public:
     [[nodiscard]] std::unique_ptr<std::vector<User>>
     getUsers() const;
 
+    void
+    saveUser(User const& user);
+
 private:
     PostgresUserStore* m_userStore;
 };

@@ -6,3 +6,4 @@ A template for building a C++ web service.
 
 - poco `v1.13.3`
 - libpqxx `v7.9.0`
+- simdjson `v3.9.2`

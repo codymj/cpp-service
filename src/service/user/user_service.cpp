@@ -5,3 +5,9 @@ UserService::getUsers() const
 {
     return m_userStore->getUsers();
 }
+
+void
+UserService::saveUser(const User &user)
+{
+    m_userStore->saveUser(user);
+}

@@ -10,10 +10,12 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${INCLUDE_DIR}
+    ${INCLUDE_DIR}/external
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
     # High level
+    ${INCLUDE_DIR}/external/simdjson.cpp
     ${INCLUDE_DIR}/postgres_connection.cpp
 
     # Core level
@@ -26,6 +28,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     # Handlers
     ${SOURCE_DIR}/handler/misc/not_found.cpp
     ${SOURCE_DIR}/handler/user/users_get.cpp
+    ${SOURCE_DIR}/handler/user/users_post.cpp
 
     # Services
     ${SOURCE_DIR}/service/user/user_service.cpp
