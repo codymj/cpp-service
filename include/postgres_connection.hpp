@@ -32,7 +32,7 @@ public:
 
 private:
     std::string
-    connection_string();
+    connectionString();
 
     std::string m_host;
     std::string m_username;

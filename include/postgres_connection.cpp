@@ -2,10 +2,10 @@
 
 PostgresConnectionPtr PostgresConnection::build()
 {
-    return std::make_unique<pqxx::connection>(connection_string());
+    return std::make_unique<pqxx::connection>(connectionString());
 }
 
-std::string PostgresConnection::connection_string()
+std::string PostgresConnection::connectionString()
 {
     return std::string
     {
