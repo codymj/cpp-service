@@ -23,10 +23,11 @@ using NewHandlerFunc = std::function<HTTPRequestHandler*()>;
 class Router
 {
 public:
+    /**
+     * Don't want to lazily create or copy/move this.
+     */
     Router() = delete;
-
     Router(Router&) = delete;
-
     Router(Router&&) = delete;
 
     explicit Router(ServiceRegistry* serviceRegistry)

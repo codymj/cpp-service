@@ -10,10 +10,11 @@
 class ServiceRegistry
 {
 public:
+    /**
+     * Don't want to lazily create or copy/move this.
+     */
     ServiceRegistry() = delete;
-
     ServiceRegistry(ServiceRegistry&) = delete;
-
     ServiceRegistry(ServiceRegistry&&) = delete;
 
     explicit ServiceRegistry(StoreRegistry* storeRegistry)

@@ -7,9 +7,19 @@
 
 using cppservice::database::ConnectionPool;
 
+/**
+ * Data store represented by a PostgreSQL database for storing User data.
+ */
 class PostgresUserStore
 {
 public:
+    /**
+     * Don't want to lazily create or copy/move this.
+     */
+    PostgresUserStore() = delete;
+    PostgresUserStore(PostgresUserStore&) = delete;
+    PostgresUserStore(PostgresUserStore&&) = delete;
+
     explicit PostgresUserStore(ConnectionPool<PqxxPtr>* connectionPool)
     : m_connectionPool(connectionPool)
     {}

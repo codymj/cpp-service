@@ -13,14 +13,18 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Net::HTTPResponse;
 
+/**
+ * Handler for parsing HTTP GET /users requests.
+ */
 class UsersGetHandler
 : public HTTPRequestHandler
 {
 public:
+    /**
+     * Don't want to lazily create or copy/move this.
+     */
     UsersGetHandler() = delete;
-
     UsersGetHandler(UsersGetHandler&) = delete;
-
     UsersGetHandler(UsersGetHandler&&) = delete;
 
     explicit UsersGetHandler(UserService* userService)

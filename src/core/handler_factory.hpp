@@ -13,10 +13,11 @@ class HandlerFactory
 : public HTTPRequestHandlerFactory
 {
 public:
+    /**
+     * Don't want to lazily create or copy/move this.
+     */
     HandlerFactory() = delete;
-
     HandlerFactory(HandlerFactory&) = delete;
-
     HandlerFactory(HandlerFactory&&) = delete;
 
     explicit HandlerFactory(Router* router)

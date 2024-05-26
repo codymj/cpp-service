@@ -12,10 +12,11 @@
 class StoreRegistry
 {
 public:
+    /**
+     * Don't want to lazily create or copy/move this.
+     */
     StoreRegistry() = delete;
-
     StoreRegistry(StoreRegistry&) = delete;
-
     StoreRegistry(StoreRegistry&&) = delete;
 
     explicit StoreRegistry

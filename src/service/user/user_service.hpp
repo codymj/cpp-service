@@ -5,13 +5,17 @@
 #include <utility>
 #include <vector>
 
+/**
+ * Service for manipulating User businless logic.
+ */
 class UserService
 {
 public:
+    /**
+     * Don't want to lazily create or copy/move this.
+     */
     UserService() = delete;
-
     UserService(UserService&) = delete;
-
     UserService(UserService&&) = delete;
 
     explicit UserService(PostgresUserStore* userStore)
