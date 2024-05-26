@@ -7,14 +7,19 @@
 namespace cppservice::database
 {
 
+/**
+ * Connection pool for holding a collection of connections to a data store.
+ * @tparam T Type of connection for the pool to utilize.
+ */
 template <typename T>
 class ConnectionPool
 {
 public:
+    /**
+     * Don't want to lazily create or copy/move this.
+     */
     ConnectionPool() = delete;
-
     ConnectionPool(ConnectionPool&) = delete;
-
     ConnectionPool(ConnectionPool&&) = delete;
 
     explicit ConnectionPool(std::vector<T> connections)
