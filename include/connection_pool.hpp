@@ -18,6 +18,8 @@ public:
 
     ConnectionPool(ConnectionPool&) = delete;
 
+    ConnectionPool(ConnectionPool&&) = delete;
+
     explicit ConnectionPool(std::vector<T> connections)
     {
         std::lock_guard<std::mutex> lock(m_mutex);

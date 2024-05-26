@@ -29,8 +29,8 @@ public:
 
     Router(Router&&) = delete;
 
-    explicit Router(std::unique_ptr<ServiceRegistry> serviceRegistry)
-    : m_serviceRegistry(std::move(serviceRegistry))
+    explicit Router(ServiceRegistry* serviceRegistry)
+    : m_serviceRegistry(serviceRegistry)
     {
         createRoutes();
     };
@@ -62,5 +62,5 @@ private:
      * various getter methods are called to inject appropriate service objects
      * into handlers.
      */
-    std::unique_ptr<ServiceRegistry> m_serviceRegistry;
+    ServiceRegistry* m_serviceRegistry{};
 };

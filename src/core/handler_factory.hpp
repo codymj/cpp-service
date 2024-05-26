@@ -19,8 +19,8 @@ public:
 
     HandlerFactory(HandlerFactory&&) = delete;
 
-    explicit HandlerFactory(std::unique_ptr<Router> router)
-    : m_router(std::move(router))
+    explicit HandlerFactory(Router* router)
+    : m_router(router)
     {};
 
     /**
@@ -36,5 +36,5 @@ private:
     /**
      * Used to route HTTP requests to the appropriate handler.
      */
-    std::unique_ptr<Router> m_router;
+    Router* m_router{};
 };

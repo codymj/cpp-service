@@ -12,6 +12,8 @@ public:
 
     UserService(UserService&) = delete;
 
+    UserService(UserService&&) = delete;
+
     explicit UserService(UserStore* userStore)
     : m_userStore(userStore)
     {}

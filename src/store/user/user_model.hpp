@@ -39,85 +39,85 @@ public:
     , m_modifiedAt(modifiedAt)
     {}
 
-    [[nodiscard]] inline uint64_t
+    [[maybe_unused]] [[nodiscard]] inline uint64_t
     getUserId() const
     {
         return m_userId;
     }
 
-    inline void
+    [[maybe_unused]] inline void
     setUserId(uint64_t uid)
     {
         m_userId = uid;
     }
 
-    [[nodiscard]] inline std::string
+    [[maybe_unused]] [[nodiscard]] inline std::string
     getEmail() const
     {
         return m_email;
     }
 
-    inline void
+    [[maybe_unused]] inline void
     setEmail(std::string email)
     {
         m_email = std::move(email);
     }
 
-    [[nodiscard]] inline std::string
+    [[maybe_unused]] [[nodiscard]] inline std::string
     getPassword() const
     {
         return m_password;
     }
 
-    inline void
+    [[maybe_unused]] inline void
     setPassword(std::string password)
     {
         m_password = std::move(password);
     }
 
-    [[nodiscard]] inline std::string
+    [[maybe_unused]] [[nodiscard]] inline std::string
     getFirstName() const
     {
         return m_firstName;
     }
 
-    inline void
+    [[maybe_unused]] inline void
     setFirstName(std::string firstName)
     {
         m_firstName = std::move(firstName);
     }
 
-    [[nodiscard]] inline std::string
+    [[maybe_unused]] [[nodiscard]] inline std::string
     getLastName() const
     {
         return m_lastName;
     }
 
-    inline void
+    [[maybe_unused]] inline void
     setLastName(std::string lastName)
     {
         m_lastName = std::move(lastName);
     }
 
-    [[nodiscard]] inline uint64_t
+    [[maybe_unused]] [[nodiscard]] inline uint64_t
     getCreatedAt() const
     {
         return m_createdAt;
     }
 
-    inline void
+    [[maybe_unused]] inline void
     setCreatedAt(uint64_t createdAt)
     {
         m_createdAt = createdAt;
     }
 
-    [[nodiscard]] inline uint64_t
+    [[maybe_unused]] [[nodiscard]] inline uint64_t
     getModifiedAt() const
     {
         return m_modifiedAt;
     }
 
-    inline void
+    [[maybe_unused]] inline void
     setModifiedAt(uint64_t modifiedAt)
     {
         m_modifiedAt = modifiedAt;

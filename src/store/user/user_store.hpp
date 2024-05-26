@@ -14,9 +14,11 @@ public:
 
     UserStore(UserStore&) = delete;
 
+    UserStore(UserStore&&) = delete;
+
     explicit UserStore
     (
-        ConnectionPool<PostgresConnectionPtr>* connectionPool
+        ConnectionPool<PqxxPtr>* connectionPool
     )
     : m_connectionPool(connectionPool)
     {}
@@ -30,5 +32,5 @@ public:
     getUsers() const;
 
 private:
-    ConnectionPool<PostgresConnectionPtr>* m_connectionPool;
+    ConnectionPool<PqxxPtr>* m_connectionPool;
 };

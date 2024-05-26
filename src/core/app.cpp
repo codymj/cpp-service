@@ -1,7 +1,7 @@
 #include "app.hpp"
 #include <Poco/Environment.h>
 
-void
+[[maybe_unused]] void
 App::initialize(Application&)
 {
     loadConfiguration("app.properties");
@@ -10,7 +10,7 @@ App::initialize(Application&)
     createPostgresConnectionPool();
 }
 
-void
+[[maybe_unused]] void
 App::uninitialize()
 {
     ServerApplication::uninitialize();
@@ -48,7 +48,7 @@ App::createPostgresConnectionPool()
     }
 
     // Build database connections.
-    std::vector<PostgresConnectionPtr> connections;
+    std::vector<PqxxPtr> connections;
     auto cxn = PostgresConnection
     (
         host, port, username, password, name, connectionTimeout
@@ -58,7 +58,7 @@ App::createPostgresConnectionPool()
         connections.emplace_back(cxn.build());
     }
 
-    m_connectionPool = std::make_unique<ConnectionPool<PostgresConnectionPtr>>
+    m_connectionPool = std::make_unique<ConnectionPool<PqxxPtr>>
     (
         std::move(connections)
     );
@@ -73,17 +73,17 @@ App::main(const std::vector<std::string>&)
     // Create service registry to inject into the router.
     m_serviceRegistry = std::make_unique<ServiceRegistry>
     (
-        std::move(m_storeRegistry)
+        m_storeRegistry.get()
     );
 
     // Create router to inject into the handler factory.
-    m_router = std::make_unique<Router>(std::move(m_serviceRegistry));
+    m_router = std::make_unique<Router>(m_serviceRegistry.get());
 
     // Create and start the HTTP server.
     ServerSocket serverSocket(m_serverPort);
     HTTPServer server
     (
-        new HandlerFactory(std::move(m_router)),
+        new HandlerFactory(m_router.get()),
         serverSocket,
         new HTTPServerParams
     );

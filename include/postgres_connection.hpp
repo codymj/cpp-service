@@ -5,11 +5,17 @@
 #include <pqxx/pqxx>
 #include "connection_pool.hpp"
 
-using PostgresConnectionPtr = std::unique_ptr<pqxx::connection>;
+using PqxxPtr = std::unique_ptr<pqxx::connection>;
 
 class PostgresConnection
 {
 public:
+    PostgresConnection() = delete;
+
+    PostgresConnection(PostgresConnection&) = delete;
+
+    PostgresConnection(PostgresConnection&&) = delete;
+
     PostgresConnection
     (
         std::string host,
@@ -27,7 +33,7 @@ public:
     , m_connectionTimeout(connectionTimeout)
     {}
 
-    PostgresConnectionPtr
+    PqxxPtr
     build();
 
 private:

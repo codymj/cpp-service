@@ -20,13 +20,13 @@ protected:
      * Initializes application.
      * @param self
      */
-    void
+    [[maybe_unused]] void
     initialize(Application& self) override;
 
     /**
      * Uninitializes application.
      */
-    void
+    [[maybe_unused]] void
     uninitialize() override;
 
     /**
@@ -46,7 +46,7 @@ private:
     void
     createPostgresConnectionPool();
 
-    std::unique_ptr<ConnectionPool<PostgresConnectionPtr>> m_connectionPool;
+    std::unique_ptr<ConnectionPool<PqxxPtr>> m_connectionPool;
     std::unique_ptr<StoreRegistry> m_storeRegistry;
     std::unique_ptr<ServiceRegistry> m_serviceRegistry;
     std::unique_ptr<Router> m_router;

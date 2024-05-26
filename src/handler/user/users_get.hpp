@@ -17,6 +17,12 @@ class UsersGetHandler
 : public HTTPRequestHandler
 {
 public:
+    UsersGetHandler() = delete;
+
+    UsersGetHandler(UsersGetHandler&) = delete;
+
+    UsersGetHandler(UsersGetHandler&&) = delete;
+
     explicit UsersGetHandler(UserService* userService)
     : m_userService(userService)
     {}

@@ -1,6 +1,6 @@
 #include "postgres_connection.hpp"
 
-PostgresConnectionPtr PostgresConnection::build()
+PqxxPtr PostgresConnection::build()
 {
     return std::make_unique<pqxx::connection>(connectionString());
 }

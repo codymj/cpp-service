@@ -16,8 +16,8 @@ public:
 
     ServiceRegistry(ServiceRegistry&&) = delete;
 
-    explicit ServiceRegistry(std::unique_ptr<StoreRegistry> storeRegistry)
-    : m_storeRegistry(std::move(storeRegistry))
+    explicit ServiceRegistry(StoreRegistry* storeRegistry)
+    : m_storeRegistry(storeRegistry)
     {
         // Services get created here.
         m_userService = std::make_unique<UserService>
@@ -39,7 +39,7 @@ private:
      * which the service layer utilizes. When the Router is created, this
      * registry is injected into the ServiceRegistry.
      */
-    std::unique_ptr<StoreRegistry> m_storeRegistry;
+    StoreRegistry* m_storeRegistry{};
 
     /**
      * Service layer for User logic.

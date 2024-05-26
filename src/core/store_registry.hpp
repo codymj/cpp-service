@@ -20,7 +20,7 @@ public:
 
     explicit StoreRegistry
     (
-        ConnectionPool<PostgresConnectionPtr>* connectionPool
+        ConnectionPool<PqxxPtr>* connectionPool
     )
     : m_connectionPool(connectionPool)
     {
@@ -39,7 +39,7 @@ private:
     /**
      * Connection pool shared pointer which gets copied to each data store.
      */
-    ConnectionPool<PostgresConnectionPtr>* m_connectionPool;
+    ConnectionPool<PqxxPtr>* m_connectionPool{};
 
     /**
      * Data store for User logic.
