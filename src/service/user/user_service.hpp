@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../store/user/user_store.hpp"
+#include "../../store/user/postgres_user_store.hpp"
 #include <memory>
 #include <utility>
 #include <vector>
@@ -14,7 +14,7 @@ public:
 
     UserService(UserService&&) = delete;
 
-    explicit UserService(UserStore* userStore)
+    explicit UserService(PostgresUserStore* userStore)
     : m_userStore(userStore)
     {}
 
@@ -26,5 +26,5 @@ public:
     getUsers() const;
 
 private:
-    UserStore* m_userStore;
+    PostgresUserStore* m_userStore;
 };

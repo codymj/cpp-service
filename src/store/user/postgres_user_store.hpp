@@ -1,25 +1,16 @@
 #pragma once
 
-#include "user_model.hpp"
+#include "connection_pool.hpp"
 #include "postgres_connection.hpp"
-#include <utility>
+#include "user_model.hpp"
 #include <vector>
 
 using cppservice::database::ConnectionPool;
 
-class UserStore
+class PostgresUserStore
 {
 public:
-    UserStore() = delete;
-
-    UserStore(UserStore&) = delete;
-
-    UserStore(UserStore&&) = delete;
-
-    explicit UserStore
-    (
-        ConnectionPool<PqxxPtr>* connectionPool
-    )
+    explicit PostgresUserStore(ConnectionPool<PqxxPtr>* connectionPool)
     : m_connectionPool(connectionPool)
     {}
 

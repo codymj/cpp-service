@@ -1,6 +1,6 @@
 #include "store_registry.hpp"
 
-UserStore*
+PostgresUserStore*
 StoreRegistry::getUserStore()
 {
     return m_userStore.get();

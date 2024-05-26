@@ -1,7 +1,7 @@
 #pragma once
 
 #include "postgres_connection.hpp"
-#include "../store/user/user_store.hpp"
+#include "../store/user/postgres_user_store.hpp"
 #include <memory>
 #include <utility>
 
@@ -25,14 +25,14 @@ public:
     : m_connectionPool(connectionPool)
     {
         // Data stores get created here.
-        m_userStore = std::make_unique<UserStore>(m_connectionPool);
+        m_userStore = std::make_unique<PostgresUserStore>(m_connectionPool);
     };
 
     /**
      * Returns a pointer to the UserStore.
      * @return Pointer to UserStore.
      */
-    UserStore*
+    PostgresUserStore*
     getUserStore();
 
 private:
@@ -44,5 +44,5 @@ private:
     /**
      * Data store for User logic.
      */
-    std::unique_ptr<UserStore> m_userStore;
+    std::unique_ptr<PostgresUserStore> m_userStore;
 };

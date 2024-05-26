@@ -1,5 +1,6 @@
 #include "app.hpp"
 #include <Poco/Environment.h>
+#include <iostream>
 
 [[maybe_unused]] void
 App::initialize(Application&)

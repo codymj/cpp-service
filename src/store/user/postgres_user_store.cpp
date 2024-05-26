@@ -1,8 +1,8 @@
-#include "user_store.hpp"
+#include "postgres_user_store.hpp"
 #include <iostream>
 
 std::unique_ptr<std::vector<User>>
-UserStore::getUsers() const
+PostgresUserStore::getUsers() const
 {
     // Rent a connection from pool.
     auto cxn = m_connectionPool->rentConnection();
@@ -12,17 +12,17 @@ UserStore::getUsers() const
 
     // Query to get all users.
     std::string query
-    {
-        "select "
-        "user_id, "
-        "email, "
-        "password, "
-        "first_name, "
-        "last_name, "
-        "floor(extract(epoch FROM created_at)*1000000) as created_at, "
-        "floor(extract(epoch FROM modified_at)*1000000) as modified_at "
-        "from users"
-    };
+        {
+            "select "
+            "user_id, "
+            "email, "
+            "password, "
+            "first_name, "
+            "last_name, "
+            "floor(extract(epoch FROM created_at)*1000000) as created_at, "
+            "floor(extract(epoch FROM modified_at)*1000000) as modified_at "
+            "from users"
+        };
 
     // Execute query and build users container.
     pqxx::result res = txn.exec(query);

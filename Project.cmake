@@ -31,7 +31,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}/service/user/user_service.cpp
 
     # Data stores
-    ${SOURCE_DIR}/store/user/user_store.cpp
+    ${SOURCE_DIR}/store/user/postgres_user_store.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
