@@ -15,12 +15,19 @@ using RoutePath = std::string const;
 using RouteKey = std::pair<HttpMethod, RoutePath>;
 using NewHandlerFunc = std::function<HTTPRequestHandler*()>;
 
+/**
+ * The router acts as a typical HTTP request router which routes requests by
+ * HTTP method and path to the appropriate handler. The Router gets injected
+ * into the HandlerFactory.
+ */
 class Router
 {
 public:
     Router() = delete;
 
     Router(Router&) = delete;
+
+    Router(Router&&) = delete;
 
     explicit Router(std::unique_ptr<ServiceRegistry> serviceRegistry)
     : m_serviceRegistry(std::move(serviceRegistry))

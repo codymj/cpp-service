@@ -3,6 +3,10 @@
 #include "store_registry.hpp"
 #include "../service/user/user_service.hpp"
 
+/**
+ * Registry that contains services for business logic and is injected into the
+ * Router.
+ */
 class ServiceRegistry
 {
 public:
@@ -10,21 +14,23 @@ public:
 
     ServiceRegistry(ServiceRegistry&) = delete;
 
+    ServiceRegistry(ServiceRegistry&&) = delete;
+
     explicit ServiceRegistry(std::unique_ptr<StoreRegistry> storeRegistry)
     : m_storeRegistry(std::move(storeRegistry))
     {
-        // Service registries get created here.
-        m_userService = std::make_shared<UserService>
+        // Services get created here.
+        m_userService = std::make_unique<UserService>
         (
             m_storeRegistry->getUserStore()
         );
     };
 
     /**
-     * Returns a shared pointer to the UserService.
-     * @return Shared pointer to the UserService.
+     * Returns a pointer to the UserService.
+     * @return Pointer to the UserService.
      */
-    std::shared_ptr<UserService>
+    UserService*
     getUserService();
 
 private:
@@ -38,5 +44,5 @@ private:
     /**
      * Service layer for User logic.
      */
-    std::shared_ptr<UserService> m_userService;
+    std::unique_ptr<UserService> m_userService;
 };

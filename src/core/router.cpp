@@ -17,7 +17,6 @@ void
 Router::createRoutes()
 {
     // Add all HTTP routes here.
-    // TODO: Maybe a way to inject these routes from the handlers?
     m_routes = {
         {
             RouteKey{HTTPRequest::HTTP_GET, "/users"},

@@ -17,8 +17,8 @@ class UsersGetHandler
 : public HTTPRequestHandler
 {
 public:
-    explicit UsersGetHandler(std::shared_ptr<UserService> userService)
-    : m_userService(std::move(userService))
+    explicit UsersGetHandler(UserService* userService)
+    : m_userService(userService)
     {}
 
     /**
@@ -33,5 +33,5 @@ private:
     /**
      * Service layer for User.
      */
-    std::shared_ptr<UserService> m_userService;
+    UserService* m_userService;
 };

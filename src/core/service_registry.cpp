@@ -1,7 +1,7 @@
 #include "service_registry.hpp"
 
-std::shared_ptr<UserService>
+UserService*
 ServiceRegistry::getUserService()
 {
-    return m_userService;
+    return m_userService.get();
 }

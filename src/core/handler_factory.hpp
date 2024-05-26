@@ -17,6 +17,8 @@ public:
 
     HandlerFactory(HandlerFactory&) = delete;
 
+    HandlerFactory(HandlerFactory&&) = delete;
+
     explicit HandlerFactory(std::unique_ptr<Router> router)
     : m_router(std::move(router))
     {};

@@ -1,12 +1,13 @@
 #include "app.hpp"
-#include "handler_factory.hpp"
 #include <Poco/Environment.h>
-#include <iostream>
 
 void
 App::initialize(Application&)
 {
     loadConfiguration("app.properties");
+    m_serverPort = config().getInt("server.port", 9000);
+
+    createPostgresConnectionPool();
 }
 
 void
@@ -15,8 +16,8 @@ App::uninitialize()
     ServerApplication::uninitialize();
 }
 
-ConnectionPool<PostgresConnectionPtr>*
-App::createDatabaseConnectionPool()
+void
+App::createPostgresConnectionPool()
 {
     // Get environment variable database password.
     std::string password = Poco::Environment::get
@@ -25,14 +26,14 @@ App::createDatabaseConnectionPool()
     );
 
     std::string host{}, username{}, name{};
-    uint16_t port{}, connTimeout{}, poolSize{};
+    uint16_t port{}, connectionTimeout{}, poolSize{};
     try
     {
         host = config().getString("database.host");
         port = config().getInt("database.port");
         username = config().getString("database.username");
         name = config().getString("database.name");
-        connTimeout = config().getInt("database.connection_timeout");
+        connectionTimeout = config().getInt("database.connection_timeout");
         poolSize = config().getInt("database.connection_pool_size");
     }
     catch (Poco::NotFoundException& nfe)
@@ -50,38 +51,40 @@ App::createDatabaseConnectionPool()
     std::vector<PostgresConnectionPtr> connections;
     auto cxn = PostgresConnection
     (
-        host, port, username, password, name, connTimeout
+        host, port, username, password, name, connectionTimeout
     );
     for (auto i=0; i<poolSize; ++i)
     {
         connections.emplace_back(cxn.build());
     }
 
-    return new ConnectionPool<PostgresConnectionPtr>(std::move(connections));
+    m_connectionPool = std::make_unique<ConnectionPool<PostgresConnectionPtr>>
+    (
+        std::move(connections)
+    );
 }
 
 int
 App::main(const std::vector<std::string>&)
 {
-    auto port = config().getInt("server.port", 9000);
-    ServerSocket ss(port);
+    // Create data store registry to inject into service registry.
+    m_storeRegistry = std::make_unique<StoreRegistry>(m_connectionPool.get());
 
-    // Initialize database connection pool.
-    auto connectionPool = createDatabaseConnectionPool();
-
-    // Create registries and inject into router.
-    auto storeRegistry = std::make_unique<StoreRegistry>(connectionPool);
-    auto serviceRegistry = std::make_unique<ServiceRegistry>
+    // Create service registry to inject into the router.
+    m_serviceRegistry = std::make_unique<ServiceRegistry>
     (
-        std::move(storeRegistry)
+        std::move(m_storeRegistry)
     );
-    auto router = std::make_unique<Router>(std::move(serviceRegistry));
+
+    // Create router to inject into the handler factory.
+    m_router = std::make_unique<Router>(std::move(m_serviceRegistry));
 
     // Create and start the HTTP server.
+    ServerSocket serverSocket(m_serverPort);
     HTTPServer server
     (
-        new HandlerFactory(std::move(router)),
-        ss,
+        new HandlerFactory(std::move(m_router)),
+        serverSocket,
         new HTTPServerParams
     );
     server.start();
@@ -89,7 +92,6 @@ App::main(const std::vector<std::string>&)
     // Waiting for interrupts.
     waitForTerminationRequest();
     server.stop();
-    delete connectionPool;
 
     return Application::EXIT_OK;
 }

@@ -5,12 +5,18 @@
 #include <memory>
 #include <utility>
 
+/**
+ * Registry to hold all data stores which gets injected into the
+ * ServiceRegistry.
+ */
 class StoreRegistry
 {
 public:
     StoreRegistry() = delete;
 
     StoreRegistry(StoreRegistry&) = delete;
+
+    StoreRegistry(StoreRegistry&&) = delete;
 
     explicit StoreRegistry
     (
@@ -19,14 +25,14 @@ public:
     : m_connectionPool(connectionPool)
     {
         // Data stores get created here.
-        m_userStore = std::make_shared<UserStore>(m_connectionPool);
+        m_userStore = std::make_unique<UserStore>(m_connectionPool);
     };
 
     /**
-     * Returns a shared pointer to the UserStore.
-     * @return Shared pointer to UserStore.
+     * Returns a pointer to the UserStore.
+     * @return Pointer to UserStore.
      */
-    std::shared_ptr<UserStore>
+    UserStore*
     getUserStore();
 
 private:
@@ -38,5 +44,5 @@ private:
     /**
      * Data store for User logic.
      */
-    std::shared_ptr<UserStore> m_userStore;
+    std::unique_ptr<UserStore> m_userStore;
 };

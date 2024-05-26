@@ -12,8 +12,8 @@ public:
 
     UserService(UserService&) = delete;
 
-    explicit UserService(std::shared_ptr<UserStore> store)
-    : m_userStore(std::move(store))
+    explicit UserService(UserStore* userStore)
+    : m_userStore(userStore)
     {}
 
     /**
@@ -24,5 +24,5 @@ public:
     getUsers() const;
 
 private:
-    std::shared_ptr<UserStore> m_userStore;
+    UserStore* m_userStore;
 };
