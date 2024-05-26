@@ -20,22 +20,37 @@ App::uninitialize()
 void
 App::createPostgresConnectionPool()
 {
-    // Get environment variable database password.
-    std::string password = Poco::Environment::get
-    (
-        config().getString("database.password")
-    );
-
-    std::string host{}, username{}, name{};
-    uint16_t port{}, connectionTimeout{}, poolSize{};
     try
     {
-        host = config().getString("database.host");
-        port = config().getInt("database.port");
-        username = config().getString("database.username");
-        name = config().getString("database.name");
-        connectionTimeout = config().getInt("database.connection_timeout");
-        poolSize = config().getInt("database.connection_pool_size");
+        // Get environment variable database password.
+        std::string const password = Poco::Environment::get
+        (
+            config().getString("database.password")
+        );
+
+        // Get the rest of the configuration parameters.
+        std::string const host = config().getString("database.host");
+        uint16_t const port = config().getInt("database.port");
+        std::string const username = config().getString("database.username");
+        std::string const name = config().getString("database.name");
+        uint16_t const connectionTimeout = config().getInt("database.connection_timeout");
+        uint16_t const poolSize = config().getInt("database.connection_pool_size");
+
+        // Build database connections.
+        std::vector<PqxxPtr> connections;
+        auto cxn = PostgresConnection
+        (
+            host, port, username, password, name, connectionTimeout
+        );
+        for (auto i=0; i<poolSize; ++i)
+        {
+            connections.emplace_back(cxn.build());
+        }
+
+        m_connectionPool = std::make_unique<ConnectionPool<PqxxPtr>>
+        (
+            std::move(connections)
+        );
     }
     catch (Poco::NotFoundException& nfe)
     {
@@ -47,22 +62,6 @@ App::createPostgresConnectionPool()
         std::cerr << e.what() << '\n';
         std::exit(EXIT_CONFIG);
     }
-
-    // Build database connections.
-    std::vector<PqxxPtr> connections;
-    auto cxn = PostgresConnection
-    (
-        host, port, username, password, name, connectionTimeout
-    );
-    for (auto i=0; i<poolSize; ++i)
-    {
-        connections.emplace_back(cxn.build());
-    }
-
-    m_connectionPool = std::make_unique<ConnectionPool<PqxxPtr>>
-    (
-        std::move(connections)
-    );
 }
 
 int
