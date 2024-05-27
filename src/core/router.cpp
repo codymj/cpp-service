@@ -3,6 +3,12 @@
 #include "../handler/user/users_get.hpp"
 #include "../handler/user/users_post.hpp"
 
+void
+Router::createRoutes()
+{
+    createUserRoutes();
+}
+
 HTTPRequestHandler*
 Router::lookupHandler(RouteKey const& key)
 {
@@ -15,30 +21,22 @@ Router::lookupHandler(RouteKey const& key)
 }
 
 void
-Router::createRoutes()
+Router::createUserRoutes()
 {
-    m_routes = {
-        // Users ---------------------------------------------------------------
+    m_routes.insert
+    ({
+        RouteKey{HTTPRequest::HTTP_GET, "/users"},
+        [&]() -> HTTPRequestHandler*
         {
-            RouteKey{HTTPRequest::HTTP_GET, "/users"},
-            [&]() -> HTTPRequestHandler*
-            {
-                return new UsersGetHandler
-                (
-                    m_serviceRegistry->getUserService()
-                );
-            }
-        },
-        {
-            RouteKey{HTTPRequest::HTTP_POST, "/users"},
-            [&]() -> HTTPRequestHandler*
-            {
-                return new UsersPostHandler
-                (
-                    m_serviceRegistry->getUserService()
-                );
-            }
+            return new UsersGetHandler(m_serviceRegistry->getUserService());
         }
-        // End Users -----------------------------------------------------------
-    };
+    });
+    m_routes.insert
+    ({
+        RouteKey{HTTPRequest::HTTP_POST, "/users"},
+        [&]() -> HTTPRequestHandler*
+        {
+            return new UsersPostHandler(m_serviceRegistry->getUserService());
+        }
+    });
 }

@@ -46,17 +46,23 @@ public:
 
 private:
     /**
-     * Adds HTTP routes to the m_routes map.
+     * Calls the helper functions to insert HTTP routes into m_routes map.
      */
     void
     createRoutes();
+
+    /**
+     * Adds User HTTP routes to the m_routes map.
+     */
+     void
+     createUserRoutes();
 
     /**
      * A map which uses a RouteKey as the key to a function that returns a new
      * Poco::Net::HTTPRequestHandler*. Since Poco deletes the handlers, this
      * function acts as an HTTPRequestHandler* factory.
      */
-    std::map<RouteKey,NewHandlerFunc> m_routes;
+    std::map<RouteKey,NewHandlerFunc> m_routes{};
 
     /**
      * Registry which contains all services to perform business logic. Its
