@@ -25,8 +25,19 @@ PostgresUserStore::getUsers() const
     };
 
     // Execute query and build users container.
-    pqxx::result res = txn.exec(query);
     auto users = std::make_unique<std::vector<User>>();
+    pqxx::result res{};
+    try
+    {
+        res = txn.exec(query);
+    }
+    catch (pqxx::sql_error const& e)
+    {
+        // TODO: logging
+        std::cerr << e.what() << '\n';
+        return users;
+    }
+
     for (auto&& row : res)
     {
         User u{};

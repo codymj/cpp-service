@@ -44,7 +44,7 @@ public:
     static nlohmann::json
     toJson(User const& user)
     {
-        nlohmann::json json{};
+        nlohmann::json json = nlohmann::json::object();
         json.emplace("userId", user.getUserId());
         json.emplace("email", user.getEmail());
         json.emplace("firstName", user.getFirstName());
@@ -63,7 +63,7 @@ public:
     static nlohmann::json
     toJson(std::vector<User> const& users)
     {
-        nlohmann::json json{};
+        nlohmann::json json = nlohmann::json::array();
         for (auto const& u : users)
         {
             json.emplace_back(toJson(u));
