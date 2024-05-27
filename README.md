@@ -4,6 +4,7 @@ A template for building a C++ web service.
 
 ## Dependencies
 
-- poco `v1.13.3`
-- libpqxx `v7.9.0`
-- simdjson `v3.9.2`
+- [libargon2](https://github.com/P-H-C/phc-winner-argon2)
+- [libpqxx](https://github.com/jtv/libpqxx)
+- [poco](https://github.com/pocoproject/poco)
+- [simdjson](https://github.com/simdjson/simdjson)

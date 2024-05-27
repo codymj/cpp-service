@@ -1,4 +1,6 @@
 #include "users_post.hpp"
+#include "password_crypt.hpp"
+#include <iostream>
 
 void
 UsersPostHandler::handleRequest
@@ -11,25 +13,35 @@ UsersPostHandler::handleRequest
     // TODO: add JSON validation (maybe middleware)
     auto& istream = req.stream();
     int64_t const len = req.getContentLength();
-    std::string buf(len, 0);
-    istream.read(buf.data(), len);
+    std::string buffer(len, 0);
+    istream.read(buffer.data(), len);
 
     // Parse JSON.
     simdjson::ondemand::parser parser;
-    auto doc = parser.iterate(buf);
+    auto json = simdjson::padded_string(buffer);
+    auto doc = parser.iterate(json);
+    std::string_view tmp{};
 
-    std::string_view email{}; doc["email"].get(email);
-    std::string_view password{}; doc["password"].get(password);
-    std::string_view firstName{}; doc["firstName"].get(firstName);
-    std::string_view lastName{}; doc["lastName"].get(lastName);
+    doc["email"].get(tmp);
+    std::string email{tmp.data(), tmp.length()};
+
+    doc["password"].get(tmp);
+    std::string password{tmp.data(), tmp.length()};
+    std::string hashedPassword = PasswordCrypt::hashPassword(password);
+
+    doc["firstName"].get(tmp);
+    std::string firstName{tmp.data(), tmp.length()};
+
+    doc["lastName"].get(tmp);
+    std::string lastName{tmp.data(), tmp.length()};
 
     // Create user object to save.
     User userToSave
     {
-        std::string{email.data(), email.size()},
-        std::string{password.data(), password.size()},
-        std::string{firstName.data(), firstName.size()},
-        std::string{lastName.data(), lastName.size()},
+        email,
+        hashedPassword,
+        firstName,
+        lastName
     };
 
     // Pass to service.

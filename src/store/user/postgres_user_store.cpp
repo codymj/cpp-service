@@ -92,6 +92,7 @@ PostgresUserStore::saveUser(const User &user)
     }
     catch (std::exception& e)
     {
+        // TODO: logging
         std::cerr << e.what() << '\n' << "Query: " << command << '\n';
     }
 
