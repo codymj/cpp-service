@@ -17,9 +17,8 @@ Router::lookupHandler(RouteKey const& key)
 void
 Router::createRoutes()
 {
-    // Add all HTTP routes here.
     m_routes = {
-        // Users
+        // Users ---------------------------------------------------------------
         {
             RouteKey{HTTPRequest::HTTP_GET, "/users"},
             [&]() -> HTTPRequestHandler*

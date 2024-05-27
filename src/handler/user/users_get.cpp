@@ -1,4 +1,5 @@
 #include "users_get.hpp"
+#include "util/json_marshaller.hpp"
 
 void
 UsersGetHandler::handleRequest
@@ -10,32 +11,13 @@ UsersGetHandler::handleRequest
     // Call to service to get some data.
     std::unique_ptr<std::vector<User>> users = m_userService->getUsers();
 
+    // Marshal users to JSON.
+    nlohmann::json json = JsonMarshaller::toJson(*users.get());
+
     res.setChunkedTransferEncoding(true);
-    res.setContentType("text/html");
+    res.setContentType("application/json");
     res.setStatus(HTTPResponse::HTTP_OK);
 
     std::ostream &os = res.send();
-    os << "<html>";
-    os << "<h1>GET /users</h1>";
-
-    // nullptr returned if there was an error.
-    if (!users)
-    {
-        os << "<h3>Error getting users.</h3>";
-        return;
-    }
-
-    // Build response.
-    for (auto const &u: *users)
-    {
-        os << "<h3>" << u.getUserId() << "</h3>";
-        os << "<ul>";
-        os << "<li>" << u.getFirstName() << "</li>";
-        os << "<li>" << u.getLastName() << "</li>";
-        os << "<li>" << u.getEmail() << "</li>";
-        os << "<li>" << u.getCreatedAt() << "</li>";
-        os << "<li>" << u.getModifiedAt() << "</li>";
-        os << "</ul>";
-    }
-    os << "</html>";
+    os << json;
 }
