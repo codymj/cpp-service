@@ -45,12 +45,12 @@ public:
     toJson(User const& user)
     {
         nlohmann::json json{};
-        json["userId"] = user.getUserId();
-        json["email"] = user.getEmail();
-        json["firstName"] = user.getFirstName();
-        json["lastName"] = user.getLastName();
-        json["createdAt"] = user.getCreatedAt();
-        json["modifiedAt"] = user.getModifiedAt();
+        json.emplace("userId", user.getUserId());
+        json.emplace("email", user.getEmail());
+        json.emplace("firstName", user.getFirstName());
+        json.emplace("lastName", user.getLastName());
+        json.emplace("createdAt", user.getCreatedAt());
+        json.emplace("modifiedAt", user.getModifiedAt());
 
         return json;
     }
