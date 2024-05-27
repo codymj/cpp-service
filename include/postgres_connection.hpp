@@ -11,9 +11,7 @@ class PostgresConnection
 {
 public:
     PostgresConnection() = delete;
-
     PostgresConnection(PostgresConnection&) = delete;
-
     PostgresConnection(PostgresConnection&&) = delete;
 
     PostgresConnection
@@ -34,11 +32,25 @@ public:
     {}
 
     PqxxPtr
-    build();
+    build()
+    {
+        return std::make_unique<pqxx::connection>(connectionString());
+    }
 
 private:
     std::string
-    connectionString();
+    connectionString()
+    {
+        return std::string
+            {
+                "postgresql://" +
+                m_username + ":" + m_password + "@" +
+                m_host + ":" +
+                std::to_string(m_port) + "/" +
+                m_name + "?" +
+                "connect_timeout=" + std::to_string(m_connectionTimeout)
+            };
+    }
 
     std::string m_host;
     std::string m_username;

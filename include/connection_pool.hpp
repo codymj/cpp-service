@@ -4,9 +4,6 @@
 #include <mutex>
 #include <queue>
 
-namespace cppservice::database
-{
-
 /**
  * Connection pool for holding a collection of connections to a data store.
  * @tparam T Type of connection for the pool to utilize.
@@ -75,5 +72,3 @@ private:
     std::condition_variable m_condition;
     std::mutex m_mutex;
 };
-
-} // namespace cppservice::database

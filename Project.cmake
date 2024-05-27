@@ -14,10 +14,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
-    # High level
-    ${INCLUDE_DIR}/external/simdjson.cpp
-    ${INCLUDE_DIR}/postgres_connection.cpp
-
     # Core level
     ${SOURCE_DIR}/core/app.cpp
     ${SOURCE_DIR}/core/handler_factory.cpp
@@ -38,8 +34,10 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
+    argon2
     pqxx
     PocoFoundation
     PocoNet
     PocoUtil
+    simdjson
 )

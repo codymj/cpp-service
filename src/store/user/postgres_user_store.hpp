@@ -6,8 +6,6 @@
 #include <vector>
 #include <pqxx/except>
 
-using cppservice::database::ConnectionPool;
-
 /**
  * Data store represented by a PostgreSQL database for storing User data.
  */
