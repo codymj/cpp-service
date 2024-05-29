@@ -2,6 +2,12 @@
 #include "util/json_marshaller.hpp"
 
 void
+UsersGetHandler::setNextHandler(ChainedHandler* handler)
+{
+    m_nextHandler = handler;
+}
+
+void
 UsersGetHandler::handleRequest
 (
     HTTPServerRequest& /*req*/,

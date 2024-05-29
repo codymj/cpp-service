@@ -1,51 +1,41 @@
 #pragma once
 
 #include "../../../include/chained_handler.hpp"
-#include "../../core/router.hpp"
-#include "../../service/user/user_service.hpp"
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
-#include <memory>
-#include <utility>
 
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Net::HTTPResponse;
 
-/**
- * Handler for parsing HTTP GET /users requests.
- */
-class UsersGetHandler
+class LoggerHandler
 : public ChainedHandler
 {
 public:
+    LoggerHandler() = default;
+
     /**
-     * Don't want to lazily create or copy/move this.
+     * Don't want to copy/move this.
      */
-    UsersGetHandler() = delete;
-    UsersGetHandler(UsersGetHandler&) = delete;
-    UsersGetHandler(UsersGetHandler&&) = delete;
+    LoggerHandler(LoggerHandler&) = delete;
+    LoggerHandler(LoggerHandler&&) = delete;
 
-    explicit UsersGetHandler(UserService* userService)
-    : m_userService(userService)
-    {}
-
-    ~UsersGetHandler() override
+    ~LoggerHandler() override
     {
         delete m_nextHandler;
-    }
+    };
 
     /**
      * Set next handler.
-     * @param handler is the next handler in the chain.
+     * @param handler
      */
     void
     setNextHandler(ChainedHandler* handler) override;
 
     /**
-     * Handler for GET /users.
+     * Middleware handler for logging data.
      * @param req HTTPServerRequest&
      * @param res HTTPServerResponse&
      */
@@ -56,10 +46,5 @@ private:
     /**
      * Next handler in the chain, if any.
      */
-    ChainedHandler* m_nextHandler = nullptr;
-
-    /**
-     * Service layer for User.
-     */
-    UserService* m_userService;
+    [[maybe_unused]] ChainedHandler* m_nextHandler = nullptr;
 };

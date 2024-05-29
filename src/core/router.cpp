@@ -1,4 +1,5 @@
 #include "router.hpp"
+#include "../handler/middleware/logger.hpp"
 #include "../handler/misc/not_found.hpp"
 #include "../handler/user/users_get.hpp"
 #include "../handler/user/users_post.hpp"
@@ -28,7 +29,18 @@ Router::createUserRoutes()
         RouteKey{HTTPRequest::HTTP_GET, "/users"},
         [&]() -> HTTPRequestHandler*
         {
-            return new UsersGetHandler(m_serviceRegistry->getUserService());
+            // Initialize handlers.
+            auto* loggerHandler = new LoggerHandler();
+            auto* usersGetHandler = new UsersGetHandler
+            (
+                m_serviceRegistry->getUserService()
+            );
+
+            // Chain handlers.
+            loggerHandler->setNextHandler(usersGetHandler);
+
+            // Return first handler in chain.
+            return loggerHandler;
         }
     });
     m_routes.insert

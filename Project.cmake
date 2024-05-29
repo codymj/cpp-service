@@ -22,6 +22,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${SOURCE_DIR}/core/store_registry.cpp
 
     # Handlers
+    ${SOURCE_DIR}/handler/middleware/logger.cpp
     ${SOURCE_DIR}/handler/misc/not_found.cpp
     ${SOURCE_DIR}/handler/user/users_get.cpp
     ${SOURCE_DIR}/handler/user/users_post.cpp
