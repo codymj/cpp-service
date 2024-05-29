@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../../include/chained_handler.hpp"
 #include "../../core/router.hpp"
 #include "../../service/user/user_service.hpp"
 #include <Poco/Net/HTTPRequestHandler.h>
@@ -18,7 +17,7 @@ using Poco::Net::HTTPResponse;
  * Handler for parsing HTTP GET /users requests.
  */
 class UsersGetHandler
-: public ChainedHandler
+: public HTTPRequestHandler
 {
 public:
     /**
@@ -28,21 +27,22 @@ public:
     UsersGetHandler(UsersGetHandler&) = delete;
     UsersGetHandler(UsersGetHandler&&) = delete;
 
-    explicit UsersGetHandler(UserService* userService)
+    explicit UsersGetHandler
+    (
+        UserService* userService,
+        HTTPRequestHandler* next = nullptr
+    )
     : m_userService(userService)
+    , m_nextHandler(next)
     {}
 
+    /**
+     * Destructor to clean up chained handlers.
+     */
     ~UsersGetHandler() override
     {
         delete m_nextHandler;
     }
-
-    /**
-     * Set next handler.
-     * @param handler is the next handler in the chain.
-     */
-    void
-    setNextHandler(ChainedHandler* handler) override;
 
     /**
      * Handler for GET /users.
@@ -54,12 +54,12 @@ public:
 
 private:
     /**
-     * Next handler in the chain, if any.
-     */
-    ChainedHandler* m_nextHandler = nullptr;
-
-    /**
      * Service layer for User.
      */
     UserService* m_userService;
+
+    /**
+     * Next handler in the chain, if any.
+     */
+    HTTPRequestHandler* m_nextHandler = nullptr;
 };

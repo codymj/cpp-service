@@ -30,14 +30,11 @@ Router::createUserRoutes()
         [&]() -> HTTPRequestHandler*
         {
             // Initialize handlers.
-            auto* loggerHandler = new LoggerHandler();
-            auto* usersGetHandler = new UsersGetHandler
+            auto usersGetHandler = new UsersGetHandler
             (
                 m_serviceRegistry->getUserService()
             );
-
-            // Chain handlers.
-            loggerHandler->setNextHandler(usersGetHandler);
+            auto loggerHandler = new LoggerHandler(usersGetHandler);
 
             // Return first handler in chain.
             return loggerHandler;

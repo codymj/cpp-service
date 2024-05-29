@@ -2,12 +2,6 @@
 #include <iostream>
 
 void
-LoggerHandler::setNextHandler(ChainedHandler* handler)
-{
-    m_nextHandler = handler;
-}
-
-void
 LoggerHandler::handleRequest
     (
         HTTPServerRequest& req,
