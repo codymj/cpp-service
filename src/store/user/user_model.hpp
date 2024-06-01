@@ -20,6 +20,10 @@ class User
 {
 public:
     User() = default;
+    User(User const&) = default;
+    User& operator=(User const&) = default;
+    User(User&&) noexcept = default;
+    User& operator=(User&&) noexcept = default;
 
     User
     (
@@ -53,86 +57,72 @@ public:
     , m_lastName(std::move(lastName))
     {}
 
-    [[maybe_unused]] [[nodiscard]] inline uint64_t
-    getUserId() const
+    [[maybe_unused]] [[nodiscard]] inline uint64_t getUserId() const
     {
         return m_userId;
     }
 
-    [[maybe_unused]] inline void
-    setUserId(uint64_t uid)
+    [[maybe_unused]] inline void setUserId(uint64_t uid)
     {
         m_userId = uid;
     }
 
-    [[maybe_unused]] [[nodiscard]] inline std::string
-    getEmail() const
+    [[maybe_unused]] [[nodiscard]] inline std::string getEmail() const
     {
         return m_email;
     }
 
-    [[maybe_unused]] inline void
-    setEmail(std::string email)
+    [[maybe_unused]] inline void setEmail(std::string email)
     {
         m_email = std::move(email);
     }
 
-    [[maybe_unused]] [[nodiscard]] inline std::string
-    getPassword() const
+    [[maybe_unused]] [[nodiscard]] inline std::string getPassword() const
     {
         return m_password;
     }
 
-    [[maybe_unused]] inline void
-    setPassword(std::string password)
+    [[maybe_unused]] inline void setPassword(std::string password)
     {
         m_password = std::move(password);
     }
 
-    [[maybe_unused]] [[nodiscard]] inline std::string
-    getFirstName() const
+    [[maybe_unused]] [[nodiscard]] inline std::string getFirstName() const
     {
         return m_firstName;
     }
 
-    [[maybe_unused]] inline void
-    setFirstName(std::string firstName)
+    [[maybe_unused]] inline void setFirstName(std::string firstName)
     {
         m_firstName = std::move(firstName);
     }
 
-    [[maybe_unused]] [[nodiscard]] inline std::string
-    getLastName() const
+    [[maybe_unused]] [[nodiscard]] inline std::string getLastName() const
     {
         return m_lastName;
     }
 
-    [[maybe_unused]] inline void
-    setLastName(std::string lastName)
+    [[maybe_unused]] inline void setLastName(std::string lastName)
     {
         m_lastName = std::move(lastName);
     }
 
-    [[maybe_unused]] [[nodiscard]] inline uint64_t
-    getCreatedAt() const
+    [[maybe_unused]] [[nodiscard]] inline uint64_t getCreatedAt() const
     {
         return m_createdAt;
     }
 
-    [[maybe_unused]] inline void
-    setCreatedAt(uint64_t createdAt)
+    [[maybe_unused]] inline void setCreatedAt(uint64_t createdAt)
     {
         m_createdAt = createdAt;
     }
 
-    [[maybe_unused]] [[nodiscard]] inline uint64_t
-    getModifiedAt() const
+    [[maybe_unused]] [[nodiscard]] inline uint64_t getModifiedAt() const
     {
         return m_modifiedAt;
     }
 
-    [[maybe_unused]] inline void
-    setModifiedAt(uint64_t modifiedAt)
+    [[maybe_unused]] inline void setModifiedAt(uint64_t modifiedAt)
     {
         m_modifiedAt = modifiedAt;
     }

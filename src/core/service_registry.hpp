@@ -11,12 +11,9 @@ class ServiceRegistry
 {
 public:
     /**
-     * Don't want to lazily create or copy/move this.
+     * Initializer for the service registry.
+     * @param storeRegistry
      */
-    ServiceRegistry() = delete;
-    ServiceRegistry(ServiceRegistry&) = delete;
-    ServiceRegistry(ServiceRegistry&&) = delete;
-
     explicit ServiceRegistry(StoreRegistry* storeRegistry)
     : m_storeRegistry(storeRegistry)
     {
@@ -31,8 +28,7 @@ public:
      * Returns a pointer to the UserService.
      * @return Pointer to the UserService.
      */
-    UserService*
-    getUserService();
+    UserService* getUserService();
 
 private:
     /**

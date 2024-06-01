@@ -1,12 +1,11 @@
 #include "logger.hpp"
 #include <iostream>
 
-void
-LoggerHandler::handleRequest
-    (
-        HTTPServerRequest& req,
-        HTTPServerResponse& res
-    )
+void LoggerMiddleware::handleRequest
+(
+    HTTPServerRequest& req,
+    HTTPServerResponse& res
+)
 {
     // [For testing purposes]
     // TODO: logging

@@ -1,8 +1,7 @@
 #include "postgres_user_store.hpp"
 #include <iostream>
 
-std::unique_ptr<std::vector<User>>
-PostgresUserStore::getUsers() const
+std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
 {
     // Rent a connection from pool.
     auto cxn = m_connectionPool->rentConnection();
@@ -69,8 +68,7 @@ PostgresUserStore::getUsers() const
     return users;
 }
 
-void
-PostgresUserStore::saveUser(const User &user)
+void PostgresUserStore::saveUser(User const& user) const
 {
     // Rent a connection from pool.
     auto cxn = m_connectionPool->rentConnection();

@@ -1,16 +1,20 @@
 #include "not_found.hpp"
 
-void
-NotFoundHandler::handleRequest
+void NotFoundHandler::handleRequest
 (
-    HTTPServerRequest& /*req*/,
+    HTTPServerRequest& req,
     HTTPServerResponse& res
 )
 {
     res.setChunkedTransferEncoding(true);
-    res.setContentType("text/html");
+    res.setContentType("application/json");
     res.setStatus(HTTPResponse::HTTP_NOT_FOUND);
 
     std::ostream& os = res.send();
-    os << "<h1>404 Not Found</h1>";
+    os << "";
+
+    if (m_nextHandler)
+    {
+        m_nextHandler->handleRequest(req, res);
+    }
 }

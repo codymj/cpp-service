@@ -24,12 +24,9 @@ class Router
 {
 public:
     /**
-     * Don't want to lazily create or copy/move this.
+     * Initializer for the HTTP router.
+     * @param serviceRegistry Registry for business services.
      */
-    Router() = delete;
-    Router(Router&) = delete;
-    Router(Router&&) = delete;
-
     explicit Router(ServiceRegistry* serviceRegistry)
     : m_serviceRegistry(serviceRegistry)
     {
@@ -41,21 +38,18 @@ public:
      * calls that function to return the provided HTTPRequestHandler*.
      * @return HTTPRequestHandler* to handle the request.
      */
-    HTTPRequestHandler*
-    lookupHandler(RouteKey const&);
+    HTTPRequestHandler* lookupHandler(RouteKey const&);
 
 private:
     /**
      * Calls the helper functions to insert HTTP routes into m_routes map.
      */
-    void
-    createRoutes();
+    void createRoutes();
 
     /**
      * Adds User HTTP routes to the m_routes map.
      */
-     void
-     createUserRoutes();
+     void createUserRoutes();
 
     /**
      * A map which uses a RouteKey as the key to a function that returns a new

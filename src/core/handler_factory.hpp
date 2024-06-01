@@ -9,17 +9,18 @@ using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPRequestHandlerFactory;
 using Poco::Net::HTTPServerRequest;
 
+/**
+ * Subclass of Poco::Net::HTTPRequestHandlerFactory to add some customization
+ * such as injecting an HTTP request router.
+ */
 class HandlerFactory
 : public HTTPRequestHandlerFactory
 {
 public:
     /**
-     * Don't want to lazily create or copy/move this.
+     * Initializer for the HTTP handler factory.
+     * @param router
      */
-    HandlerFactory() = delete;
-    HandlerFactory(HandlerFactory&) = delete;
-    HandlerFactory(HandlerFactory&&) = delete;
-
     explicit HandlerFactory(Router* router)
     : m_router(router)
     {};
@@ -30,8 +31,7 @@ public:
      * @param req HTTP request into the server.
      * @return HTTPRequestHandler* to handle the request.
      */
-    HTTPRequestHandler*
-    createRequestHandler(HTTPServerRequest const& req) override;
+    HTTPRequestHandler* createRequestHandler(HTTPServerRequest const& req) override;
 
 private:
     /**

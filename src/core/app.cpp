@@ -2,8 +2,7 @@
 #include <Poco/Environment.h>
 #include <iostream>
 
-[[maybe_unused]] void
-App::initialize(Application&)
+[[maybe_unused]] void App::initialize(Application&)
 {
     loadConfiguration("app.properties");
     m_serverPort = config().getInt("server.port", 9000);
@@ -11,14 +10,12 @@ App::initialize(Application&)
     createPostgresConnectionPool();
 }
 
-[[maybe_unused]] void
-App::uninitialize()
+[[maybe_unused]] void App::uninitialize()
 {
     ServerApplication::uninitialize();
 }
 
-void
-App::createPostgresConnectionPool()
+void App::createPostgresConnectionPool()
 {
     try
     {
@@ -64,8 +61,7 @@ App::createPostgresConnectionPool()
     }
 }
 
-int
-App::main(const std::vector<std::string>&)
+int App::main(const std::vector<std::string>&)
 {
     // Create data store registry to inject into service registry.
     m_storeRegistry = std::make_unique<StoreRegistry>(m_connectionPool.get());

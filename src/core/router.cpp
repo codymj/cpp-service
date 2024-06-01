@@ -4,14 +4,12 @@
 #include "../handler/user/users_get.hpp"
 #include "../handler/user/users_post.hpp"
 
-void
-Router::createRoutes()
+void Router::createRoutes()
 {
     createUserRoutes();
 }
 
-HTTPRequestHandler*
-Router::lookupHandler(RouteKey const& key)
+HTTPRequestHandler* Router::lookupHandler(RouteKey const& key)
 {
     NewHandlerFunc f = m_routes[key];
     if (!f)
@@ -21,8 +19,7 @@ Router::lookupHandler(RouteKey const& key)
     return f();
 }
 
-void
-Router::createUserRoutes()
+void Router::createUserRoutes()
 {
     m_routes.insert
     ({
@@ -34,10 +31,10 @@ Router::createUserRoutes()
             (
                 m_serviceRegistry->getUserService()
             );
-            auto loggerHandler = new LoggerHandler(usersGetHandler);
+            auto loggerMiddleware = new LoggerMiddleware(usersGetHandler);
 
             // Return first handler in chain.
-            return loggerHandler;
+            return loggerMiddleware;
         }
     });
     m_routes.insert

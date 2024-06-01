@@ -1,8 +1,7 @@
 #include "users_get.hpp"
 #include "util/json_marshaller.hpp"
 
-void
-UsersGetHandler::handleRequest
+void UsersGetHandler::handleRequest
 (
     HTTPServerRequest& req,
     HTTPServerResponse& res

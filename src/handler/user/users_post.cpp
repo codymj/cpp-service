@@ -2,8 +2,11 @@
 #include "util/json_marshaller.hpp"
 #include <iostream>
 
-void
-UsersPostHandler::handleRequest(HTTPServerRequest& req, HTTPServerResponse& res)
+void UsersPostHandler::handleRequest
+(
+    HTTPServerRequest& req,
+    HTTPServerResponse& res
+)
 {
     // TODO: JSON validation — maybe middleware?
 
@@ -19,4 +22,10 @@ UsersPostHandler::handleRequest(HTTPServerRequest& req, HTTPServerResponse& res)
     res.setStatus(HTTPResponse::HTTP_OK);
     std::ostream &os = res.send();
     os << "";
+
+    // Call next handler.
+    if (m_nextHandler)
+    {
+        m_nextHandler->handleRequest(req, res);
+    }
 }

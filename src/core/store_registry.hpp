@@ -13,34 +13,30 @@ class StoreRegistry
 {
 public:
     /**
-     * Don't want to lazily create or copy/move this.
+     * Initializer for the store registry.
+     * @param connectionPool
      */
-    StoreRegistry() = delete;
-    StoreRegistry(StoreRegistry&) = delete;
-    StoreRegistry(StoreRegistry&&) = delete;
-
     explicit StoreRegistry
     (
-        ConnectionPool<PqxxPtr>* connectionPool
+        ConnectionPool<PqxxPtr>* pgConnectionPool
     )
-    : m_connectionPool(connectionPool)
+    : m_pgConnectionPool(pgConnectionPool)
     {
         // Data stores get created here.
-        m_userStore = std::make_unique<PostgresUserStore>(m_connectionPool);
+        m_userStore = std::make_unique<PostgresUserStore>(m_pgConnectionPool);
     };
 
     /**
      * Returns a pointer to the UserStore.
      * @return Pointer to UserStore.
      */
-    PostgresUserStore*
-    getUserStore();
+    PostgresUserStore* getUserStore();
 
 private:
     /**
-     * Connection pool shared pointer which gets copied to each data store.
+     * PostgreSQL connection pool which gets injected to data stores.
      */
-    ConnectionPool<PqxxPtr>* m_connectionPool{};
+    ConnectionPool<PqxxPtr>* m_pgConnectionPool{};
 
     /**
      * Data store for User logic.

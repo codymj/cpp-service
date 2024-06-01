@@ -9,24 +9,22 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Net::HTTPResponse;
 
-class LoggerHandler
+class LoggerMiddleware
 : public HTTPRequestHandler
 {
 public:
-    explicit LoggerHandler(HTTPRequestHandler* next)
+    /**
+     * Middleware for handling logging.
+     * @param next
+     */
+    explicit LoggerMiddleware(HTTPRequestHandler* next)
     : m_nextHandler(next)
     {}
 
     /**
-     * Don't want to copy/move this.
-     */
-    LoggerHandler(LoggerHandler&) = delete;
-    LoggerHandler(LoggerHandler&&) = delete;
-
-    /**
      * Destructor to clean up chained handlers.
      */
-    ~LoggerHandler() override
+    ~LoggerMiddleware() override
     {
         delete m_nextHandler;
     };
@@ -36,8 +34,7 @@ public:
      * @param req HTTPServerRequest&
      * @param res HTTPServerResponse&
      */
-    void
-    handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
+    void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
 
 private:
     /**

@@ -1,7 +1,6 @@
 #include "service_registry.hpp"
 
-UserService*
-ServiceRegistry::getUserService()
+UserService* ServiceRegistry::getUserService()
 {
     return m_userService.get();
 }

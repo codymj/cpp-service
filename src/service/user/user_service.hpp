@@ -12,12 +12,9 @@ class UserService
 {
 public:
     /**
-     * Don't want to lazily create or copy/move this.
+     * Creates a service for handling User business logic.
+     * @param userStore interface for the storage layer.
      */
-    UserService() = delete;
-    UserService(UserService&) = delete;
-    UserService(UserService&&) = delete;
-
     explicit UserService(PostgresUserStore* userStore)
     : m_userStore(userStore)
     {}
@@ -26,11 +23,9 @@ public:
      * Gets users from the data store and returns results to the handler.
      * @return Collection of users.
      */
-    [[nodiscard]] std::unique_ptr<std::vector<User>>
-    getUsers() const;
+    [[nodiscard]] std::unique_ptr<std::vector<User>> getUsers() const;
 
-    void
-    saveUser(User const& user);
+    void saveUser(User const& user);
 
 private:
     PostgresUserStore* m_userStore;

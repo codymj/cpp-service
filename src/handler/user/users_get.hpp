@@ -21,12 +21,10 @@ class UsersGetHandler
 {
 public:
     /**
-     * Don't want to lazily create or copy/move this.
+     * Handler for GET /users
+     * @param userService User service layer.
+     * @param next Next handler in chain.
      */
-    UsersGetHandler() = delete;
-    UsersGetHandler(UsersGetHandler&) = delete;
-    UsersGetHandler(UsersGetHandler&&) = delete;
-
     explicit UsersGetHandler
     (
         UserService* userService,
@@ -49,8 +47,7 @@ public:
      * @param req HTTPServerRequest&
      * @param res HTTPServerResponse&
      */
-    void
-    handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
+    void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
 
 private:
     /**
@@ -59,7 +56,7 @@ private:
     UserService* m_userService;
 
     /**
-     * Next handler in the chain, if any.
+     * Next handler in the chain.
      */
     HTTPRequestHandler* m_nextHandler = nullptr;
 };

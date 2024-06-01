@@ -16,14 +16,17 @@ class UsersPostHandler
 {
 public:
     /**
-     * Don't want to lazily create or copy/move this.
+     * Handler for POST /users.
+     * @param userService User service layer.
+     * @param next Next handler in chain.
      */
-    UsersPostHandler() = delete;
-    UsersPostHandler(UsersPostHandler&) = delete;
-    UsersPostHandler(UsersPostHandler&&) = delete;
-
-    explicit UsersPostHandler(UserService* userService)
+    explicit UsersPostHandler
+    (
+        UserService* userService,
+        HTTPRequestHandler* next = nullptr
+    )
     : m_userService(userService)
+    , m_nextHandler(next)
     {}
 
     /**
@@ -31,12 +34,16 @@ public:
      * @param req HTTPServerRequest&
      * @param res HTTPServerResponse&
      */
-    void
-    handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
+    void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
 
 private:
     /**
      * Service layer for User.
      */
     UserService* m_userService;
+
+    /**
+     * Next handler in the chain.
+     */
+    HTTPRequestHandler* m_nextHandler = nullptr;
 };
