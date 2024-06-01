@@ -10,11 +10,10 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${INCLUDE_DIR}
-    ${INCLUDE_DIR}/external
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
-    # Core level
+    # Core
     ${SOURCE_DIR}/core/app.cpp
     ${SOURCE_DIR}/core/handler_factory.cpp
     ${SOURCE_DIR}/core/router.cpp
@@ -30,7 +29,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     # Services
     ${SOURCE_DIR}/service/user/user_service.cpp
 
-    # Data stores
+    # Stores
     ${SOURCE_DIR}/store/user/postgres_user_store.cpp
 )
 

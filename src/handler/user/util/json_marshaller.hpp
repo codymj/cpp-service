@@ -15,8 +15,7 @@ public:
      * @param req is the incoming HTTPServerRequest.
      * @return User object.
      */
-    static User
-    toUser(HTTPServerRequest& req)
+    static User toUser(HTTPServerRequest& req)
     {
         // Parse request body.
         auto& istream = req.stream();
@@ -41,8 +40,7 @@ public:
      * @param user to marshal into JSON.
      * @return JSON object of the user.
      */
-    static nlohmann::json
-    toJson(User const& user)
+    static nlohmann::json toJson(User const& user)
     {
         nlohmann::json json = nlohmann::json::object();
         json.emplace("userId", user.getUserId());
@@ -60,8 +58,7 @@ public:
      * @param users to marshal into JSON.
      * @return JSON array of user objects.
      */
-    static nlohmann::json
-    toJson(std::vector<User> const& users)
+    static nlohmann::json toJson(std::vector<User> const& users)
     {
         nlohmann::json json = nlohmann::json::array();
         for (auto const& u : users)
