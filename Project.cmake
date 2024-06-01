@@ -36,6 +36,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PUBLIC
     argon2
     pqxx
+    pq
     PocoFoundation
     PocoNet
     PocoUtil

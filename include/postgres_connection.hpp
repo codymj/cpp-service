@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include <pqxx/pqxx>
-#include "connection_pool.hpp"
+#include <connection_pool.hpp>
 
 using PqxxPtr = std::unique_ptr<pqxx::connection>;
 
