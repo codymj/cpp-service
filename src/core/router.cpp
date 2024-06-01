@@ -11,7 +11,7 @@ void Router::createRoutes()
 
 HTTPRequestHandler* Router::lookupHandler(RouteKey const& key)
 {
-    NewHandlerFunc f = m_routes[key];
+    NewHandlerFunc const f = m_routes[key];
     if (!f)
     {
         return new NotFoundHandler();

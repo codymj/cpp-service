@@ -13,7 +13,7 @@ class StoreRegistry
 public:
     /**
      * Initializer for the store registry.
-     * @param pgConnectionPool PostreSQL connection pool.
+     * @param pgConnectionPool Pointer to a PostgreSQL connection pool.
      */
     explicit StoreRegistry
     (

@@ -12,7 +12,7 @@ class ServiceRegistry
 public:
     /**
      * Initializer for the service registry.
-     * @param storeRegistry
+     * @param storeRegistry Store registry for injecting stores into services.
      */
     explicit ServiceRegistry(StoreRegistry* storeRegistry)
     : m_storeRegistry(storeRegistry)

@@ -6,8 +6,9 @@ void App::initialize(Application&)
 {
     loadConfiguration("app.properties");
     m_serverPort = config().getInt("server.port", 9000);
-
     createPostgresConnectionPool();
+
+    ServerApplication::initialize(*this);
 }
 
 void App::uninitialize()
@@ -35,7 +36,7 @@ void App::createPostgresConnectionPool()
 
         // Build database connections.
         std::vector<PqxxPtr> connections;
-        auto cxn = PostgresConnection
+        auto const cxn = PostgresConnection
         (
             host, port, username, password, name, connectionTimeout
         );
