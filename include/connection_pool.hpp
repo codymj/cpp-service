@@ -5,7 +5,7 @@
 #include <queue>
 
 /**
- * Connection pool for holding a collection of connections to a data store.
+ * Connection pool for holding a container of connections to a data store.
  * @tparam T Type of connection for the pool to utilize.
  */
 template <typename T>
@@ -13,15 +13,12 @@ class ConnectionPool
 {
 public:
     /**
-     * Don't want to lazily create or copy/move this.
+     * Constructor for creating a connection pool.
+     * @param connections Collection of connection objects.
      */
-    ConnectionPool() = delete;
-    ConnectionPool(ConnectionPool&) = delete;
-    ConnectionPool(ConnectionPool&&) = delete;
-
     explicit ConnectionPool(std::vector<T> connections)
     {
-        std::lock_guard<std::mutex> lock(m_mutex);
+        std::lock_guard lock(m_mutex);
 
         // Populate the connection pool.
         for (auto&& cxn : connections)
@@ -34,10 +31,9 @@ public:
      * Returns a database connection from the connection pool.
      * @return Database connection from connection pool.
      */
-    [[nodiscard]] T
-    rentConnection()
+    [[nodiscard]] T rentConnection()
     {
-        std::unique_lock<std::mutex> lock(m_mutex);
+        std::unique_lock lock(m_mutex);
 
         // If all connections are busy, wait until we can get a connection.
         while (m_pool.empty())
@@ -55,10 +51,9 @@ public:
     /**
      * Frees the database connection back into the connection pool.
      */
-    void
-    freeConnection(T connection)
+    void freeConnection(T connection)
     {
-        std::unique_lock<std::mutex> lock(m_mutex);
+        std::unique_lock lock(m_mutex);
 
         // Return connection to pool.
         m_pool.push(std::move(connection));

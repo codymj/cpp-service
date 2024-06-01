@@ -8,7 +8,7 @@ void UsersGetHandler::handleRequest
 )
 {
     // Call to service to get some data.
-    std::unique_ptr<std::vector<User>> users = m_userService->getUsers();
+    std::unique_ptr<std::vector<User>> const users = m_userService->getUsers();
 
     // Return nothing if container is empty.
     if (users->empty())
@@ -23,12 +23,15 @@ void UsersGetHandler::handleRequest
     }
 
     // Marshal users to JSON.
-    nlohmann::json json = JsonMarshaller::toJson(*users);
+    nlohmann::json const json = JsonMarshaller::toJson(*users);
 
     // Send response.
     res.setChunkedTransferEncoding(true);
     res.setContentType("application/json");
-    res.setContentLength64(Poco::Int64(users->size() * sizeof(users->at(0))));
+    res.setContentLength64
+    (
+        static_cast<Poco::Int64>(users->size() * sizeof(users->at(0)))
+    );
     res.setStatus(HTTPResponse::HTTP_OK);
     std::ostream &os = res.send();
     os << json;

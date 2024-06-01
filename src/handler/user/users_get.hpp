@@ -1,12 +1,8 @@
 #pragma once
 
-#include "../../core/router.hpp"
 #include "../../service/user/user_service.hpp"
 #include <Poco/Net/HTTPRequestHandler.h>
-#include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
-#include <memory>
-#include <utility>
 
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPServerRequest;
@@ -16,7 +12,7 @@ using Poco::Net::HTTPResponse;
 /**
  * Handler for parsing HTTP GET /users requests.
  */
-class UsersGetHandler
+class UsersGetHandler final
 : public HTTPRequestHandler
 {
 public:

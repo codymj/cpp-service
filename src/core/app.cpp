@@ -2,7 +2,7 @@
 #include <Poco/Environment.h>
 #include <iostream>
 
-[[maybe_unused]] void App::initialize(Application&)
+void App::initialize(Application&)
 {
     loadConfiguration("app.properties");
     m_serverPort = config().getInt("server.port", 9000);
@@ -10,7 +10,7 @@
     createPostgresConnectionPool();
 }
 
-[[maybe_unused]] void App::uninitialize()
+void App::uninitialize()
 {
     ServerApplication::uninitialize();
 }
@@ -76,7 +76,7 @@ int App::main(const std::vector<std::string>&)
     m_router = std::make_unique<Router>(m_serviceRegistry.get());
 
     // Create and start the HTTP server.
-    ServerSocket serverSocket(m_serverPort);
+    ServerSocket const serverSocket(m_serverPort);
     HTTPServer server
     (
         new HandlerFactory(m_router.get()),
@@ -89,5 +89,5 @@ int App::main(const std::vector<std::string>&)
     waitForTerminationRequest();
     server.stop();
 
-    return Application::EXIT_OK;
+    return EXIT_OK;
 }

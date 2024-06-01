@@ -11,7 +11,7 @@ void UsersPostHandler::handleRequest
     // TODO: JSON validation — maybe middleware?
 
     // Parse request body into a User object.
-    User userToSave = JsonMarshaller::toUser(req);
+    User const userToSave = JsonMarshaller::toUser(req);
     std::cout << userToSave.getEmail() << '\n';
 
     // Pass to service.

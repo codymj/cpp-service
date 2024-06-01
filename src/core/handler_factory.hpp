@@ -2,7 +2,6 @@
 
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
-#include <Poco/Net/HTTPServerRequest.h>
 #include "router.hpp"
 
 using Poco::Net::HTTPRequestHandler;
@@ -13,13 +12,13 @@ using Poco::Net::HTTPServerRequest;
  * Subclass of Poco::Net::HTTPRequestHandlerFactory to add some customization
  * such as injecting an HTTP request router.
  */
-class HandlerFactory
+class HandlerFactory final
 : public HTTPRequestHandlerFactory
 {
 public:
     /**
      * Initializer for the HTTP handler factory.
-     * @param router
+     * @param router HTTP router.
      */
     explicit HandlerFactory(Router* router)
     : m_router(router)

@@ -25,11 +25,11 @@ public:
 
         // Parse JSON.
         nlohmann::json json = nlohmann::json::parse(buffer);
-        std::string email{json["email"]};
-        std::string password{json["password"]};
-        std::string hashedPassword = PasswordCrypt::hashPassword(password);
-        std::string firstName{json["firstName"]};
-        std::string lastName{json["lastName"]};
+        std::string const email{json["email"]};
+        std::string const password{json["password"]};
+        std::string const hashedPassword = PasswordCrypt::hashPassword(password);
+        std::string const firstName{json["firstName"]};
+        std::string const lastName{json["lastName"]};
 
         // Create user object to save.
         return User{email, hashedPassword, firstName, lastName};

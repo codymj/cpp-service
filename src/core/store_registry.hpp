@@ -3,7 +3,6 @@
 #include "postgres_connection.hpp"
 #include "../store/user/postgres_user_store.hpp"
 #include <memory>
-#include <utility>
 
 /**
  * Registry to hold all data stores which gets injected into the
@@ -14,7 +13,7 @@ class StoreRegistry
 public:
     /**
      * Initializer for the store registry.
-     * @param connectionPool
+     * @param pgConnectionPool PostreSQL connection pool.
      */
     explicit StoreRegistry
     (
@@ -30,7 +29,7 @@ public:
      * Returns a pointer to the UserStore.
      * @return Pointer to UserStore.
      */
-    PostgresUserStore* getUserStore();
+    [[nodiscard]] PostgresUserStore* getUserStore() const;
 
 private:
     /**

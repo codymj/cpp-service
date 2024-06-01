@@ -6,24 +6,25 @@
 #include <string>
 #include <vector>
 
+/**
+ * Simple utility class for hashing passwords.
+ */
 class PasswordCrypt
 {
 public:
     /**
      * Generates a random salt.
-     * @param saltLength is the requested length of the salt.
-     * @return salt as std::string const.
+     * @return salt as std::string.
      */
-    static std::string
-    generateSalt()
+    static std::string generateSalt()
     {
         std::random_device randomDevice;
         std::mt19937 generator(randomDevice());
-        std::uniform_int_distribution<> distribution(0, 255);
+        std::uniform_int_distribution distribution(0, 255);
 
         unsigned char salt[saltLength];
         for (unsigned char& ch : salt) {
-            ch = (char)distribution(generator);
+            ch = static_cast<char>(distribution(generator));
         }
         return std::string{reinterpret_cast<char*>(salt), saltLength};
     }
@@ -33,14 +34,13 @@ public:
      * @param password is the password to hash.
      * @return Encoded hash of the provided password.
      */
-    static std::string
-    hashPassword(std::string const& password)
+    static std::string hashPassword(std::string const& password)
     {
         // Generate random salt.
-        std::string salt = generateSalt();
+        std::string const salt = generateSalt();
 
         // Get encoded hash length.
-        size_t encodedLength = argon2_encodedlen
+        size_t const encodedLength = argon2_encodedlen
         (
             t_cost,
             m_cost,
@@ -54,7 +54,7 @@ public:
         std::vector<char> encoded(encodedLength);
 
         // Hash the password.
-        int result = argon2id_hash_encoded
+        int const result = argon2id_hash_encoded
         (
             t_cost,
             m_cost,
@@ -86,7 +86,7 @@ public:
     static bool
     verifyPassword(std::string const& password, std::string const& encodedHash)
     {
-        int result = argon2i_verify
+        int const result = argon2i_verify
         (
             encodedHash.c_str(),
             password.c_str(),
@@ -96,7 +96,7 @@ public:
         {
             return true;
         }
-        else if (result == ARGON2_VERIFY_MISMATCH)
+        if (result == ARGON2_VERIFY_MISMATCH)
         {
             return false;
         }
@@ -106,9 +106,9 @@ public:
     }
 
 private:
-    static const uint32_t t_cost = 5;            // Number of iterations
-    static const uint32_t m_cost = (1 << 16);    // Memory usage in kibibytes
-    static const uint32_t parallelism = 4;       // Number of parallel threads
-    static const uint32_t saltLength = 16;       // Salt length
-    static const uint32_t hashLength = 16;       // Hash length
+    static constexpr uint32_t t_cost = 5;       // Number of iterations
+    static constexpr uint32_t m_cost = 1 << 16; // Memory usage in kibibytes
+    static constexpr uint32_t parallelism = 4;  // Number of threads
+    static constexpr uint32_t saltLength = 16;  // Salt length
+    static constexpr uint32_t hashLength = 16;  // Hash length
 };

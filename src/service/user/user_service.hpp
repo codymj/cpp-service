@@ -2,7 +2,6 @@
 
 #include "../../store/user/postgres_user_store.hpp"
 #include <memory>
-#include <utility>
 #include <vector>
 
 /**
@@ -25,7 +24,11 @@ public:
      */
     [[nodiscard]] std::unique_ptr<std::vector<User>> getUsers() const;
 
-    void saveUser(User const& user);
+    /**
+     * Saves user to the database.
+     * @param user User to store in database.
+     */
+    void saveUser(User const& user) const;
 
 private:
     PostgresUserStore* m_userStore;

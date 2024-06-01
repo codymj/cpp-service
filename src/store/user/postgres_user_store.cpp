@@ -10,7 +10,7 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
     pqxx::work txn{*cxn, std::string{"txn"}};
 
     // Query to get all users.
-    std::string query
+    std::string const query
     {
         "select "
         "user_id, "
@@ -77,7 +77,7 @@ void PostgresUserStore::saveUser(User const& user) const
     pqxx::work txn{*cxn, std::string{"txn"}};
 
     // Command to save a user.
-    std::string command
+    std::string const command
     {
         "insert into "
         "users (email, password, first_name, last_name) "

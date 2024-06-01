@@ -4,7 +4,6 @@
 #include <connection_pool.hpp>
 #include <postgres_connection.hpp>
 #include <vector>
-#include <pqxx/except>
 
 /**
  * Data store represented by a PostgreSQL database for storing User data.

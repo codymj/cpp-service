@@ -1,5 +1,6 @@
 #include "logger.hpp"
 #include <iostream>
+#include <Poco/Net/HTTPServerRequest.h>
 
 void LoggerMiddleware::handleRequest
 (
@@ -10,7 +11,7 @@ void LoggerMiddleware::handleRequest
     // [For testing purposes]
     // TODO: logging
     std::cout << "Client Address: " << req.clientAddress() << "\t"
-    << req.getMethod() << " " << req.getURI() << '\n';
+        << req.getMethod() << " " << req.getURI() << '\n';
 
     if (m_nextHandler)
     {

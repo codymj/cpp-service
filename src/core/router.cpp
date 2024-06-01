@@ -27,11 +27,11 @@ void Router::createUserRoutes()
         [&]() -> HTTPRequestHandler*
         {
             // Initialize handlers.
-            auto usersGetHandler = new UsersGetHandler
+            auto const usersGetHandler = new UsersGetHandler
             (
                 m_serviceRegistry->getUserService()
             );
-            auto loggerMiddleware = new LoggerMiddleware(usersGetHandler);
+            auto const loggerMiddleware = new LoggerMiddleware(usersGetHandler);
 
             // Return first handler in chain.
             return loggerMiddleware;

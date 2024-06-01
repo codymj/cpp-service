@@ -28,7 +28,7 @@ public:
      * Returns a pointer to the UserService.
      * @return Pointer to the UserService.
      */
-    UserService* getUserService();
+    [[nodiscard]] UserService* getUserService() const;
 
 private:
     /**

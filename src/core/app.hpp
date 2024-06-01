@@ -3,8 +3,6 @@
 #include "handler_factory.hpp"
 #include <postgres_connection.hpp>
 #include <Poco/Net/HTTPServer.h>
-#include <Poco/Net/HTTPServerParams.h>
-#include <Poco/Net/ServerSocket.h>
 #include <Poco/Util/ServerApplication.h>
 #include <memory>
 
@@ -13,7 +11,7 @@ using Poco::Net::HTTPServerParams;
 using Poco::Net::ServerSocket;
 using Poco::Util::ServerApplication;
 
-class App
+class App final
 : public ServerApplication
 {
 protected:
@@ -21,12 +19,12 @@ protected:
      * Initializes application.
      * @param self
      */
-    [[maybe_unused]] void initialize(Application& self) override;
+    void initialize(Application& self) override;
 
     /**
      * Uninitializes application.
      */
-    [[maybe_unused]] void uninitialize() override;
+    void uninitialize() override;
 
     /**
      * Main application loop for the HTTP server.
@@ -47,5 +45,5 @@ private:
     std::unique_ptr<StoreRegistry> m_storeRegistry;
     std::unique_ptr<ServiceRegistry> m_serviceRegistry;
     std::unique_ptr<Router> m_router;
-    uint16_t m_serverPort;
+    uint16_t m_serverPort{};
 };

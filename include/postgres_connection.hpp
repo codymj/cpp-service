@@ -7,21 +7,29 @@
 
 using PqxxPtr = std::unique_ptr<pqxx::connection>;
 
+/**
+ * Class for building a PostgreSQL connection.
+ */
 class PostgresConnection
 {
 public:
-    PostgresConnection() = delete;
-    PostgresConnection(PostgresConnection&) = delete;
-    PostgresConnection(PostgresConnection&&) = delete;
-
+    /**
+     * Constructor for building a connection to a PostgreSQL database.
+     * @param host Database host.
+     * @param port Database port.
+     * @param username Username to connect to database.
+     * @param password Password to connect to database.
+     * @param name Database name.
+     * @param connectionTimeout Connection timeout in seconds.
+     */
     PostgresConnection
     (
         std::string host,
-        uint16_t port,
+        uint16_t const port,
         std::string username,
         std::string password,
         std::string name,
-        uint16_t connectionTimeout = 180
+        uint16_t const connectionTimeout = 180
     )
     : m_host(std::move(host))
     , m_username(std::move(username))
@@ -31,15 +39,21 @@ public:
     , m_connectionTimeout(connectionTimeout)
     {}
 
-    PqxxPtr
-    build()
+    /**
+     * Builds and returns the pointer to the database connector.
+     * @return
+     */
+    [[nodiscard]] PqxxPtr build() const
     {
         return std::make_unique<pqxx::connection>(connectionString());
     }
 
 private:
-    std::string
-    connectionString()
+    /**
+     * Builds the connection string based on the provided parameters.
+     * @return PostgreSQL connection string.
+     */
+    [[nodiscard]] std::string connectionString() const
     {
         return std::string
             {

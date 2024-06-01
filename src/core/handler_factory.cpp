@@ -1,4 +1,5 @@
 #include "handler_factory.hpp"
+#include <Poco/Net/HTTPServerRequest.h>
 
 HTTPRequestHandler* HandlerFactory::createRequestHandler
 (
