@@ -11,6 +11,16 @@ void UsersGetHandler::handleRequest
     std::unique_ptr<std::vector<User>> const users = m_userService->getUsers();
 
     // Return nothing if container is empty.
+    if (!users)
+    {
+        res.setChunkedTransferEncoding(true);
+        res.setContentType("application/json");
+        res.setContentLength64(0);
+        res.setStatus(HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+        std::ostream &os = res.send();
+        os << "";
+        return;
+    }
     if (users->empty())
     {
         res.setChunkedTransferEncoding(true);

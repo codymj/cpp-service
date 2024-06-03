@@ -1,10 +1,12 @@
 #include "postgres_user_store.hpp"
+#include <defer.hpp>
 #include <iostream>
 
 std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
 {
     // Rent a connection from pool.
     auto cxn = m_connectionPool->rentConnection();
+    DEFER(m_connectionPool->freeConnection(std::move(cxn)));
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
@@ -34,7 +36,7 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
     {
         // TODO: logging
         std::cerr << e.what() << '\n';
-        return users;
+        return nullptr;
     }
 
     for (auto&& row : res)
@@ -52,7 +54,7 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
                 row[6].as<uint64_t>()
             };
         }
-        catch (std::exception& e)
+        catch (std::exception const& e)
         {
             // TODO: logging
             std::cerr << e.what() << '\n';
@@ -62,9 +64,6 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
         users->push_back(u);
     }
 
-    // Free connection (IMPORTANT!)
-    m_connectionPool->freeConnection(std::move(cxn));
-
     return users;
 }
 
@@ -72,6 +71,7 @@ void PostgresUserStore::saveUser(User const& user) const
 {
     // Rent a connection from pool.
     auto cxn = m_connectionPool->rentConnection();
+    DEFER(m_connectionPool->freeConnection(std::move(cxn)));
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
@@ -94,7 +94,7 @@ void PostgresUserStore::saveUser(User const& user) const
         txn.exec(command);
         txn.commit();
     }
-    catch (pqxx::sql_error& e)
+    catch (pqxx::sql_error const& e)
     {
         // TODO: logging
         std::cerr << e.what() << '\n' << "Query: " << command << '\n';
@@ -104,7 +104,4 @@ void PostgresUserStore::saveUser(User const& user) const
         // TODO: logging
         std::cerr << e.what() << '\n' << "Query: " << command << '\n';
     }
-
-    // Free connection (IMPORTANT!)
-    m_connectionPool->freeConnection(std::move(cxn));
 }
