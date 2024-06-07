@@ -1,10 +1,12 @@
 #include "postgres_user_store.hpp"
-#include <iostream>
+#include <defer.hpp>
+#include <exception>
 
 std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
 {
     // Rent a connection from pool.
     auto cxn = m_connectionPool->rentConnection();
+    DEFER(m_connectionPool->freeConnection(std::move(cxn)));
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
@@ -30,13 +32,17 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
     {
         res = txn.exec(query);
     }
-    catch (pqxx::sql_error const& e)
+    catch (std::exception const& e)
     {
-        // TODO: logging
-        std::cerr << e.what() << '\n';
-        return users;
+        m_logger->error
+        (
+            "SQL error in PostgresUserStore::getUsers: {}",
+            e.what()
+        );
+        throw;
     }
 
+    // Parse rows in response.
     for (auto&& row : res)
     {
         User u{};
@@ -52,18 +58,18 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
                 row[6].as<uint64_t>()
             };
         }
-        catch (std::exception& e)
+        catch (std::exception const& e)
         {
-            // TODO: logging
-            std::cerr << e.what() << '\n';
-            return nullptr;
+            m_logger->error
+            (
+                "Error parsing row in PostgresUserStore::getUsers: {}",
+                e.what()
+            );
+            throw;
         }
 
         users->push_back(u);
     }
-
-    // Free connection (IMPORTANT!)
-    m_connectionPool->freeConnection(std::move(cxn));
 
     return users;
 }
@@ -72,6 +78,7 @@ void PostgresUserStore::saveUser(User const& user) const
 {
     // Rent a connection from pool.
     auto cxn = m_connectionPool->rentConnection();
+    DEFER(m_connectionPool->freeConnection(std::move(cxn)));
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
@@ -94,17 +101,13 @@ void PostgresUserStore::saveUser(User const& user) const
         txn.exec(command);
         txn.commit();
     }
-    catch (pqxx::sql_error& e)
-    {
-        // TODO: logging
-        std::cerr << e.what() << '\n' << "Query: " << command << '\n';
-    }
     catch (std::exception& e)
     {
-        // TODO: logging
-        std::cerr << e.what() << '\n' << "Query: " << command << '\n';
+        m_logger->error
+        (
+            "Error in PostgresUserStore::saveUser: {}",
+            e.what()
+        );
+        throw;
     }
-
-    // Free connection (IMPORTANT!)
-    m_connectionPool->freeConnection(std::move(cxn));
 }

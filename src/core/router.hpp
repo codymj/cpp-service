@@ -7,7 +7,6 @@
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 
-using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPRequestHandler;
 
 using HttpMethod = std::string const;

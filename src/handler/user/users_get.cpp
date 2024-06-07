@@ -8,9 +8,24 @@ void UsersGetHandler::handleRequest
 )
 {
     // Call to service to get some data.
-    std::unique_ptr<std::vector<User>> const users = m_userService->getUsers();
+    std::unique_ptr<std::vector<User>> users;
+    try
+    {
+        users = m_userService->getUsers();
+    }
+    catch (std::exception& e)
+    {
+        // TODO: Create JSON error messages
+        res.setChunkedTransferEncoding(true);
+        res.setContentType("application/json");
+        res.setContentLength64(0);
+        res.setStatus(HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+        std::ostream &os = res.send();
+        os << "";
+        return;
+    }
 
-    // Return nothing if container is empty.
+    // No users to return.
     if (users->empty())
     {
         res.setChunkedTransferEncoding(true);

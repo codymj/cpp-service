@@ -8,3 +8,4 @@ A template for building a C++ web service.
 - [libpqxx](https://github.com/jtv/libpqxx)
 - [nlohmann/json](https://github.com/nlohmann/json)
 - [poco](https://github.com/pocoproject/poco)
+- [spdlog](https://github.com/gabime/spdlog)
