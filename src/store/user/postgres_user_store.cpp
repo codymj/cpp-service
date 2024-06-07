@@ -1,6 +1,6 @@
 #include "postgres_user_store.hpp"
 #include <defer.hpp>
-#include <iostream>
+#include <exception>
 
 std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
 {
@@ -32,13 +32,17 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
     {
         res = txn.exec(query);
     }
-    catch (pqxx::sql_error const& e)
+    catch (std::exception const& e)
     {
-        // TODO: logging
-        std::cerr << e.what() << '\n';
-        return nullptr;
+        m_logger->error
+        (
+            "SQL error in PostgresUserStore::getUsers: {}",
+            e.what()
+        );
+        throw;
     }
 
+    // Parse rows in response.
     for (auto&& row : res)
     {
         User u{};
@@ -56,9 +60,12 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
         }
         catch (std::exception const& e)
         {
-            // TODO: logging
-            std::cerr << e.what() << '\n';
-            return nullptr;
+            m_logger->error
+            (
+                "Error parsing row in PostgresUserStore::getUsers: {}",
+                e.what()
+            );
+            throw;
         }
 
         users->push_back(u);
@@ -94,14 +101,13 @@ void PostgresUserStore::saveUser(User const& user) const
         txn.exec(command);
         txn.commit();
     }
-    catch (pqxx::sql_error const& e)
-    {
-        // TODO: logging
-        std::cerr << e.what() << '\n' << "Query: " << command << '\n';
-    }
     catch (std::exception& e)
     {
-        // TODO: logging
-        std::cerr << e.what() << '\n' << "Query: " << command << '\n';
+        m_logger->error
+        (
+            "Error in PostgresUserStore::saveUser: {}",
+            e.what()
+        );
+        throw;
     }
 }

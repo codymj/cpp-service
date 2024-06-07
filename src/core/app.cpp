@@ -1,19 +1,68 @@
 #include "app.hpp"
+#include "handler_factory.hpp"
 #include <Poco/Environment.h>
+#include <exception>
 #include <iostream>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 void App::initialize(Application&)
 {
     loadConfiguration("app.properties");
-    m_serverPort = config().getInt("server.port", 9000);
+    initLogger();
+    initAppInfo();
     createPostgresConnectionPool();
-
     ServerApplication::initialize(*this);
 }
 
 void App::uninitialize()
 {
     ServerApplication::uninitialize();
+}
+
+void App::initAppInfo()
+{
+    try
+    {
+        m_serverPort = config().getInt("server.port", 9000);
+        m_appDomain = config().getString("app.domain");
+        m_appName = config().getString("app.name");
+        m_appVersion = config().getString("app.version");
+    }
+    catch (Poco::NotFoundException& e)
+    {
+        m_logger->critical("{}: {}", e.what(), e.message());
+        std::exit(EXIT_CONFIG);
+    }
+    catch (std::exception& e)
+    {
+        m_logger->critical("Error in createPostgresConnectionPool: {}", e.what());
+        std::exit(EXIT_CONFIG);
+    }
+}
+
+void App::initLogger()
+{
+    try
+    {
+        std::string const level = config().getString("app.log_level");
+        if (level == "trace")
+            spdlog::set_level(spdlog::level::trace);
+        else if (level == "warn")
+            spdlog::set_level(spdlog::level::warn);
+        else if (level == "error")
+            spdlog::set_level(spdlog::level::err);
+        else if (level == "critical")
+            spdlog::set_level(spdlog::level::critical);
+        else
+            spdlog::set_level(spdlog::level::debug);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Error loading property app.log_level: " << e.what() << '\n';
+        std::exit(EXIT_CONFIG);
+    }
+
+    m_logger = spdlog::stdout_color_mt("logger");
 }
 
 void App::createPostgresConnectionPool()
@@ -50,20 +99,24 @@ void App::createPostgresConnectionPool()
             std::move(connections)
         );
     }
-    catch (Poco::NotFoundException& nfe)
+    catch (Poco::NotFoundException& e)
     {
-        std::cerr << nfe.what() << ": " << nfe.message() << '\n';
+        m_logger->critical("{}: {}", e.what(), e.message());
         std::exit(EXIT_CONFIG);
     }
     catch (std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        m_logger->critical("Error in createPostgresConnectionPool: {}", e.what());
         std::exit(EXIT_CONFIG);
     }
 }
 
 int App::main(const std::vector<std::string>&)
 {
+    using Poco::Net::HTTPServer;
+    using Poco::Net::HTTPServerParams;
+    using Poco::Net::ServerSocket;
+
     // Create data store registry to inject into service registry.
     m_storeRegistry = std::make_unique<StoreRegistry>(m_connectionPool.get());
 
@@ -84,10 +137,14 @@ int App::main(const std::vector<std::string>&)
         serverSocket,
         new HTTPServerParams
     );
+
+    m_logger->info("Starting server on port {}", m_serverPort);
     server.start();
 
     // Waiting for interrupts.
     waitForTerminationRequest();
+
+    m_logger->info("Shutting down server...", m_serverPort);
     server.stop();
 
     return EXIT_OK;

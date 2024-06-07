@@ -23,11 +23,11 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang" OR ${CMAKE_CXX_COMPILER_ID} MATCHES 
     # https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html#index-g
     SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
 
-    # SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
+    # SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
     SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
 
     # EPX specific flags
-    SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -g")
+    SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
     # https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html#index-rdynamic
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <argon2.h>
-#include <iostream>
 #include <random>
 #include <string>
 #include <vector>
@@ -69,9 +68,7 @@ public:
         );
         if (result != ARGON2_OK)
         {
-            // TODO: logging
-            // throw exception?
-            std::cerr << "Error: " << argon2_error_message(result) << '\n';
+            throw std::runtime_error(argon2_error_message(result));
         }
 
         return encoded.data();
@@ -101,8 +98,7 @@ public:
             return false;
         }
 
-        std::cerr << "Error: " << argon2_error_message(result) << '\n';
-        return false;
+        throw std::runtime_error(argon2_error_message(result));
     }
 
 private:

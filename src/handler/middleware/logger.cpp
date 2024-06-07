@@ -1,18 +1,12 @@
 #include "logger.hpp"
-#include <iostream>
 #include <Poco/Net/HTTPServerRequest.h>
 
-void LoggerMiddleware::handleRequest
-(
-    HTTPServerRequest& req,
-    HTTPServerResponse& res
-)
+void LoggerMiddleware::handleRequest(HTTPServerRequest& req, HTTPServerResponse& res)
 {
-    // [For testing purposes]
-    // TODO: logging
-    std::cout << "Client Address: " << req.clientAddress() << "\t"
-        << req.getMethod() << " " << req.getURI() << '\n';
+    // Log request.
+    m_logger->info("{} {} from {}", req.getMethod(), req.getURI(), req.clientAddress().toString());
 
+    // Call next handler, if any.
     if (m_nextHandler)
     {
         m_nextHandler->handleRequest(req, res);

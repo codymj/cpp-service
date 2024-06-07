@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Poco/Net/HTTPRequestHandler.h>
-#include <Poco/Net/HTTPServerResponse.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
-using Poco::Net::HTTPResponse;
 
 class LoggerMiddleware final
 : public HTTPRequestHandler
@@ -18,7 +18,9 @@ public:
      */
     explicit LoggerMiddleware(HTTPRequestHandler* next)
     : m_nextHandler(next)
-    {}
+    {
+        m_logger = spdlog::get("logger");
+    }
 
     /**
      * Destructor to clean up chained handlers.
@@ -36,6 +38,11 @@ public:
     void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
 
 private:
+    /**
+     * Logger for this class.
+     */
+    std::shared_ptr<spdlog::logger> m_logger;
+
     /**
      * Next handler in the chain, if any.
      */

@@ -21,6 +21,8 @@ HTTPRequestHandler* Router::lookupHandler(RouteKey const& key)
 
 void Router::createUserRoutes()
 {
+    using Poco::Net::HTTPRequest;
+    
     m_routes.insert
     ({
         RouteKey{HTTPRequest::HTTP_GET, "/users"},

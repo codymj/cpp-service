@@ -2,17 +2,12 @@
 #include "util/json_marshaller.hpp"
 #include <iostream>
 
-void UsersPostHandler::handleRequest
-(
-    HTTPServerRequest& req,
-    HTTPServerResponse& res
-)
+void UsersPostHandler::handleRequest(HTTPServerRequest& req, HTTPServerResponse& res)
 {
     // TODO: JSON validation — maybe middleware?
 
     // Parse request body into a User object.
     User const userToSave = JsonMarshaller::toUser(req);
-    std::cout << userToSave.getEmail() << '\n';
 
     // Pass to service.
     m_userService->saveUser(userToSave);
