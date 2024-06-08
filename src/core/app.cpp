@@ -1,17 +1,18 @@
 #include "app.hpp"
 #include "handler_factory.hpp"
 #include <Poco/Environment.h>
+#include <Poco/Net/HTTPServer.h>
 #include <exception>
 #include <iostream>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 void App::initialize(Application&)
 {
-    loadConfiguration("app.properties");
-    initLogger();
-    initAppInfo();
-    createPostgresConnectionPool();
+    ConfigManager::instance().initialize("app.properties");
     ServerApplication::initialize(*this);
+
+    initLogger();
+    createPostgresConnectionPool();
 }
 
 void App::uninitialize()
@@ -19,32 +20,11 @@ void App::uninitialize()
     ServerApplication::uninitialize();
 }
 
-void App::initAppInfo()
-{
-    try
-    {
-        m_serverPort = config().getInt("server.port", 9000);
-        m_appDomain = config().getString("app.domain");
-        m_appName = config().getString("app.name");
-        m_appVersion = config().getString("app.version");
-    }
-    catch (Poco::NotFoundException& e)
-    {
-        m_logger->critical("{}: {}", e.what(), e.message());
-        std::exit(EXIT_CONFIG);
-    }
-    catch (std::exception& e)
-    {
-        m_logger->critical("Error in createPostgresConnectionPool: {}", e.what());
-        std::exit(EXIT_CONFIG);
-    }
-}
-
 void App::initLogger()
 {
     try
     {
-        std::string const level = config().getString("app.log_level");
+        std::string const level = ConfigManager::instance().config().getString("app.log_level");
         if (level == "trace")
             spdlog::set_level(spdlog::level::trace);
         else if (level == "warn")
@@ -72,16 +52,16 @@ void App::createPostgresConnectionPool()
         // Get environment variable database password.
         std::string const password = Poco::Environment::get
         (
-            config().getString("database.password")
+            ConfigManager::instance().config().getString("database.password")
         );
 
         // Get the rest of the configuration parameters.
-        std::string const host = config().getString("database.host");
-        uint16_t const port = config().getInt("database.port");
-        std::string const username = config().getString("database.username");
-        std::string const name = config().getString("database.name");
-        uint16_t const connectionTimeout = config().getInt("database.connection_timeout");
-        uint16_t const poolSize = config().getInt("database.connection_pool_size");
+        std::string const host = ConfigManager::instance().config().getString("database.host");
+        uint16_t const port = ConfigManager::instance().config().getInt("database.port");
+        std::string const username = ConfigManager::instance().config().getString("database.username");
+        std::string const name = ConfigManager::instance().config().getString("database.name");
+        uint16_t const connectionTimeout = ConfigManager::instance().config().getInt("database.connection_timeout");
+        uint16_t const poolSize = ConfigManager::instance().config().getInt("database.connection_pool_size");
 
         // Build database connections.
         std::vector<PqxxPtr> connections;
@@ -130,7 +110,7 @@ int App::main(const std::vector<std::string>&)
     m_router = std::make_unique<Router>(m_serviceRegistry.get());
 
     // Create and start the HTTP server.
-    ServerSocket const serverSocket(m_serverPort);
+    ServerSocket const serverSocket(ConfigManager::instance().config().getInt("server.port"));
     HTTPServer server
     (
         new HandlerFactory(m_router.get()),
@@ -138,13 +118,13 @@ int App::main(const std::vector<std::string>&)
         new HTTPServerParams
     );
 
-    m_logger->info("Starting server on port {}", m_serverPort);
+    m_logger->info("Starting server on port {}", ConfigManager::instance().config().getInt("server.port"));
     server.start();
 
     // Waiting for interrupts.
     waitForTerminationRequest();
 
-    m_logger->info("Shutting down server...", m_serverPort);
+    m_logger->info("Shutting down server...", ConfigManager::instance().config().getInt("server.port"));
     server.stop();
 
     return EXIT_OK;
