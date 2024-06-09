@@ -4,7 +4,6 @@
 #include <connection_pool.hpp>
 #include <postgres_connection.hpp>
 #include <vector>
-#include <spdlog/spdlog.h>
 
 /**
  * Data store represented by a PostgreSQL database for storing User data.
@@ -18,9 +17,7 @@ public:
      */
     explicit PostgresUserStore(ConnectionPool<PqxxPtr>* connectionPool)
     : m_connectionPool(connectionPool)
-    {
-        m_logger = spdlog::get("logger");
-    }
+    {}
 
     /**
      * Gets all users from the database.
@@ -36,11 +33,6 @@ public:
     void saveUser(User const& user) const;
 
 private:
-    /**
-     * Logger for this class.
-     */
-    std::shared_ptr<spdlog::logger> m_logger;
-
     /**
      * PostgreSQL connection pool.
      */

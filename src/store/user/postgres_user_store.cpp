@@ -1,6 +1,8 @@
 #include "postgres_user_store.hpp"
+#include <context.hpp>
 #include <defer.hpp>
 #include <exception>
+#include <spdlog/spdlog.h>
 
 std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
 {
@@ -34,11 +36,7 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
     }
     catch (std::exception const& e)
     {
-        m_logger->error
-        (
-            "SQL error in PostgresUserStore::getUsers: {}",
-            e.what()
-        );
+        SPDLOG_ERROR("{}", e.what());
         throw;
     }
 
@@ -60,11 +58,7 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
         }
         catch (std::exception const& e)
         {
-            m_logger->error
-            (
-                "Error parsing row in PostgresUserStore::getUsers: {}",
-                e.what()
-            );
+            SPDLOG_ERROR("{}", e.what());
             throw;
         }
 
@@ -103,11 +97,7 @@ void PostgresUserStore::saveUser(User const& user) const
     }
     catch (std::exception& e)
     {
-        m_logger->error
-        (
-            "Error in PostgresUserStore::saveUser: {}",
-            e.what()
-        );
+        SPDLOG_ERROR("{}", e.what());
         throw;
     }
 }

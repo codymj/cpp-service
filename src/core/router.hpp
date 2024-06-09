@@ -4,7 +4,6 @@
 #include <functional>
 #include <map>
 #include <string>
-#include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 
 using Poco::Net::HTTPRequestHandler;

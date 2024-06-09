@@ -32,6 +32,7 @@ public:
      * Encodes and hashes the supplied password.
      * @param password is the password to hash.
      * @return Encoded hash of the provided password.
+     * @throws std::runtime_error.
      */
     static std::string hashPassword(std::string const& password)
     {
@@ -79,6 +80,7 @@ public:
      * @param password is the provided password.
      * @param encodedHash the encoded hash of the password to verify.
      * @return True on match, false otherwise.
+     * @throws std::runtime_error.
      */
     static bool
     verifyPassword(std::string const& password, std::string const& encodedHash)
@@ -102,9 +104,28 @@ public:
     }
 
 private:
-    static constexpr uint32_t t_cost = 5;       // Number of iterations
-    static constexpr uint32_t m_cost = 1 << 16; // Memory usage in kibibytes
-    static constexpr uint32_t parallelism = 4;  // Number of threads
-    static constexpr uint32_t saltLength = 16;  // Salt length
-    static constexpr uint32_t hashLength = 16;  // Hash length
+    /**
+     * Number of iterations.
+     */
+    static constexpr uint32_t t_cost = 5;
+
+    /**
+     * Memory usage in kibibytes.
+     */
+    static constexpr uint32_t m_cost = 1 << 16;
+
+    /**
+     * Number of threads.
+     */
+    static constexpr uint32_t parallelism = 4;
+
+    /**
+     * Salt length.
+     */
+    static constexpr uint32_t saltLength = 16;
+
+    /**
+     * Hash length.
+     */
+    static constexpr uint32_t hashLength = 16;
 };

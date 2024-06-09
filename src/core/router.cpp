@@ -1,4 +1,5 @@
 #include "router.hpp"
+#include <Poco/Net/HTTPRequest.h>
 #include "../handler/middleware/logger.hpp"
 #include "../handler/misc/not_found.hpp"
 #include "../handler/user/users_get.hpp"
@@ -28,15 +29,8 @@ void Router::createUserRoutes()
         RouteKey{HTTPRequest::HTTP_GET, "/users"},
         [&]() -> HTTPRequestHandler*
         {
-            // Initialize handlers.
-            auto const usersGetHandler = new UsersGetHandler
-            (
-                m_serviceRegistry->getUserService()
-            );
-            auto const loggerMiddleware = new LoggerMiddleware(usersGetHandler);
-
-            // Return first handler in chain.
-            return loggerMiddleware;
+            auto const ugh = new UsersGetHandler(m_serviceRegistry->getUserService());
+            return new LoggerMiddleware(ugh);
         }
     });
     m_routes.insert
@@ -44,7 +38,8 @@ void Router::createUserRoutes()
         RouteKey{HTTPRequest::HTTP_POST, "/users"},
         [&]() -> HTTPRequestHandler*
         {
-            return new UsersPostHandler(m_serviceRegistry->getUserService());
+            auto const uph = new UsersPostHandler(m_serviceRegistry->getUserService());
+            return new LoggerMiddleware(uph);
         }
     });
 }

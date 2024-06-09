@@ -21,6 +21,14 @@ public:
     {}
 
     /**
+     * Destructor to clean up chained handlers.
+     */
+    ~NotFoundHandler() override
+    {
+        delete m_nextHandler;
+    }
+
+    /**
      * Handler to return 404 error.
      * @param req HTTPServerRequest&
      * @param res HTTPServerResponse&
