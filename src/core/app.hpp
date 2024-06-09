@@ -3,11 +3,9 @@
 #include "router.hpp"
 #include "service_registry.hpp"
 #include "store_registry.hpp"
-#include <config_manager.hpp>
 #include <postgres_connection.hpp>
 #include <Poco/Util/ServerApplication.h>
 #include <memory>
-#include <spdlog/spdlog.h>
 
 using Poco::Util::ServerApplication;
 
@@ -37,7 +35,7 @@ private:
     /**
      * Initializes logger.
      */
-    void initLogger();
+    static void initLogger();
 
     /**
      * Creates the connection pool for the database with parameters from
@@ -46,7 +44,6 @@ private:
      */
     void createPostgresConnectionPool();
 
-    std::shared_ptr<spdlog::logger> m_logger;
     std::unique_ptr<ConnectionPool<PqxxPtr>> m_connectionPool;
     std::unique_ptr<StoreRegistry> m_storeRegistry;
     std::unique_ptr<ServiceRegistry> m_serviceRegistry;

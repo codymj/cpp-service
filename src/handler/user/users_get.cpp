@@ -13,7 +13,7 @@ void UsersGetHandler::handleRequest
     {
         users = m_userService->getUsers();
     }
-    catch (std::exception& e)
+    catch (std::exception const&)
     {
         // TODO: Create JSON error messages
         res.setChunkedTransferEncoding(true);

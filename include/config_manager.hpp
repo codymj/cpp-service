@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <Poco/Util/PropertyFileConfiguration.h>
 #include <Poco/AutoPtr.h>
 

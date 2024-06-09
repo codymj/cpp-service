@@ -22,7 +22,7 @@ public:
      */
     explicit HandlerFactory(Router* router)
     : m_router(router)
-    {};
+    {}
 
     /**
      * Generates a RouteKey from the HTTPServerRequest which is used in m_router
