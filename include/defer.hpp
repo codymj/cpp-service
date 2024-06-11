@@ -8,8 +8,6 @@
 
 /**
  * Defer is used to execute a function upon exiting a scope.
- * Example:
- * DEFER(m_connectionPool->freeConnection(std::move(cxn)));
  */
 class Defer
 {
@@ -71,6 +69,13 @@ public:
     }
 
 private:
+    /**
+     * Function to run when scope is exited.
+     */
     std::function<void()> m_func;
+
+    /**
+     * If true, runs m_func on scope exit.
+     */
     bool m_active;
 };

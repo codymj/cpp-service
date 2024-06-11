@@ -6,16 +6,22 @@
 #include <string>
 #include <unordered_map>
 #include <variant>
-#include <vector>
 
+/**
+ * Context object to manage request parameters through the application.
+ * TODO: Implement timeouts and other things.
+ */
 class Context final
 {
 public:
+    /**
+     * Possible types a value can take in the map.
+     */
     using Value = std::variant<int, double, std::string>;
 
     /**
-     * Construct a context and set any default values in map.
-     * @op
+     * Construct a context and set any default values that all contexts should
+     * have.
      */
     explicit Context()
     : m_startTime(std::chrono::steady_clock::now())
@@ -24,6 +30,10 @@ public:
         set("traceId", uuidGenerator.createRandom().toString());
     }
 
+    /**
+     * Returns the start time of the request.
+     * @return When the request began.
+     */
     std::chrono::time_point<std::chrono::steady_clock> startTime() const
     {
         return m_startTime;
@@ -62,13 +72,13 @@ public:
      * Returns map of key/values.
      * @return Map of key/values.
      */
-    [[nodiscard]] std::unordered_map<std::string, Value>& getValues()
+    [[nodiscard]] std::unordered_map<std::string, Value>& values()
     {
         return m_values;
     }
 
     /**
-     *
+     * Returns traceId for logging.
      */
     [[nodiscard]] std::string traceId() const
     {
