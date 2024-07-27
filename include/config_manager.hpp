@@ -20,6 +20,8 @@ public:
         load_configuration(path);
     }
 
+    // app ---------------------------------------------------------------------
+
     [[nodiscard]] std::string const& app_domain() const
     {
         return m_app_domain;
@@ -38,6 +40,13 @@ public:
     [[nodiscard]] std::string const& app_log_level() const
     {
         return m_app_log_level;
+    }
+
+    // server ------------------------------------------------------------------
+
+    [[nodiscard]] std::string const& server_host() const
+    {
+        return m_server_host;
     }
 
     [[nodiscard]] uint16_t server_port() const
@@ -59,6 +68,8 @@ public:
     {
         return m_server_idle_timeout;
     }
+
+    // database  ---------------------------------------------------------------
 
     [[nodiscard]] std::string const& database_host() const
     {
@@ -172,14 +183,12 @@ private:
         }
     }
 
-    /**
-     * Properties parsed from file.
-     */
     std::string m_app_domain;
     std::string m_app_name;
     std::string m_app_version;
     std::string m_app_log_level;
 
+    std::string m_server_host;
     uint16_t m_server_port{};
     uint16_t m_server_read_timeout{};
     uint16_t m_server_write_timeout{};
