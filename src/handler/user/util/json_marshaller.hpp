@@ -2,10 +2,7 @@
 
 #include "../../../store/user/user_model.hpp"
 #include "password_crypt.hpp"
-#include <Poco/Net/HTTPServerRequest.h>
 #include <nlohmann/json.hpp>
-
-using Poco::Net::HTTPServerRequest;
 
 class JsonMarshaller
 {
@@ -15,16 +12,10 @@ public:
      * @param req is the incoming HTTPServerRequest.
      * @return User object.
      */
-    static User toUser(HTTPServerRequest& req)
+    static User toUser(http::request<http::string_body> req)
     {
-        // Parse request body.
-        auto& istream = req.stream();
-        int64_t const len = req.getContentLength();
-        std::string buffer(len, 0);
-        istream.read(buffer.data(), len);
-
         // Parse JSON.
-        nlohmann::json json = nlohmann::json::parse(buffer);
+        nlohmann::json json = nlohmann::json::parse(req.body());
         std::string const email{json["email"]};
         std::string const password{json["password"]};
         std::string const hashedPassword = PasswordCrypt::hashPassword(password);

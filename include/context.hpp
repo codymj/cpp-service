@@ -1,8 +1,9 @@
 #pragma once
 
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <memory>
 #include <mutex>
-#include <Poco/UUIDGenerator.h>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -26,8 +27,7 @@ public:
     explicit Context()
     : m_startTime(std::chrono::steady_clock::now())
     {
-        auto uuidGenerator = Poco::UUIDGenerator();
-        set("traceId", uuidGenerator.createRandom().toString());
+        set("traceId", to_string(boost::uuids::random_generator()()));
     }
 
     /**

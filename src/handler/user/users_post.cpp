@@ -3,7 +3,11 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 
-void UsersPostHandler::handleRequest(HTTPServerRequest& req, HTTPServerResponse& res)
+http::message_generator users_post_handler::handle
+(
+    http::request<http::string_body> req,
+    http::response<http::string_body> res
+)
 {
     // TODO: JSON validation middleware.
 
@@ -13,27 +17,35 @@ void UsersPostHandler::handleRequest(HTTPServerRequest& req, HTTPServerResponse&
         User const userToSave = JsonMarshaller::toUser(req);
 
         // Pass to service.
-        m_userService->saveUser(userToSave);
+        m_user_service->saveUser(userToSave);
+
+        // Build response.
+        res.chunked(true);
+        res.result(http::status::created);
+        res.set(http::field::content_type, "application/json");
+        res.keep_alive(req.keep_alive());
+        res.body() = "";
     }
     catch (std::runtime_error const& e)
     {
         SPDLOG_ERROR("{}", e.what());
-        res.setContentType("application/json");
-        res.setStatus(HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
-        std::ostream &os = res.send();
-        os << "";
-        return;
+        res.chunked(true);
+        res.result(http::status::internal_server_error);
+        res.set(http::field::content_type, "application/json");
+        res.keep_alive(req.keep_alive());
+        res.body() = "";
     }
 
-    // Send response.
-    res.setContentType("application/json");
-    res.setStatus(HTTPResponse::HTTP_OK);
-    std::ostream &os = res.send();
-    os << "";
-
-    // Call next handler.
-    if (m_nextHandler)
+    // Call next handler, if any.
+    if (m_next)
     {
-        m_nextHandler->handleRequest(req, res);
+        return m_next->handle
+        (
+            std::move(req),
+            std::move(res)
+        );
     }
+
+    res.prepare_payload();
+    return res;
 }

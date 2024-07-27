@@ -1,42 +1,34 @@
 #pragma once
 
-#include <Poco/Net/HTTPRequestHandler.h>
-
-using Poco::Net::HTTPRequestHandler;
-using Poco::Net::HTTPServerRequest;
-using Poco::Net::HTTPServerResponse;
+#include <handler.hpp>
 
 // TODO: Need to implement structured logging with JSON.
-class LoggerMiddleware final
-: public HTTPRequestHandler
+class logger_middleware final
+: public handler
 {
 public:
     /**
      * Middleware for handling logging.
      * @param next
      */
-    explicit LoggerMiddleware(HTTPRequestHandler* next = nullptr)
-    : m_nextHandler(next)
+    explicit logger_middleware(std::unique_ptr<handler> next = nullptr)
+    : m_next(std::move(next))
     {}
 
     /**
-     * Destructor to clean up chained handlers.
-     */
-    ~LoggerMiddleware() override
-    {
-        delete m_nextHandler;
-    }
-
-    /**
      * Middleware handler for logging data.
-     * @param req HTTPServerRequest&
-     * @param res HTTPServerResponse&
+     * @param req boost::beast::http::request<http::string_body>
+     * @param res boost::beast::http::response<http::string_body>
      */
-    void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
+    http::message_generator handle
+    (
+        http::request<http::string_body> req,
+        http::response<http::string_body> res
+    ) override;
 
 private:
     /**
      * Next handler in the chain, if any.
      */
-    [[maybe_unused]] HTTPRequestHandler* m_nextHandler = nullptr;
+    [[maybe_unused]] std::unique_ptr<handler> m_next = nullptr;
 };

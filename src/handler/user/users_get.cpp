@@ -1,59 +1,58 @@
 #include "users_get.hpp"
 #include "util/json_marshaller.hpp"
+#include <spdlog/spdlog.h>
 
-void UsersGetHandler::handleRequest
+http::message_generator users_get_handler::handle
 (
-    HTTPServerRequest& req,
-    HTTPServerResponse& res
+    http::request<http::string_body> req,
+    http::response<http::string_body> res
 )
 {
-    // Call to service to get some data.
-    std::unique_ptr<std::vector<User>> users;
     try
     {
-        users = m_userService->getUsers();
+        // Call to service to get some data.
+        auto const users = m_user_service->getUsers();
+
+        // No users to return.
+        if (users->empty())
+        {
+            res.chunked(true);
+            res.result(http::status::no_content);
+            res.set(http::field::content_type, "application/json");
+            res.keep_alive(req.keep_alive());
+            res.body() = "";
+        }
+        else
+        {
+            // Build response.
+            res.chunked(true);
+            res.result(http::status::ok);
+            res.set(http::field::content_type, "application/json");
+            res.keep_alive(req.keep_alive());
+            res.body() = JsonMarshaller::toJson(*users).dump();
+        }
     }
-    catch (std::exception const&)
+    catch (std::exception const& e)
     {
-        // TODO: Create JSON error messages
-        res.setChunkedTransferEncoding(true);
-        res.setContentType("application/json");
-        res.setContentLength64(0);
-        res.setStatus(HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
-        std::ostream &os = res.send();
-        os << "";
-        return;
+        // TODO: Create JSON error message
+        SPDLOG_ERROR("{}", e.what());
+        res.chunked(true);
+        res.result(http::status::internal_server_error);
+        res.set(http::field::content_type, "application/json");
+        res.keep_alive(req.keep_alive());
+        res.body() = "";
     }
-
-    // No users to return.
-    if (users->empty())
-    {
-        res.setChunkedTransferEncoding(true);
-        res.setContentType("application/json");
-        res.setContentLength64(0);
-        res.setStatus(HTTPResponse::HTTP_NO_CONTENT);
-        std::ostream &os = res.send();
-        os << "";
-        return;
-    }
-
-    // Marshal users to JSON.
-    nlohmann::json const json = JsonMarshaller::toJson(*users);
-
-    // Send response.
-    res.setChunkedTransferEncoding(true);
-    res.setContentType("application/json");
-    res.setContentLength64
-    (
-        static_cast<Poco::Int64>(users->size() * sizeof(users->at(0)))
-    );
-    res.setStatus(HTTPResponse::HTTP_OK);
-    std::ostream &os = res.send();
-    os << json;
 
     // Call next handler, if any.
-    if (m_nextHandler)
+    if (m_next)
     {
-        m_nextHandler->handleRequest(req, res);
+        return m_next->handle
+        (
+            std::move(req),
+            std::move(res)
+        );
     }
+
+    res.prepare_payload();
+    return res;
 }

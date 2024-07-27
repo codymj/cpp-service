@@ -1,65 +1,73 @@
 #pragma once
 
-#include "service_registry.hpp"
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
 #include <functional>
+#include <handler.hpp>
 #include <map>
-#include <string>
-#include <Poco/Net/HTTPRequestHandler.h>
+#include "service_registry.hpp"
 
-using Poco::Net::HTTPRequestHandler;
+namespace beast = boost::beast;
+namespace http = beast::http;
+namespace net = boost::asio;
+using tcp = net::ip::tcp;
 
-using HttpMethod = std::string const;
-using RoutePath = std::string const;
-using RouteKey = std::pair<HttpMethod, RoutePath>;
-using NewHandlerFunc = std::function<HTTPRequestHandler*()>;
+using route_key = std::pair<http::verb, std::string>;
+using handler_func = std::function<std::unique_ptr<handler>()>;
 
 /**
  * The router acts as a typical HTTP request router which routes requests by
  * HTTP method and path to the appropriate handler. The Router gets injected
  * into the HandlerFactory.
  */
-class Router
+class router
 {
 public:
+    router(router const&) = delete;
+    router& operator=(router const&) = delete;
+    router(router&&) noexcept = delete;
+    router& operator=(router&&) noexcept = delete;
+
     /**
      * Initializer for the HTTP router.
-     * @param serviceRegistry Registry for business services.
+     * @param service_registry Registry for business services.
      */
-    explicit Router(ServiceRegistry* serviceRegistry)
-    : m_serviceRegistry(serviceRegistry)
+    explicit router(ServiceRegistry* service_registry)
+    : m_service_registry(service_registry)
     {
-        createRoutes();
-    };
+        create_routes();
+    }
 
     /**
      * Gets the appropriate NewHandlerFunc from m_routes by RouteKey and then
      * calls that function to return the provided HTTPRequestHandler*.
      * @return HTTPRequestHandler* to handle the request.
      */
-    HTTPRequestHandler* lookupHandler(RouteKey const&);
+    std::unique_ptr<handler> lookup_handler(route_key const& key);
 
 private:
+
     /**
      * Calls the helper functions to insert HTTP routes into m_routes map.
      */
-    void createRoutes();
+    void create_routes();
 
     /**
      * Adds User HTTP routes to the m_routes map.
      */
-     void createUserRoutes();
+     void create_user_routes();
 
     /**
      * A map which uses a RouteKey as the key to a function that returns a new
      * Poco::Net::HTTPRequestHandler*. Since Poco deletes the handlers, this
      * function acts as an HTTPRequestHandler* factory.
      */
-    std::map<RouteKey,NewHandlerFunc> m_routes{};
+    std::map<route_key, handler_func> m_routes{};
 
     /**
      * Registry which contains all services to perform business logic. Its
      * various getter methods are called to inject appropriate service objects
      * into handlers.
      */
-    ServiceRegistry* m_serviceRegistry{};
+    ServiceRegistry* m_service_registry{};
 };

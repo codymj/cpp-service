@@ -1,6 +1,5 @@
 #pragma once
 
-#include <csignal>
 #include <fstream>
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
@@ -52,6 +51,11 @@ public:
     [[nodiscard]] uint16_t server_port() const
     {
         return m_server_port;
+    }
+
+    [[nodiscard]] uint16_t server_threads() const
+    {
+        return m_server_threads;
     }
 
     [[nodiscard]] uint16_t server_read_timeout() const
@@ -108,79 +112,43 @@ public:
 
 private:
     /**
-     * Poco loads the configuration file.
+     * Loads the configuration file and sets properties.
      * @param path
      */
     void load_configuration(std::string const& path)
     {
-        try
-        {
-            // Load configuration file.
-            YAML::Node cfg = YAML::LoadFile(path);
+        // Load configuration file.
+        YAML::Node cfg = YAML::LoadFile(path);
 
-            // Load environment variables.
-            auto const db_pass = cfg["database"]["password"].as<std::string>();
-            if (char const* db_pass_env = std::getenv(db_pass.c_str()))
-            {
-                m_database_password = db_pass_env;
-            }
+        // Load environment variables.
+        auto const db_pass = cfg["database"]["password"].as<std::string>();
+        if (char const* db_pass_env = std::getenv(db_pass.c_str()))
+        {
+            m_database_password = db_pass_env;
+        }
 
-            // Convert properites.
-            m_app_domain = cfg["app"]["domain"].as<std::string>();
-            m_app_name = cfg["app"]["name"].as<std::string>();
-            m_app_version = cfg["app"]["version"].as<std::string>();
-            m_app_log_level = cfg["app"]["log_level"].as<std::string>();
+        // Convert properites.
+        m_app_domain = cfg["app"]["domain"].as<std::string>();
+        m_app_name = cfg["app"]["name"].as<std::string>();
+        m_app_version = cfg["app"]["version"].as<std::string>();
+        m_app_log_level = cfg["app"]["log_level"].as<std::string>();
 
-            m_server_port = cfg["server"]["port"].as<int>();
-            m_server_read_timeout = cfg["server"]["read_timeout"].as<int>();
-            m_server_write_timeout = cfg["server"]["write_timeout"].as<int>();
-            m_server_idle_timeout = cfg["server"]["idle_timeout"].as<int>();
+        m_server_host = cfg["server"]["host"].as<std::string>();
+        m_server_port = cfg["server"]["port"].as<int>();
+        m_server_read_timeout = cfg["server"]["read_timeout"].as<int>();
+        m_server_threads = cfg["server"]["threads"].as<int>();
+        m_server_write_timeout = cfg["server"]["write_timeout"].as<int>();
+        m_server_idle_timeout = cfg["server"]["idle_timeout"].as<int>();
 
-            m_database_host = cfg["database"]["host"].as<std::string>();
-            m_database_port = cfg["database"]["port"].as<int>();
-            m_database_username = cfg["database"]["username"].as<std::string>();
-            m_database_name = cfg["database"]["name"].as<std::string>();
-            m_database_connection_timeout =
-                cfg["database"]["connection_timeout"].as<int>();
-            m_database_connection_pool_size =
-                cfg["database"]["connection_pool_size"].as<int>();
-        }
-        catch (YAML::ParserException const& e)
-        {
-            SPDLOG_CRITICAL
-            (
-                "Error parsing configuration properties: {}",
-                e.what()
-            );
-            std::raise(SIGQUIT);
-        }
-        catch (YAML::BadFile const& e)
-        {
-            SPDLOG_CRITICAL
-            (
-                "properties.yml does not exist: {}",
-                e.what()
-            );
-            std::raise(SIGQUIT);
-        }
-        catch (YAML::BadConversion const& e)
-        {
-            SPDLOG_CRITICAL
-            (
-                "Error converting property from properties.yml: {}",
-                e.what()
-            );
-            std::raise(SIGQUIT);
-        }
-        catch (std::exception const& e)
-        {
-            SPDLOG_CRITICAL
-            (
-                "Unknown error while loading configuration properties: {}",
-                e.what()
-            );
-            std::raise(SIGQUIT);
-        }
+        m_database_host = cfg["database"]["host"].as<std::string>();
+        m_database_port = cfg["database"]["port"].as<int>();
+        m_database_username = cfg["database"]["username"].as<std::string>();
+        m_database_name = cfg["database"]["name"].as<std::string>();
+        m_database_connection_timeout =
+            cfg["database"]["connection_timeout"].as<int>();
+        m_database_connection_pool_size =
+            cfg["database"]["connection_pool_size"].as<int>();
+
     }
 
     std::string m_app_domain;
@@ -190,6 +158,7 @@ private:
 
     std::string m_server_host;
     uint16_t m_server_port{};
+    uint16_t m_server_threads{};
     uint16_t m_server_read_timeout{};
     uint16_t m_server_write_timeout{};
     uint16_t m_server_idle_timeout{};

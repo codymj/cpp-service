@@ -1,33 +1,74 @@
 #include "app.hpp"
-#include "handler_factory.hpp"
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/asio/signal_set.hpp>
+#include <boost/asio/thread_pool.hpp>
 #include <config_manager.hpp>
-#include <Poco/Net/HTTPServer.h>
 #include <exception>
-#include <iostream>
 #include <spdlog/async.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include "listener.hpp"
 
-void App::initialize(Application&)
+namespace net = boost::asio;
+using tcp = net::ip::tcp;
+
+void app::initialize()
 {
-    m_config_manager = std::make_unique<config_manager>("properties.yml");
-    ServerApplication::initialize(*this);
-
-    initLogger();
-    createPostgresConnectionPool();
+    load_configuration();
+    init_logger();
+    create_postgres_connection_pool();
 }
 
-void App::uninitialize()
-{
-    ServerApplication::uninitialize();
-}
-
-void App::initLogger() const
+void app::load_configuration()
 {
     try
     {
-        std::string const level =
-            m_config_manager->app_log_level();
+        m_config_manager = std::make_unique<config_manager>("properties.yml");
+    }
+    catch (YAML::ParserException const& e)
+    {
+        SPDLOG_CRITICAL
+        (
+            "Error parsing configuration properties: {}",
+            e.what()
+        );
+        std::exit(EXIT_FAILURE);
+    }
+    catch (YAML::BadFile const& e)
+    {
+        SPDLOG_CRITICAL
+        (
+            "properties.yml does not exist: {}",
+            e.what()
+        );
+        std::exit(EXIT_FAILURE);
+    }
+    catch (YAML::BadConversion const& e)
+    {
+        SPDLOG_CRITICAL
+        (
+            "Error converting property from properties.yml: {}",
+            e.what()
+        );
+        std::exit(EXIT_FAILURE);
+    }
+    catch (std::exception const& e)
+    {
+        SPDLOG_CRITICAL
+        (
+            "Unknown error while loading configuration properties: {}",
+            e.what()
+        );
+        std::exit(EXIT_FAILURE);
+    }
+}
+
+void app::init_logger() const
+{
+    try
+    {
+        std::string const level = m_config_manager->app_log_level();
 
         if (level == "trace")
             spdlog::set_level(spdlog::level::trace);
@@ -42,12 +83,8 @@ void App::initLogger() const
     }
     catch (std::exception& e)
     {
-        std::cerr
-            << "Error loading property app.log_level: "
-            << e.what()
-            << '\n';
-
-        std::exit(EXIT_CONFIG);
+        SPDLOG_CRITICAL("{}", e.what());
+        std::exit(EXIT_FAILURE);
     }
 
     spdlog::init_thread_pool(8192, 1);
@@ -65,7 +102,7 @@ void App::initLogger() const
     m_logger->set_pattern("[%Y-%m-%d %T.%e] [%l] [%s:%#] %v");
 }
 
-void App::createPostgresConnectionPool()
+void app::create_postgres_connection_pool()
 {
     try
     {
@@ -97,28 +134,19 @@ void App::createPostgresConnectionPool()
             std::move(connections)
         );
     }
-    catch (Poco::NotFoundException& e)
-    {
-        SPDLOG_CRITICAL("{}: {}", e.what(), e.message());
-        std::exit(EXIT_CONFIG);
-    }
-    catch (std::exception& e)
+    catch (std::exception const& e)
     {
         SPDLOG_CRITICAL
         (
-            "Error in createPostgresConnectionPool: {}",
+            "Error in create_postgres_connection_pool: {}",
             e.what()
         );
-        std::exit(EXIT_CONFIG);
+        std::exit(EXIT_FAILURE);
     }
 }
 
-int App::main(const std::vector<std::string>&)
+int app::main()
 {
-    using Poco::Net::HTTPServer;
-    using Poco::Net::HTTPServerParams;
-    using Poco::Net::ServerSocket;
-
     // Create data store registry to inject into service registry.
     m_storeRegistry = std::make_unique<StoreRegistry>(m_connectionPool.get());
 
@@ -129,44 +157,54 @@ int App::main(const std::vector<std::string>&)
     );
 
     // Create router to inject into the handler factory.
-    m_router = std::make_unique<Router>(m_serviceRegistry.get());
+    m_router = std::make_unique<router>(m_serviceRegistry.get());
 
     // Create and start the HTTP server.
-    auto const serverSocket(m_config_manager->server_port());
-
-    auto const serverParams = new HTTPServerParams();
-    std::string const serverName
+    try
     {
-        m_config_manager->app_domain() + "." + m_config_manager->app_name()
-    };
-    serverParams->setServerName(serverName);
-    serverParams->setSoftwareVersion(m_config_manager->app_version());
-    serverParams->setTimeout
-    (
-        Poco::Timespan(m_config_manager->server_idle_timeout(), 0)
-    );
+        // The io_context is required for all I/O.
+        net::thread_pool ioc(m_config_manager->server_threads());
 
-    HTTPServer server
-    (
-        new HandlerFactory(m_router.get()),
-        serverSocket,
-        new HTTPServerParams
-    );
+        // Create and launch a listening port.
+        std::make_shared<listener>
+        (
+            ioc.get_executor(),
+            tcp::endpoint
+            {
+                net::ip::make_address(m_config_manager->server_host()),
+                m_config_manager->server_port()
+            },
+            std::move(m_router)
+        )->run();
 
-    SPDLOG_INFO
-    (
-        "Starting {} v{} on port {}",
-        serverName,
-        m_config_manager->app_version(),
-        m_config_manager->server_port()
-    );
-    server.start();
+        SPDLOG_INFO
+        (
+            "Started {} v{} on port {}",
+            m_config_manager->app_domain() + "." + m_config_manager->app_name(),
+            m_config_manager->app_version(),
+            m_config_manager->server_port()
+        );
 
-    // Waiting for interrupts.
-    waitForTerminationRequest();
+        // Capture SIGINT and SIGTERM to perform a clean shutdown.
+        net::signal_set signals(ioc, SIGINT, SIGTERM);
+        signals.async_wait
+        (
+            [&ioc](beast::error_code const&, int)
+            {
+                SPDLOG_INFO("Stopping I/O context.");
+                ioc.stop();
+            }
+        );
 
-    SPDLOG_INFO("Shutting down server...");
-    server.stop();
+        ioc.join();
+    }
+    catch (beast::system_error const& e)
+    {
+        SPDLOG_CRITICAL("Server error: {}", e.what());
+        std::exit(EXIT_FAILURE);
+    }
 
-    return EXIT_OK;
+    SPDLOG_INFO("Shutting down.");
+
+    return EXIT_SUCCESS;
 }
