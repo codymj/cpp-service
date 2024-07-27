@@ -1,7 +1,6 @@
 #include "app.hpp"
 #include "handler_factory.hpp"
 #include <config_manager.hpp>
-#include <Poco/Environment.h>
 #include <Poco/Net/HTTPServer.h>
 #include <exception>
 #include <iostream>
@@ -11,7 +10,7 @@
 
 void App::initialize(Application&)
 {
-    ConfigManager::instance().initialize("app.properties");
+    m_config_manager = std::make_unique<config_manager>("properties.yml");
     ServerApplication::initialize(*this);
 
     initLogger();
@@ -23,12 +22,13 @@ void App::uninitialize()
     ServerApplication::uninitialize();
 }
 
-void App::initLogger()
+void App::initLogger() const
 {
     try
     {
         std::string const level =
-            ConfigManager::instance().config().getString("app.log_level");
+            m_config_manager->app_log_level();
+
         if (level == "trace")
             spdlog::set_level(spdlog::level::trace);
         else if (level == "warn")
@@ -42,13 +42,19 @@ void App::initLogger()
     }
     catch (std::exception& e)
     {
-        std::cerr << "Error loading property app.log_level: " << e.what() << '\n';
+        std::cerr
+            << "Error loading property app.log_level: "
+            << e.what()
+            << '\n';
+
         std::exit(EXIT_CONFIG);
     }
 
     spdlog::init_thread_pool(8192, 1);
-    auto const console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    auto const m_logger = std::make_shared<spdlog::async_logger>(
+    auto const console_sink =
+        std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto const m_logger = std::make_shared<spdlog::async_logger>
+    (
         "logger",
         std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
         spdlog::thread_pool(),
@@ -63,35 +69,25 @@ void App::createPostgresConnectionPool()
 {
     try
     {
-        // Get environment variable database password.
-        std::string const password = Poco::Environment::get
-        (
-            ConfigManager::instance().config().getString("database.password")
-        );
-
-        // Get the rest of the configuration parameters.
-        std::string const host =
-            ConfigManager::instance().config().getString("database.host");
-        uint16_t const port =
-            ConfigManager::instance().config().getInt("database.port");
-        std::string const username =
-            ConfigManager::instance().config().getString("database.username");
-        std::string const name =
-            ConfigManager::instance().config().getString("database.name");
-        uint16_t const connectionTimeout =
-            ConfigManager::instance().config().getInt("database.connection_timeout");
-        uint16_t const poolSize =
-            ConfigManager::instance().config().getInt("database.connection_pool_size");
+        std::string const host = m_config_manager->database_host();
+        uint16_t const port = m_config_manager->database_port();
+        std::string const username = m_config_manager->database_username();
+        std::string const password = m_config_manager->database_password();
+        std::string const name = m_config_manager->database_name();
+        uint16_t const connection_timeout =
+            m_config_manager->database_connection_timeout();
+        uint16_t const pool_size =
+            m_config_manager->database_connection_pool_size();
 
         // Build database connections.
         std::vector<PqxxPtr> connections;
-        connections.reserve(poolSize);
+        connections.reserve(pool_size);
 
         auto const cxn = PostgresConnection
         (
-            host, port, username, password, name, connectionTimeout
+            host, port, username, password, name, connection_timeout
         );
-        for (auto i=0; i<poolSize; ++i)
+        for (auto i=0; i<pool_size; ++i)
         {
             connections.emplace_back(cxn.build());
         }
@@ -136,23 +132,18 @@ int App::main(const std::vector<std::string>&)
     m_router = std::make_unique<Router>(m_serviceRegistry.get());
 
     // Create and start the HTTP server.
-    auto const serverSocket(ConfigManager::instance().config().getInt("server.port"));
+    auto const serverSocket(m_config_manager->server_port());
 
     auto const serverParams = new HTTPServerParams();
     std::string const serverName
     {
-        ConfigManager::instance().config().getString("app.domain") +
-        "." +
-        ConfigManager::instance().config().getString("app.name")
+        m_config_manager->app_domain() + "." + m_config_manager->app_name()
     };
     serverParams->setServerName(serverName);
-    serverParams->setSoftwareVersion
-    (
-        ConfigManager::instance().config().getString("app.version")
-    );
+    serverParams->setSoftwareVersion(m_config_manager->app_version());
     serverParams->setTimeout
     (
-        Poco::Timespan(ConfigManager::instance().config().getInt("server.timeout"), 0)
+        Poco::Timespan(m_config_manager->server_idle_timeout(), 0)
     );
 
     HTTPServer server
@@ -166,8 +157,8 @@ int App::main(const std::vector<std::string>&)
     (
         "Starting {} v{} on port {}",
         serverName,
-        ConfigManager::instance().config().getString("app.version"),
-        ConfigManager::instance().config().getInt("server.port")
+        m_config_manager->app_version(),
+        m_config_manager->server_port()
     );
     server.start();
 

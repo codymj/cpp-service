@@ -41,4 +41,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     PocoNet
     PocoUtil
     spdlog
+    yaml-cpp
 )
