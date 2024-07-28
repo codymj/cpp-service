@@ -1,6 +1,5 @@
 #include "app.hpp"
 #include <boost/beast/core.hpp>
-#include <boost/beast/http.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/asio/thread_pool.hpp>
 #include <config_manager.hpp>
