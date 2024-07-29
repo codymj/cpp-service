@@ -1,43 +1,33 @@
 #pragma once
 
-#include <Poco/Net/HTTPRequestHandler.h>
-#include <Poco/Net/HTTPServerResponse.h>
+#include <handler.hpp>
 
-using Poco::Net::HTTPRequestHandler;
-using Poco::Net::HTTPServerRequest;
-using Poco::Net::HTTPServerResponse;
-using Poco::Net::HTTPResponse;
-
-class NotFoundHandler final
-: public HTTPRequestHandler
+class not_found_handler final
+: public handler
 {
 public:
     /**
      * Handler for returning 404 statuses.
      * @param next Next handler in chain.
      */
-    explicit NotFoundHandler(HTTPRequestHandler* next = nullptr)
-    : m_nextHandler(next)
+    explicit not_found_handler(std::unique_ptr<handler> next = nullptr)
+    : m_next(std::move(next))
     {}
 
     /**
-     * Destructor to clean up chained handlers.
-     */
-    ~NotFoundHandler() override
-    {
-        delete m_nextHandler;
-    }
-
-    /**
      * Handler to return 404 error.
-     * @param req HTTPServerRequest&
-     * @param res HTTPServerResponse&
+     * @param req boost::beast::http::request<http::string_body>
+     * @param res boost::beast::http::response<http::string_body>
      */
-    void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
+    http::message_generator handle
+    (
+        http::request<http::string_body> req,
+        http::response<http::string_body> res
+    ) override;
 
 private:
     /**
      * Next handler in the chain.
      */
-    HTTPRequestHandler* m_nextHandler = nullptr;
+    std::unique_ptr<handler> m_next = nullptr;
 };

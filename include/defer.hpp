@@ -4,36 +4,36 @@
 
 #define CONCATENATE_DETAIL(x, y) x##y
 #define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
-#define DEFER(code) Defer CONCATENATE(_defer_, __COUNTER__)([&](){code;})
+#define DEFER(code) defer CONCATENATE(_defer_, __COUNTER__)([&](){code;})
 
 /**
- * Defer is used to execute a function upon exiting a scope.
+ * Used to execute a function upon exiting a scope.
  */
-class Defer
+class defer
 {
 public:
     /**
      * Constructor.
      * @param func Function to defer on scope exit.
      */
-    explicit Defer(std::function<void()> func)
+    explicit defer(std::function<void()> func)
     : m_func(std::move(func)), m_active(true)
     {}
 
     /**
      * Disable copy constructor.
      */
-    Defer(const Defer&) = delete;
+    defer(const defer&) = delete;
 
     /**
      * Disable copy assignment.
      */
-    Defer& operator=(const Defer&) = delete;
+    defer& operator=(const defer&) = delete;
 
     /**
      * Enable move constructor.
      */
-    Defer(Defer&& other) noexcept
+    defer(defer&& other) noexcept
     : m_func(std::move(other.m_func))
     , m_active(other.m_active)
     {
@@ -45,7 +45,7 @@ public:
      * @param other Defer object to move.
      * @return Reference to moved Defer object.
      */
-    Defer& operator=(Defer&& other) noexcept
+    defer& operator=(defer&& other) noexcept
     {
         if (this != &other)
         {
@@ -60,7 +60,7 @@ public:
     /**
      * Destructor.
      */
-    ~Defer()
+    ~defer()
     {
         if (m_active)
         {

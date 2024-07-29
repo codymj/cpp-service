@@ -2,12 +2,9 @@
 
 #include "../../../store/user/user_model.hpp"
 #include "password_crypt.hpp"
-#include <Poco/Net/HTTPServerRequest.h>
 #include <nlohmann/json.hpp>
 
-using Poco::Net::HTTPServerRequest;
-
-class JsonMarshaller
+class json_marshaller
 {
 public:
     /**
@@ -15,24 +12,18 @@ public:
      * @param req is the incoming HTTPServerRequest.
      * @return User object.
      */
-    static User toUser(HTTPServerRequest& req)
+    static user to_user(http::request<http::string_body> req)
     {
-        // Parse request body.
-        auto& istream = req.stream();
-        int64_t const len = req.getContentLength();
-        std::string buffer(len, 0);
-        istream.read(buffer.data(), len);
-
         // Parse JSON.
-        nlohmann::json json = nlohmann::json::parse(buffer);
+        nlohmann::json json = nlohmann::json::parse(req.body());
         std::string const email{json["email"]};
         std::string const password{json["password"]};
-        std::string const hashedPassword = PasswordCrypt::hashPassword(password);
-        std::string const firstName{json["firstName"]};
-        std::string const lastName{json["lastName"]};
+        std::string const hashed_password = password_crypt::hash_password(password);
+        std::string const first_name{json["firstName"]};
+        std::string const last_name{json["lastName"]};
 
         // Create user object to save.
-        return User{email, hashedPassword, firstName, lastName};
+        return user{email, hashed_password, first_name, last_name};
     }
 
     /**
@@ -40,15 +31,15 @@ public:
      * @param user to marshal into JSON.
      * @return JSON object of the user.
      */
-    static nlohmann::json toJson(User const& user)
+    static nlohmann::json to_json(user const& user)
     {
         nlohmann::json json = nlohmann::json::object();
-        json.emplace("userId", user.getUserId());
-        json.emplace("email", user.getEmail());
-        json.emplace("firstName", user.getFirstName());
-        json.emplace("lastName", user.getLastName());
-        json.emplace("createdAt", user.getCreatedAt());
-        json.emplace("modifiedAt", user.getModifiedAt());
+        json.emplace("userId", user.get_user_id());
+        json.emplace("email", user.get_email());
+        json.emplace("firstName", user.get_first_name());
+        json.emplace("lastName", user.get_last_name());
+        json.emplace("createdAt", user.get_created_at());
+        json.emplace("modifiedAt", user.get_modified_at());
 
         return json;
     }
@@ -58,12 +49,12 @@ public:
      * @param users to marshal into JSON.
      * @return JSON array of user objects.
      */
-    static nlohmann::json toJson(std::vector<User> const& users)
+    static nlohmann::json toJson(std::vector<user> const& users)
     {
         nlohmann::json json = nlohmann::json::array();
         for (auto const& u : users)
         {
-            json.emplace_back(toJson(u));
+            json.emplace_back(to_json(u));
         }
 
         return json;

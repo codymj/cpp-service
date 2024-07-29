@@ -1,7 +1,8 @@
 #include "core/app.hpp"
 
-int main(int const argc, char **argv)
+int main()
 {
-    App app;
-    return app.run(argc, argv);
+    app app;
+    app.initialize();
+    return app.main();
 }

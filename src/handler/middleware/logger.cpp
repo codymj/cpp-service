@@ -1,26 +1,35 @@
 #include "logger.hpp"
 #include <context.hpp>
-#include <Poco/Net/HTTPServerRequest.h>
 #include <spdlog/spdlog.h>
 
-void LoggerMiddleware::handleRequest(HTTPServerRequest& req, HTTPServerResponse& res)
+http::message_generator logger_middleware::handle
+(
+    http::request<http::string_body> req,
+    http::response<http::string_body> res
+)
 {
     // Get context from thread local storage.
-    auto const ctx = Context::getContext();
+    auto const ctx = context::get_context();
 
     // Log request.
     SPDLOG_INFO
     (
-        "{} {} {} {}",
-        ctx->traceId(),
-        req.getMethod(),
-        req.getURI(),
-        req.clientAddress().toString()
+        "{} {} {}",
+        ctx->trace_id(),
+        req.method_string().data(),
+        req.target().data()
     );
 
     // Call next handler, if any.
-    if (m_nextHandler)
+    if (m_next)
     {
-        m_nextHandler->handleRequest(req, res);
+        return m_next->handle
+        (
+            std::move(req),
+            std::move(res)
+        );
     }
+
+    res.prepare_payload();
+    return res;
 }

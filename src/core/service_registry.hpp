@@ -4,23 +4,22 @@
 #include "../service/user/user_service.hpp"
 
 /**
- * Registry that contains services for business logic and is injected into the
- * Router.
+ * Contains services for business logic and is injected into the router.
  */
-class ServiceRegistry
+class service_registry
 {
 public:
     /**
      * Initializer for the service registry.
-     * @param storeRegistry Store registry for injecting stores into services.
+     * @param store_registry Store registry for injecting stores into services.
      */
-    explicit ServiceRegistry(StoreRegistry* storeRegistry)
-    : m_storeRegistry(storeRegistry)
+    explicit service_registry(store_registry* store_registry)
+    : m_store_registry(store_registry)
     {
         // Services get created here.
-        m_userService = std::make_unique<UserService>
+        m_user_service = std::make_unique<user_service>
         (
-            m_storeRegistry->getUserStore()
+            m_store_registry->get_user_store()
         );
     };
 
@@ -28,7 +27,7 @@ public:
      * Returns a pointer to the UserService.
      * @return Pointer to the UserService.
      */
-    [[nodiscard]] UserService* getUserService() const;
+    [[nodiscard]] user_service* get_user_service() const;
 
 private:
     /**
@@ -36,10 +35,10 @@ private:
      * which the service layer utilizes. When the Router is created, this
      * registry is injected into the ServiceRegistry.
      */
-    StoreRegistry* m_storeRegistry{};
+    store_registry* m_store_registry{};
 
     /**
      * Service layer for User logic.
      */
-    std::unique_ptr<UserService> m_userService;
+    std::unique_ptr<user_service> m_user_service;
 };

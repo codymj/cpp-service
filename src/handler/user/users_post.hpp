@@ -1,47 +1,45 @@
 #pragma once
 
 #include "../../service/user/user_service.hpp"
-#include <Poco/Net/HTTPRequestHandler.h>
-#include <Poco/Net/HTTPServerResponse.h>
+#include <handler.hpp>
 
-using Poco::Net::HTTPRequestHandler;
-using Poco::Net::HTTPServerRequest;
-using Poco::Net::HTTPServerResponse;
-using Poco::Net::HTTPResponse;
-
-class UsersPostHandler final
-: public HTTPRequestHandler
+class users_post_handler final
+: public handler
 {
 public:
     /**
      * Handler for POST /users.
-     * @param userService User service layer.
+     * @param user_service User service layer.
      * @param next Next handler in chain.
      */
-    explicit UsersPostHandler
+    explicit users_post_handler
     (
-        UserService* userService,
-        HTTPRequestHandler* next = nullptr
+        user_service* user_service,
+        std::unique_ptr<handler> next = nullptr
     )
-    : m_userService(userService)
-    , m_nextHandler(next)
+    : m_user_service(user_service)
+    , m_next(std::move(next))
     {}
 
     /**
-     * Handler for GET /users.
-     * @param req HTTPServerRequest&
-     * @param res HTTPServerResponse&
+     * Handle method for POST /users.
+     * @param req boost::beast::http::request<http::string_body>
+     * @param res boost::beast::http::response<http::string_body>
      */
-    void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
+    http::message_generator handle
+    (
+        http::request<http::string_body> req,
+        http::response<http::string_body> res
+    ) override;
 
 private:
     /**
      * Service layer for User.
      */
-    UserService* m_userService;
+    user_service* m_user_service;
 
     /**
      * Next handler in the chain.
      */
-    HTTPRequestHandler* m_nextHandler = nullptr;
+    std::unique_ptr<handler> m_next = nullptr;
 };

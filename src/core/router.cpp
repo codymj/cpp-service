@@ -1,45 +1,49 @@
 #include "router.hpp"
-#include <Poco/Net/HTTPRequest.h>
 #include "../handler/middleware/logger.hpp"
 #include "../handler/misc/not_found.hpp"
 #include "../handler/user/users_get.hpp"
 #include "../handler/user/users_post.hpp"
 
-void Router::createRoutes()
+void router::create_routes()
 {
-    createUserRoutes();
+    create_user_routes();
 }
 
-HTTPRequestHandler* Router::lookupHandler(RouteKey const& key)
+std::unique_ptr<handler> router::lookup_handler(route_key const& key)
 {
-    NewHandlerFunc const f = m_routes[key];
+    handler_func const f = m_routes[key];
     if (!f)
     {
-        return new NotFoundHandler();
+        return std::make_unique<not_found_handler>();
     }
+
     return f();
 }
 
-void Router::createUserRoutes()
+void router::create_user_routes()
 {
-    using Poco::Net::HTTPRequest;
-    
     m_routes.insert
     ({
-        RouteKey{HTTPRequest::HTTP_GET, "/users"},
-        [&]() -> HTTPRequestHandler*
+        route_key{http::verb::get, "/users"},
+        [&]() -> std::unique_ptr<handler>
         {
-            auto const ugh = new UsersGetHandler(m_serviceRegistry->getUserService());
-            return new LoggerMiddleware(ugh);
+            auto ugh = std::make_unique<users_get_handler>
+            (
+                m_service_registry->get_user_service()
+            );
+            return std::make_unique<logger_middleware>(std::move(ugh));
         }
     });
     m_routes.insert
     ({
-        RouteKey{HTTPRequest::HTTP_POST, "/users"},
-        [&]() -> HTTPRequestHandler*
+        route_key{http::verb::post, "/users"},
+        [&]() -> std::unique_ptr<handler>
         {
-            auto const uph = new UsersPostHandler(m_serviceRegistry->getUserService());
-            return new LoggerMiddleware(uph);
+            auto uph = std::make_unique<users_post_handler>
+            (
+                m_service_registry->get_user_service()
+            );
+            return std::make_unique<logger_middleware>(std::move(uph));
         }
     });
 }

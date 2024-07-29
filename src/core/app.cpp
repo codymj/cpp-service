@@ -1,34 +1,74 @@
 #include "app.hpp"
-#include "handler_factory.hpp"
+#include <boost/beast/core.hpp>
+#include <boost/asio/signal_set.hpp>
+#include <boost/asio/thread_pool.hpp>
 #include <config_manager.hpp>
-#include <Poco/Environment.h>
-#include <Poco/Net/HTTPServer.h>
 #include <exception>
-#include <iostream>
 #include <spdlog/async.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include "listener.hpp"
 
-void App::initialize(Application&)
+namespace net = boost::asio;
+using tcp = net::ip::tcp;
+
+void app::initialize()
 {
-    ConfigManager::instance().initialize("app.properties");
-    ServerApplication::initialize(*this);
-
-    initLogger();
-    createPostgresConnectionPool();
+    load_configuration();
+    init_logger();
+    create_postgres_connection_pool();
 }
 
-void App::uninitialize()
-{
-    ServerApplication::uninitialize();
-}
-
-void App::initLogger()
+void app::load_configuration()
 {
     try
     {
-        std::string const level =
-            ConfigManager::instance().config().getString("app.log_level");
+        m_config_manager = std::make_unique<config_manager>("properties.yml");
+    }
+    catch (YAML::ParserException const& e)
+    {
+        SPDLOG_CRITICAL
+        (
+            "Error parsing configuration properties: {}",
+            e.what()
+        );
+        std::exit(EXIT_FAILURE);
+    }
+    catch (YAML::BadFile const& e)
+    {
+        SPDLOG_CRITICAL
+        (
+            "properties.yml does not exist: {}",
+            e.what()
+        );
+        std::exit(EXIT_FAILURE);
+    }
+    catch (YAML::BadConversion const& e)
+    {
+        SPDLOG_CRITICAL
+        (
+            "Error converting property from properties.yml: {}",
+            e.what()
+        );
+        std::exit(EXIT_FAILURE);
+    }
+    catch (std::exception const& e)
+    {
+        SPDLOG_CRITICAL
+        (
+            "Unknown error while loading configuration properties: {}",
+            e.what()
+        );
+        std::exit(EXIT_FAILURE);
+    }
+}
+
+void app::init_logger() const
+{
+    try
+    {
+        std::string const level = m_config_manager->app_log_level();
+
         if (level == "trace")
             spdlog::set_level(spdlog::level::trace);
         else if (level == "warn")
@@ -42,13 +82,15 @@ void App::initLogger()
     }
     catch (std::exception& e)
     {
-        std::cerr << "Error loading property app.log_level: " << e.what() << '\n';
-        std::exit(EXIT_CONFIG);
+        SPDLOG_CRITICAL("Error initializing logger: {}", e.what());
+        std::exit(EXIT_FAILURE);
     }
 
     spdlog::init_thread_pool(8192, 1);
-    auto const console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    auto const m_logger = std::make_shared<spdlog::async_logger>(
+    auto const console_sink =
+        std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto const m_logger = std::make_shared<spdlog::async_logger>
+    (
         "logger",
         std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
         spdlog::thread_pool(),
@@ -59,123 +101,109 @@ void App::initLogger()
     m_logger->set_pattern("[%Y-%m-%d %T.%e] [%l] [%s:%#] %v");
 }
 
-void App::createPostgresConnectionPool()
+void app::create_postgres_connection_pool()
 {
     try
     {
-        // Get environment variable database password.
-        std::string const password = Poco::Environment::get
-        (
-            ConfigManager::instance().config().getString("database.password")
-        );
-
-        // Get the rest of the configuration parameters.
-        std::string const host =
-            ConfigManager::instance().config().getString("database.host");
-        uint16_t const port =
-            ConfigManager::instance().config().getInt("database.port");
-        std::string const username =
-            ConfigManager::instance().config().getString("database.username");
-        std::string const name =
-            ConfigManager::instance().config().getString("database.name");
-        uint16_t const connectionTimeout =
-            ConfigManager::instance().config().getInt("database.connection_timeout");
-        uint16_t const poolSize =
-            ConfigManager::instance().config().getInt("database.connection_pool_size");
+        std::string const host = m_config_manager->database_host();
+        uint16_t const port = m_config_manager->database_port();
+        std::string const username = m_config_manager->database_username();
+        std::string const password = m_config_manager->database_password();
+        std::string const name = m_config_manager->database_name();
+        uint16_t const connection_timeout =
+            m_config_manager->database_connection_timeout();
+        uint16_t const pool_size =
+            m_config_manager->database_connection_pool_size();
 
         // Build database connections.
-        std::vector<PqxxPtr> connections;
-        connections.reserve(poolSize);
+        std::vector<pqxx_ptr> connections;
+        connections.reserve(pool_size);
 
-        auto const cxn = PostgresConnection
+        auto const cxn = postgres_connection
         (
-            host, port, username, password, name, connectionTimeout
+            host, port, username, password, name, connection_timeout
         );
-        for (auto i=0; i<poolSize; ++i)
+        for (auto i=0; i<pool_size; ++i)
         {
             connections.emplace_back(cxn.build());
         }
 
-        m_connectionPool = std::make_unique<ConnectionPool<PqxxPtr>>
+        m_connection_pool = std::make_unique<connection_pool<pqxx_ptr>>
         (
             std::move(connections)
         );
     }
-    catch (Poco::NotFoundException& e)
-    {
-        SPDLOG_CRITICAL("{}: {}", e.what(), e.message());
-        std::exit(EXIT_CONFIG);
-    }
-    catch (std::exception& e)
+    catch (std::exception const& e)
     {
         SPDLOG_CRITICAL
         (
-            "Error in createPostgresConnectionPool: {}",
+            "Error in create_postgres_connection_pool: {}",
             e.what()
         );
-        std::exit(EXIT_CONFIG);
+        std::exit(EXIT_FAILURE);
     }
 }
 
-int App::main(const std::vector<std::string>&)
+int app::main()
 {
-    using Poco::Net::HTTPServer;
-    using Poco::Net::HTTPServerParams;
-    using Poco::Net::ServerSocket;
-
     // Create data store registry to inject into service registry.
-    m_storeRegistry = std::make_unique<StoreRegistry>(m_connectionPool.get());
+    m_store_registry = std::make_unique<store_registry>(m_connection_pool.get());
 
     // Create service registry to inject into the router.
-    m_serviceRegistry = std::make_unique<ServiceRegistry>
+    m_service_registry = std::make_unique<service_registry>
     (
-        m_storeRegistry.get()
+        m_store_registry.get()
     );
 
     // Create router to inject into the handler factory.
-    m_router = std::make_unique<Router>(m_serviceRegistry.get());
+    m_router = std::make_unique<router>(m_service_registry.get());
 
     // Create and start the HTTP server.
-    auto const serverSocket(ConfigManager::instance().config().getInt("server.port"));
-
-    auto const serverParams = new HTTPServerParams();
-    std::string const serverName
+    try
     {
-        ConfigManager::instance().config().getString("app.domain") +
-        "." +
-        ConfigManager::instance().config().getString("app.name")
-    };
-    serverParams->setServerName(serverName);
-    serverParams->setSoftwareVersion
-    (
-        ConfigManager::instance().config().getString("app.version")
-    );
-    serverParams->setTimeout
-    (
-        Poco::Timespan(ConfigManager::instance().config().getInt("server.timeout"), 0)
-    );
+        // The io_context is required for all I/O.
+        net::thread_pool ioc(m_config_manager->server_threads());
 
-    HTTPServer server
-    (
-        new HandlerFactory(m_router.get()),
-        serverSocket,
-        new HTTPServerParams
-    );
+        // Create and launch a listening port.
+        std::make_shared<listener>
+        (
+            ioc.get_executor(),
+            tcp::endpoint
+            {
+                net::ip::make_address(m_config_manager->server_host()),
+                m_config_manager->server_port()
+            },
+            std::move(m_router)
+        )->run();
 
-    SPDLOG_INFO
-    (
-        "Starting {} v{} on port {}",
-        serverName,
-        ConfigManager::instance().config().getString("app.version"),
-        ConfigManager::instance().config().getInt("server.port")
-    );
-    server.start();
+        SPDLOG_INFO
+        (
+            "Started {} v{} on port {}",
+            m_config_manager->app_domain() + "." + m_config_manager->app_name(),
+            m_config_manager->app_version(),
+            m_config_manager->server_port()
+        );
 
-    // Waiting for interrupts.
-    waitForTerminationRequest();
+        // Capture SIGINT and SIGTERM to perform a clean shutdown.
+        net::signal_set signals(ioc, SIGINT, SIGTERM);
+        signals.async_wait
+        (
+            [&ioc](beast::error_code const&, int)
+            {
+                SPDLOG_INFO("Stopping I/O context.");
+                ioc.stop();
+            }
+        );
 
-    SPDLOG_INFO("Shutting down server...");
-    server.stop();
+        ioc.join();
+    }
+    catch (beast::system_error const& e)
+    {
+        SPDLOG_CRITICAL("Server error: {}", e.what());
+        std::exit(EXIT_FAILURE);
+    }
 
-    return EXIT_OK;
+    SPDLOG_INFO("Shutting down.");
+
+    return EXIT_SUCCESS;
 }

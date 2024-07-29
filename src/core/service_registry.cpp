@@ -1,6 +1,6 @@
 #include "service_registry.hpp"
 
-UserService* ServiceRegistry::getUserService() const
+user_service* service_registry::get_user_service() const
 {
-    return m_userService.get();
+    return m_user_service.get();
 }

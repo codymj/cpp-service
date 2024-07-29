@@ -3,49 +3,45 @@
 #include "router.hpp"
 #include "service_registry.hpp"
 #include "store_registry.hpp"
+#include <config_manager.hpp>
 #include <postgres_connection.hpp>
-#include <Poco/Util/ServerApplication.h>
 #include <memory>
 
-using Poco::Util::ServerApplication;
-
-class App final
-: public ServerApplication
+class app
 {
-protected:
+public:
     /**
      * Initializes application.
-     * @param self
      */
-    void initialize(Application& self) override;
-
-    /**
-     * Uninitializes application.
-     */
-    void uninitialize() override;
+    void initialize();
 
     /**
      * Main application loop for the HTTP server.
-     * @param args
      * @return Exit code.
      */
-    int main(const std::vector<std::string>& args) override;
+    int main();
 
 private:
     /**
+     * Loads application configuration properties.
+     */
+    void load_configuration();
+
+    /**
      * Initializes logger.
      */
-    static void initLogger();
+    void init_logger() const;
 
     /**
      * Creates the connection pool for the database with parameters from
-     * the app.properties file. The pool gets injected into the StoreRegistry.
+     * the app.json file. The pool gets injected into the StoreRegistry.
      * @return Shared pointer of the connection pool.
      */
-    void createPostgresConnectionPool();
+    void create_postgres_connection_pool();
 
-    std::unique_ptr<ConnectionPool<PqxxPtr>> m_connectionPool;
-    std::unique_ptr<StoreRegistry> m_storeRegistry;
-    std::unique_ptr<ServiceRegistry> m_serviceRegistry;
-    std::unique_ptr<Router> m_router;
+    std::unique_ptr<config_manager> m_config_manager;
+    std::unique_ptr<connection_pool<pqxx_ptr>> m_connection_pool;
+    std::unique_ptr<store_registry> m_store_registry;
+    std::unique_ptr<service_registry> m_service_registry;
+    std::unique_ptr<router> m_router;
 };

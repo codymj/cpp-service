@@ -9,14 +9,14 @@
  * @tparam T Type of connection for the pool to utilize.
  */
 template <typename T>
-class ConnectionPool
+class connection_pool
 {
 public:
     /**
      * Constructor for creating a connection pool.
      * @param connections Collection of connection objects.
      */
-    explicit ConnectionPool(std::vector<T> connections)
+    explicit connection_pool(std::vector<T> connections)
     {
         std::lock_guard lock(m_mutex);
 
@@ -31,7 +31,7 @@ public:
      * Returns a database connection from the connection pool.
      * @return Database connection from connection pool.
      */
-    [[nodiscard]] T rentConnection()
+    [[nodiscard]] T rent()
     {
         std::unique_lock lock(m_mutex);
 
@@ -51,7 +51,7 @@ public:
     /**
      * Frees the database connection back into the connection pool.
      */
-    void freeConnection(T connection)
+    void free(T connection)
     {
         std::unique_lock lock(m_mutex);
 

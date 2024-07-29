@@ -1,58 +1,48 @@
 #pragma once
 
 #include "../../service/user/user_service.hpp"
-#include <Poco/Net/HTTPRequestHandler.h>
-#include <Poco/Net/HTTPServerResponse.h>
-
-using Poco::Net::HTTPRequestHandler;
-using Poco::Net::HTTPServerRequest;
-using Poco::Net::HTTPServerResponse;
-using Poco::Net::HTTPResponse;
+#include <handler.hpp>
 
 /**
  * Handler for parsing HTTP GET /users requests.
  */
-class UsersGetHandler final
-: public HTTPRequestHandler
+class users_get_handler final
+: public handler
 {
 public:
     /**
      * Handler for GET /users
-     * @param userService User service layer.
+     * @param user_service User service layer.
      * @param next Next handler in chain.
      */
-    explicit UsersGetHandler
+    explicit users_get_handler
     (
-        UserService* userService,
-        HTTPRequestHandler* next = nullptr
+        user_service* user_service,
+        std::unique_ptr<handler> next = nullptr
     )
-    : m_userService(userService)
-    , m_nextHandler(next)
+    : m_user_service(user_service)
+    , m_next(std::move(next))
     {}
 
     /**
-     * Destructor to clean up chained handlers.
+     * Handle method for GET /users.
+     * @param req boost::beast::http::request<http::string_body>
+     * @param res boost::beast::http::response<http::string_body>
      */
-    ~UsersGetHandler() override
-    {
-        delete m_nextHandler;
-    }
-
-    /**
-     * Handler for GET /users.
-     * @param req HTTPServerRequest&
-     * @param res HTTPServerResponse&
-     */
-    void handleRequest(HTTPServerRequest& req, HTTPServerResponse& res) override;
+    http::message_generator handle
+    (
+        http::request<http::string_body> req,
+        http::response<http::string_body> res
+    ) override;
 
 private:
     /**
      * Service layer for User.
      */
-    UserService* m_userService;
+    user_service* m_user_service;
 
     /**
      * Next handler in the chain.
      */
-    HTTPRequestHandler* m_nextHandler = nullptr;
+    std::unique_ptr<handler> m_next = nullptr;
 };

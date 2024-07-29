@@ -8,15 +8,15 @@
 /**
  * Data store represented by a PostgreSQL database for storing User data.
  */
-class PostgresUserStore
+class postgres_user_store
 {
 public:
     /**
      * Interface to save Users to the PostgreSQL database.
-     * @param connectionPool is the PostgreSQL connection pool.
+     * @param connection_pool is the PostgreSQL connection pool.
      */
-    explicit PostgresUserStore(ConnectionPool<PqxxPtr>* connectionPool)
-    : m_connectionPool(connectionPool)
+    explicit postgres_user_store(connection_pool<pqxx_ptr>* connection_pool)
+    : m_connection_pool(connection_pool)
     {}
 
     /**
@@ -24,17 +24,17 @@ public:
      * TODO: Implement query parameters.
      * @return All users in database.
      */
-    [[nodiscard]] std::unique_ptr<std::vector<User>> getUsers() const;
+    [[nodiscard]] std::unique_ptr<std::vector<user>> get_users() const;
 
     /**
      * Saves user to the database.
-     * @param user is the User to save.
+     * @param user is the user to save.
      */
-    void saveUser(User const& user) const;
+    void save_user(user const& user) const;
 
 private:
     /**
      * PostgreSQL connection pool.
      */
-    ConnectionPool<PqxxPtr>* m_connectionPool;
+    connection_pool<pqxx_ptr>* m_connection_pool;
 };

@@ -1,0 +1,22 @@
+app:
+  domain: http
+  name: cpp-service
+  version: 0.0.1
+  log_level: info
+
+server:
+  host: 0.0.0.0
+  port: 8080
+  threads: 16
+  read_timeout: 10
+  write_timeout: 10
+  idle_timeout: 60
+
+database:
+  host: localhost
+  port: 5432
+  username: postgres
+  password: POSTGRES_PASS
+  name: postgres
+  connection_timeout: 120
+  connection_pool_size: 8
