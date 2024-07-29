@@ -23,16 +23,31 @@ using handler_func = std::function<std::unique_ptr<handler>()>;
 class router
 {
 public:
+    /**
+     * Disable copy construction.
+     */
     router(router const&) = delete;
+
+    /**
+     * Disable copy assignment.
+     */
     router& operator=(router const&) = delete;
+
+    /**
+     * Disable move construction.
+     */
     router(router&&) noexcept = delete;
+
+    /**
+     * Disable move assignment.
+     */
     router& operator=(router&&) noexcept = delete;
 
     /**
      * Initializer for the HTTP router.
      * @param service_registry Registry for business services.
      */
-    explicit router(ServiceRegistry* service_registry)
+    explicit router(service_registry* service_registry)
     : m_service_registry(service_registry)
     {
         create_routes();
@@ -69,5 +84,5 @@ private:
      * various getter methods are called to inject appropriate service objects
      * into handlers.
      */
-    ServiceRegistry* m_service_registry{};
+    service_registry* m_service_registry{};
 };

@@ -5,40 +5,39 @@
 #include <memory>
 
 /**
- * Registry to hold all data stores which gets injected into the
- * ServiceRegistry.
+ * Holds all data stores which gets injected into the service registry.
  */
-class StoreRegistry
+class store_registry
 {
 public:
     /**
      * Initializer for the store registry.
-     * @param pgConnectionPool Pointer to a PostgreSQL connection pool.
+     * @param pg_connection_pool Pointer to a PostgreSQL connection pool.
      */
-    explicit StoreRegistry
+    explicit store_registry
     (
-        ConnectionPool<PqxxPtr>* pgConnectionPool
+        connection_pool<pqxx_ptr>* pg_connection_pool
     )
-    : m_pgConnectionPool(pgConnectionPool)
+    : m_pg_connection_pool(pg_connection_pool)
     {
         // Data stores get created here.
-        m_userStore = std::make_unique<PostgresUserStore>(m_pgConnectionPool);
-    };
+        m_user_store = std::make_unique<postgres_user_store>(m_pg_connection_pool);
+    }
 
     /**
      * Returns a pointer to the UserStore.
      * @return Pointer to UserStore.
      */
-    [[nodiscard]] PostgresUserStore* getUserStore() const;
+    [[nodiscard]] postgres_user_store* get_user_store() const;
 
 private:
     /**
      * PostgreSQL connection pool which gets injected to data stores.
      */
-    ConnectionPool<PqxxPtr>* m_pgConnectionPool{};
+    connection_pool<pqxx_ptr>* m_pg_connection_pool{};
 
     /**
      * Data store for User logic.
      */
-    std::unique_ptr<PostgresUserStore> m_userStore;
+    std::unique_ptr<postgres_user_store> m_user_store;
 };

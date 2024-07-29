@@ -4,11 +4,11 @@
 #include <exception>
 #include <spdlog/spdlog.h>
 
-std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
+std::unique_ptr<std::vector<user>> postgres_user_store::get_users() const
 {
     // Rent a connection from pool.
-    auto cxn = m_connectionPool->rentConnection();
-    DEFER(m_connectionPool->freeConnection(std::move(cxn)));
+    auto cxn = m_connection_pool->rent();
+    DEFER(m_connection_pool->free(std::move(cxn)));
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
@@ -28,7 +28,7 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
     };
 
     // Execute query and build users container.
-    auto users = std::make_unique<std::vector<User>>();
+    auto users = std::make_unique<std::vector<user>>();
     pqxx::result res{};
     try
     {
@@ -43,7 +43,7 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
     // Parse rows in response.
     for (auto&& row : res)
     {
-        User u{};
+        user u{};
         try
         {
             u = {
@@ -68,11 +68,11 @@ std::unique_ptr<std::vector<User>> PostgresUserStore::getUsers() const
     return users;
 }
 
-void PostgresUserStore::saveUser(User const& user) const
+void postgres_user_store::save_user(user const& user) const
 {
     // Rent a connection from pool.
-    auto cxn = m_connectionPool->rentConnection();
-    DEFER(m_connectionPool->freeConnection(std::move(cxn)));
+    auto cxn = m_connection_pool->rent();
+    DEFER(m_connection_pool->free(std::move(cxn)));
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
@@ -83,10 +83,10 @@ void PostgresUserStore::saveUser(User const& user) const
         "insert into "
         "users (email, password, first_name, last_name) "
         "values ("
-        "'" + user.getEmail() + "', "
-        "'" + user.getPassword() + "', "
-        "'" + user.getFirstName() + "', "
-        "'" + user.getLastName() + "')"
+        "'" + user.get_email() + "', "
+        "'" + user.get_password() + "', "
+        "'" + user.get_first_name() + "', "
+        "'" + user.get_last_name() + "')"
     };
 
     // Execute and commit transaction.

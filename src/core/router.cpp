@@ -29,7 +29,7 @@ void router::create_user_routes()
         {
             auto ugh = std::make_unique<users_get_handler>
             (
-                m_service_registry->getUserService()
+                m_service_registry->get_user_service()
             );
             return std::make_unique<logger_middleware>(std::move(ugh));
         }
@@ -41,7 +41,7 @@ void router::create_user_routes()
         {
             auto uph = std::make_unique<users_post_handler>
             (
-                m_service_registry->getUserService()
+                m_service_registry->get_user_service()
             );
             return std::make_unique<logger_middleware>(std::move(uph));
         }

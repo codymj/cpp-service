@@ -11,7 +11,7 @@ http::message_generator users_get_handler::handle
     try
     {
         // Call to service to get some data.
-        auto const users = m_user_service->getUsers();
+        auto const users = m_user_service->get_users();
 
         // No users to return.
         if (users->empty())
@@ -29,7 +29,7 @@ http::message_generator users_get_handler::handle
             res.result(http::status::ok);
             res.set(http::field::content_type, "application/json");
             res.keep_alive(req.keep_alive());
-            res.body() = JsonMarshaller::toJson(*users).dump();
+            res.body() = json_marshaller::toJson(*users).dump();
         }
     }
     catch (std::exception const& e)

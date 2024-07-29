@@ -35,20 +35,20 @@ void session::on_read(beast::error_code const& ec, std::size_t const bytes_sent)
     }
 
     // Initialize context for this request.
-    auto const ctx = std::make_shared<Context>();
-    Context::setContext(ctx);
+    auto const ctx = std::make_shared<context>();
+    context::set_context(ctx);
 
     route_key const rk{m_req.method(), m_req.target()};
     auto const handler = m_router->lookup_handler(rk);
 
     SPDLOG_INFO("Routing request.");
-    send_response
+    do_write
     (
         handler->handle(std::move(m_req), std::move(m_res))
     );
 }
 
-void session::send_response(http::message_generator&& msg)
+void session::do_write(http::message_generator&& msg)
 {
     bool keep_alive = msg.keep_alive();
 

@@ -9,7 +9,7 @@ class logger_middleware final
 public:
     /**
      * Middleware for handling logging.
-     * @param next
+     * @param next Next handler in chain to call.
      */
     explicit logger_middleware(std::unique_ptr<handler> next = nullptr)
     : m_next(std::move(next))

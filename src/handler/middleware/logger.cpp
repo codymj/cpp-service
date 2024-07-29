@@ -9,13 +9,13 @@ http::message_generator logger_middleware::handle
 )
 {
     // Get context from thread local storage.
-    auto const ctx = Context::getContext();
+    auto const ctx = context::get_context();
 
     // Log request.
     SPDLOG_INFO
     (
         "{} {} {}",
-        ctx->traceId(),
+        ctx->trace_id(),
         req.method_string().data(),
         req.target().data()
     );

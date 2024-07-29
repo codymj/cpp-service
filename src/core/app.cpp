@@ -116,10 +116,10 @@ void app::create_postgres_connection_pool()
             m_config_manager->database_connection_pool_size();
 
         // Build database connections.
-        std::vector<PqxxPtr> connections;
+        std::vector<pqxx_ptr> connections;
         connections.reserve(pool_size);
 
-        auto const cxn = PostgresConnection
+        auto const cxn = postgres_connection
         (
             host, port, username, password, name, connection_timeout
         );
@@ -128,7 +128,7 @@ void app::create_postgres_connection_pool()
             connections.emplace_back(cxn.build());
         }
 
-        m_connectionPool = std::make_unique<ConnectionPool<PqxxPtr>>
+        m_connection_pool = std::make_unique<connection_pool<pqxx_ptr>>
         (
             std::move(connections)
         );
@@ -147,16 +147,16 @@ void app::create_postgres_connection_pool()
 int app::main()
 {
     // Create data store registry to inject into service registry.
-    m_storeRegistry = std::make_unique<StoreRegistry>(m_connectionPool.get());
+    m_store_registry = std::make_unique<store_registry>(m_connection_pool.get());
 
     // Create service registry to inject into the router.
-    m_serviceRegistry = std::make_unique<ServiceRegistry>
+    m_service_registry = std::make_unique<service_registry>
     (
-        m_storeRegistry.get()
+        m_store_registry.get()
     );
 
     // Create router to inject into the handler factory.
-    m_router = std::make_unique<router>(m_serviceRegistry.get());
+    m_router = std::make_unique<router>(m_service_registry.get());
 
     // Create and start the HTTP server.
     try

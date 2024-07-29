@@ -12,7 +12,7 @@
  * Context object to manage request parameters through the application.
  * TODO: Implement timeouts and other things.
  */
-class Context final
+class context final
 {
 public:
     /**
@@ -24,8 +24,8 @@ public:
      * Construct a context and set any default values that all contexts should
      * have.
      */
-    explicit Context()
-    : m_startTime(std::chrono::steady_clock::now())
+    explicit context()
+    : m_start_time(std::chrono::steady_clock::now())
     {
         set("traceId", to_string(boost::uuids::random_generator()()));
     }
@@ -34,9 +34,9 @@ public:
      * Returns the start time of the request.
      * @return When the request began.
      */
-    std::chrono::time_point<std::chrono::steady_clock> startTime() const
+    std::chrono::time_point<std::chrono::steady_clock> start_time() const
     {
-        return m_startTime;
+        return m_start_time;
     }
 
     /**
@@ -80,7 +80,7 @@ public:
     /**
      * Returns traceId for logging.
      */
-    [[nodiscard]] std::string traceId() const
+    [[nodiscard]] std::string trace_id() const
     {
         return std::string("[" + get<std::string>("traceId") + "]");
     }
@@ -89,7 +89,7 @@ public:
      * Gets context from thread local storage.
      * @return Context in thread local storage.
      */
-    static std::shared_ptr<Context> getContext()
+    static std::shared_ptr<context> get_context()
     {
         return m_context;
     }
@@ -98,7 +98,7 @@ public:
      * Sets context to thread local storage.
      * @param context Context to set in thread local storage.
      */
-    static void setContext(std::shared_ptr<Context> const& context)
+    static void set_context(std::shared_ptr<context> const& context)
     {
         m_context = context;
     }
@@ -117,10 +117,10 @@ private:
     /**
      * Time when context was created.
      */
-    std::chrono::time_point<std::chrono::steady_clock> m_startTime;
+    std::chrono::time_point<std::chrono::steady_clock> m_start_time;
 
     /**
      * Thread local storage to maintain the life of the context.
      */
-    static inline thread_local std::shared_ptr<Context> m_context;
+    static inline thread_local std::shared_ptr<context> m_context;
 };

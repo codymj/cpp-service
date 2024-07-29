@@ -14,7 +14,7 @@ public:
      */
     explicit users_post_handler
     (
-        UserService* user_service,
+        user_service* user_service,
         std::unique_ptr<handler> next = nullptr
     )
     : m_user_service(user_service)
@@ -36,7 +36,7 @@ private:
     /**
      * Service layer for User.
      */
-    UserService* m_user_service;
+    user_service* m_user_service;
 
     /**
      * Next handler in the chain.

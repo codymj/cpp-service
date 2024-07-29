@@ -3,14 +3,13 @@
 #include <memory>
 #include <string>
 #include <pqxx/pqxx>
-#include <connection_pool.hpp>
 
-using PqxxPtr = std::unique_ptr<pqxx::connection>;
+using pqxx_ptr = std::unique_ptr<pqxx::connection>;
 
 /**
  * Class for building a PostgreSQL connection.
  */
-class PostgresConnection
+class postgres_connection
 {
 public:
     /**
@@ -20,32 +19,32 @@ public:
      * @param username Username to connect to database.
      * @param password Password to connect to database.
      * @param name Database name.
-     * @param connectionTimeout Connection timeout in seconds.
+     * @param connection_timeout Connection timeout in seconds.
      */
-    PostgresConnection
+    postgres_connection
     (
         std::string host,
         uint16_t const port,
         std::string username,
         std::string password,
         std::string name,
-        uint16_t const connectionTimeout = 180
+        uint16_t const connection_timeout = 180
     )
     : m_host(std::move(host))
     , m_username(std::move(username))
     , m_password(std::move(password))
     , m_name(std::move(name))
     , m_port(port)
-    , m_connectionTimeout(connectionTimeout)
+    , m_connection_timeout(connection_timeout)
     {}
 
     /**
      * Builds and returns the pointer to the database connector.
      * @return
      */
-    [[nodiscard]] PqxxPtr build() const
+    [[nodiscard]] pqxx_ptr build() const
     {
-        return std::make_unique<pqxx::connection>(connectionString());
+        return std::make_unique<pqxx::connection>(connection_string());
     }
 
 private:
@@ -53,7 +52,7 @@ private:
      * Builds the connection string based on the provided parameters.
      * @return PostgreSQL connection string.
      */
-    [[nodiscard]] std::string connectionString() const
+    [[nodiscard]] std::string connection_string() const
     {
         return std::string
             {
@@ -62,7 +61,7 @@ private:
                 m_host + ":" +
                 std::to_string(m_port) + "/" +
                 m_name + "?" +
-                "connect_timeout=" + std::to_string(m_connectionTimeout)
+                "connect_timeout=" + std::to_string(m_connection_timeout)
             };
     }
 
@@ -71,5 +70,5 @@ private:
     std::string m_password;
     std::string m_name;
     uint16_t m_port;
-    uint16_t m_connectionTimeout;
+    uint16_t m_connection_timeout;
 };

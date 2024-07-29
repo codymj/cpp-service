@@ -8,24 +8,24 @@
 /**
  * Simple utility class for hashing passwords.
  */
-class PasswordCrypt
+class password_crypt
 {
 public:
     /**
      * Generates a random salt.
      * @return salt as std::string.
      */
-    static std::string generateSalt()
+    static std::string generate_salt()
     {
         std::random_device randomDevice;
         std::mt19937 generator(randomDevice());
         std::uniform_int_distribution distribution(0, 255);
 
-        unsigned char salt[saltLength];
+        unsigned char salt[m_salt_length];
         for (unsigned char& ch : salt) {
             ch = static_cast<char>(distribution(generator));
         }
-        return std::string{reinterpret_cast<char*>(salt), saltLength};
+        return std::string{reinterpret_cast<char*>(salt), m_salt_length};
     }
 
     /**
@@ -34,19 +34,19 @@ public:
      * @return Encoded hash of the provided password.
      * @throws std::runtime_error.
      */
-    static std::string hashPassword(std::string const& password)
+    static std::string hash_password(std::string const& password)
     {
         // Generate random salt.
-        std::string const salt = generateSalt();
+        std::string const salt = generate_salt();
 
         // Get encoded hash length.
         size_t const encodedLength = argon2_encodedlen
         (
-            t_cost,
+            m_iterations,
             m_cost,
-            parallelism,
+            m_parallelism,
             salt.size(),
-            hashLength,
+            m_hash_length,
             Argon2_id
         );
 
@@ -56,14 +56,14 @@ public:
         // Hash the password.
         int const result = argon2id_hash_encoded
         (
-            t_cost,
+            m_iterations,
             m_cost,
-            parallelism,
+            m_parallelism,
             password.c_str(),
             password.size(),
             salt.data(),
             salt.size(),
-            hashLength,
+            m_hash_length,
             encoded.data(),
             encoded.size()
         );
@@ -82,8 +82,11 @@ public:
      * @return True on match, false otherwise.
      * @throws std::runtime_error.
      */
-    static bool
-    verifyPassword(std::string const& password, std::string const& encodedHash)
+    static bool verify_password
+    (
+        std::string const& password,
+        std::string const& encodedHash
+    )
     {
         int const result = argon2i_verify
         (
@@ -107,7 +110,7 @@ private:
     /**
      * Number of iterations.
      */
-    static constexpr uint32_t t_cost = 5;
+    static constexpr uint32_t m_iterations = 5;
 
     /**
      * Memory usage in kibibytes.
@@ -117,15 +120,15 @@ private:
     /**
      * Number of threads.
      */
-    static constexpr uint32_t parallelism = 4;
+    static constexpr uint32_t m_parallelism = 4;
 
     /**
      * Salt length.
      */
-    static constexpr uint32_t saltLength = 16;
+    static constexpr uint32_t m_salt_length = 16;
 
     /**
      * Hash length.
      */
-    static constexpr uint32_t hashLength = 16;
+    static constexpr uint32_t m_hash_length = 16;
 };

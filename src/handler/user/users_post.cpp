@@ -13,11 +13,11 @@ http::message_generator users_post_handler::handle
 
     try
     {
-        // Parse request body into a User object.
-        User const userToSave = JsonMarshaller::toUser(req);
+        // Parse request body into a user object.
+        user const to_save = json_marshaller::to_user(req);
 
         // Pass to service.
-        m_user_service->saveUser(userToSave);
+        m_user_service->save_user(to_save);
 
         // Build response.
         res.chunked(true);

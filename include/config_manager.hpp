@@ -113,7 +113,7 @@ public:
 private:
     /**
      * Loads the configuration file and sets properties.
-     * @param path
+     * @param path Path to properties.yml.
      */
     void load_configuration(std::string const& path)
     {
