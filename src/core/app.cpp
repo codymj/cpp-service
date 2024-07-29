@@ -82,7 +82,7 @@ void app::init_logger() const
     }
     catch (std::exception& e)
     {
-        SPDLOG_CRITICAL("{}", e.what());
+        SPDLOG_CRITICAL("Error initializing logger: {}", e.what());
         std::exit(EXIT_FAILURE);
     }
 
