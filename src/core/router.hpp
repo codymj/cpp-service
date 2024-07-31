@@ -17,8 +17,9 @@ using handler_func = std::function<std::unique_ptr<handler>()>;
 
 /**
  * The router acts as a typical HTTP request router which routes requests by
- * HTTP method and path to the appropriate handler. The Router gets injected
- * into the HandlerFactory.
+ * HTTP method and path to the appropriate handler. The listener class owns the
+ * router and forwards a raw pointer to each created session where routing
+ * happens.
  */
 class router
 {
@@ -80,9 +81,7 @@ private:
     std::map<route_key, handler_func> m_routes{};
 
     /**
-     * Registry which contains all services to perform business logic. Its
-     * various getter methods are called to inject appropriate service objects
-     * into handlers.
+     * Registry which contains all business services.
      */
     service_registry* m_service_registry{};
 };

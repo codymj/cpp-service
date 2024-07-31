@@ -17,8 +17,8 @@ public:
      */
     static std::string generate_salt()
     {
-        std::random_device randomDevice;
-        std::mt19937 generator(randomDevice());
+        std::random_device random_device;
+        std::mt19937 generator(random_device());
         std::uniform_int_distribution distribution(0, 255);
 
         unsigned char salt[m_salt_length];
@@ -40,7 +40,7 @@ public:
         std::string const salt = generate_salt();
 
         // Get encoded hash length.
-        size_t const encodedLength = argon2_encodedlen
+        size_t const encoded_length = argon2_encodedlen
         (
             m_iterations,
             m_cost,
@@ -51,7 +51,7 @@ public:
         );
 
         // Create container for the hash.
-        std::vector<char> encoded(encodedLength);
+        std::vector<char> encoded(encoded_length);
 
         // Hash the password.
         int const result = argon2id_hash_encoded
@@ -78,19 +78,19 @@ public:
     /**
      * Verifies that the provided encoded hash matches the provided password.
      * @param password is the provided password.
-     * @param encodedHash the encoded hash of the password to verify.
+     * @param encoded_hash the encoded hash of the password to verify.
      * @return True on match, false otherwise.
      * @throws std::runtime_error.
      */
     static bool verify_password
     (
         std::string const& password,
-        std::string const& encodedHash
+        std::string const& encoded_hash
     )
     {
         int const result = argon2i_verify
         (
-            encodedHash.c_str(),
+            encoded_hash.c_str(),
             password.c_str(),
             password.size()
         );

@@ -12,6 +12,9 @@ namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
+/**
+ * Listener for accepting requests and creating sessions.
+ */
 class listener
 : public std::enable_shared_from_this<listener>
 {
@@ -48,7 +51,7 @@ public:
         ec = m_acceptor.bind(endpoint, ec);
         if (ec)
         {
-            //SPDLOG_ERROR("Error binding acceptor: {}", ec.message());
+            SPDLOG_ERROR("Error binding acceptor: {}", ec.message());
             return;
         }
 
@@ -61,10 +64,22 @@ public:
         }
     }
 
+    /**
+     * Runs the listener.
+     */
     void run();
 
 private:
+    /**
+     * Accept a request.
+     */
     void do_accept();
+
+    /**
+     * Creates a session and forwards request.
+     * @param ec Error code.
+     * @param socket TCP socket for HTTP requests.
+     */
     void on_accept(beast::error_code const& ec, tcp::socket socket);
 
     net::any_io_executor m_executor;

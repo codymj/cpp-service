@@ -4,7 +4,9 @@
 #include "../service/user/user_service.hpp"
 
 /**
- * Contains services for business logic and is injected into the router.
+ * Contains services for business logic and is injected into the router. The
+ * service registry is instantiated on application start up and owns the
+ * services. The services are then forwarded to handlers which require them.
  */
 class service_registry
 {

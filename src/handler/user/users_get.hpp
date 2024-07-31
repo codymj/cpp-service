@@ -4,7 +4,7 @@
 #include <handler.hpp>
 
 /**
- * Handler for parsing HTTP GET /users requests.
+ * Handler for GET /users.
  */
 class users_get_handler final
 : public handler

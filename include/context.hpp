@@ -18,7 +18,7 @@ public:
     /**
      * Possible types a value can take in the map.
      */
-    using Value = std::variant<int, double, std::string>;
+    using value = std::variant<int, double, std::string>;
 
     /**
      * Construct a context and set any default values that all contexts should
@@ -27,7 +27,7 @@ public:
     explicit context()
     : m_start_time(std::chrono::steady_clock::now())
     {
-        set("traceId", to_string(boost::uuids::random_generator()()));
+        set("trace_id", to_string(boost::uuids::random_generator()()));
     }
 
     /**
@@ -44,7 +44,7 @@ public:
      * @param key Key to store.
      * @param value Value to store.
      */
-    void set(std::string const& key, Value const& value)
+    void set(std::string const& key, value const& value)
     {
         std::lock_guard lock(m_mutex);
         m_values[key] = value;
@@ -72,7 +72,7 @@ public:
      * Returns map of key/values.
      * @return Map of key/values.
      */
-    [[nodiscard]] std::unordered_map<std::string, Value>& values()
+    [[nodiscard]] std::unordered_map<std::string, value>& values()
     {
         return m_values;
     }
@@ -82,7 +82,7 @@ public:
      */
     [[nodiscard]] std::string trace_id() const
     {
-        return std::string("[" + get<std::string>("traceId") + "]");
+        return std::string("[" + get<std::string>("trace_id") + "]");
     }
 
     /**
@@ -107,7 +107,7 @@ private:
     /**
      * Unordered map to contain context key/value pairs.
      */
-    std::unordered_map<std::string, Value> m_values;
+    std::unordered_map<std::string, value> m_values;
 
     /**
      * Access guard to the map.

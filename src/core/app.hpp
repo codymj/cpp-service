@@ -40,7 +40,7 @@ private:
     void create_postgres_connection_pool();
 
     std::unique_ptr<config_manager> m_config_manager;
-    std::unique_ptr<connection_pool<pqxx_ptr>> m_connection_pool;
+    std::unique_ptr<connection_pool<pqxx_ptr>> m_pg_connection_pool;
     std::unique_ptr<store_registry> m_store_registry;
     std::unique_ptr<service_registry> m_service_registry;
     std::unique_ptr<router> m_router;

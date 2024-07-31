@@ -28,7 +28,7 @@ void listener::on_accept(beast::error_code const& ec, tcp::socket socket)
         return;
     }
 
-    SPDLOG_INFO("Accepted new connection.");
+    // Create and run session.
     std::make_shared<session>
     (
         std::move(socket),

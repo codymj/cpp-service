@@ -89,16 +89,16 @@ void app::init_logger() const
     spdlog::init_thread_pool(8192, 1);
     auto const console_sink =
         std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    auto const m_logger = std::make_shared<spdlog::async_logger>
+    auto const logger = std::make_shared<spdlog::async_logger>
     (
         "logger",
         std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
         spdlog::thread_pool(),
         spdlog::async_overflow_policy::block
     );
-    register_logger(m_logger);
-    set_default_logger(m_logger);
-    m_logger->set_pattern("[%Y-%m-%d %T.%e] [%l] [%s:%#] %v");
+    register_logger(logger);
+    set_default_logger(logger);
+    logger->set_pattern("[%Y-%m-%d %T.%e] [%l] [%s:%#] %v");
 }
 
 void app::create_postgres_connection_pool()
@@ -128,7 +128,7 @@ void app::create_postgres_connection_pool()
             connections.emplace_back(cxn.build());
         }
 
-        m_connection_pool = std::make_unique<connection_pool<pqxx_ptr>>
+        m_pg_connection_pool = std::make_unique<connection_pool<pqxx_ptr>>
         (
             std::move(connections)
         );
@@ -147,7 +147,10 @@ void app::create_postgres_connection_pool()
 int app::main()
 {
     // Create data store registry to inject into service registry.
-    m_store_registry = std::make_unique<store_registry>(m_connection_pool.get());
+    m_store_registry = std::make_unique<store_registry>
+    (
+        m_pg_connection_pool.get()
+    );
 
     // Create service registry to inject into the router.
     m_service_registry = std::make_unique<service_registry>
@@ -155,7 +158,7 @@ int app::main()
         m_store_registry.get()
     );
 
-    // Create router to inject into the handler factory.
+    // Create router which is passed to the listener.
     m_router = std::make_unique<router>(m_service_registry.get());
 
     // Create and start the HTTP server.

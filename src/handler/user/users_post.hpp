@@ -3,12 +3,15 @@
 #include "../../service/user/user_service.hpp"
 #include <handler.hpp>
 
+/**
+ * Handler for POST /users.
+ */
 class users_post_handler final
 : public handler
 {
 public:
     /**
-     * Handler for POST /users.
+     * Constructor.
      * @param user_service User service layer.
      * @param next Next handler in chain.
      */
@@ -22,7 +25,7 @@ public:
     {}
 
     /**
-     * Handle method for POST /users.
+     * Handler.
      * @param req boost::beast::http::request<http::string_body>
      * @param res boost::beast::http::response<http::string_body>
      */
@@ -34,7 +37,7 @@ public:
 
 private:
     /**
-     * Service layer for User.
+     * Service layer for user.
      */
     user_service* m_user_service;
 

@@ -5,13 +5,13 @@
 #include <vector>
 
 /**
- * Service for manipulating User businless logic.
+ * Service for user business logic.
  */
 class user_service
 {
 public:
     /**
-     * Creates a service for handling User business logic.
+     * Creates a service for handling user business logic.
      * @param user_store interface for the storage layer.
      */
     explicit user_service(postgres_user_store* user_store)

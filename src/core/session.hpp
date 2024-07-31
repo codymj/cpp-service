@@ -10,6 +10,9 @@ namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
+/**
+ * Session to be created upon receiving a request.
+ */
 class session
 : public std::enable_shared_from_this<session>
 {

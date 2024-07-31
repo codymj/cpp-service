@@ -5,7 +5,9 @@
 #include <memory>
 
 /**
- * Holds all data stores which gets injected into the service registry.
+ * Holds all data stores which gets injected into the service registry. The
+ * store registry is instantiated on application start up and owns the data
+ * stores which get forwarded to the services.
  */
 class store_registry
 {
@@ -21,7 +23,10 @@ public:
     : m_pg_connection_pool(pg_connection_pool)
     {
         // Data stores get created here.
-        m_user_store = std::make_unique<postgres_user_store>(m_pg_connection_pool);
+        m_user_store = std::make_unique<postgres_user_store>
+        (
+            m_pg_connection_pool
+        );
     }
 
     /**

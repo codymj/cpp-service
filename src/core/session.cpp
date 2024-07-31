@@ -38,6 +38,7 @@ void session::on_read(beast::error_code const& ec, std::size_t const bytes_sent)
     auto const ctx = std::make_shared<context>();
     context::set_context(ctx);
 
+    // Get handler.
     route_key const rk{m_req.method(), m_req.target()};
     auto const handler = m_router->lookup_handler(rk);
 

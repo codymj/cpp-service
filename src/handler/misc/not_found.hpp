@@ -2,12 +2,15 @@
 
 #include <handler.hpp>
 
+/**
+ * Handler for returning 404 statuses.
+ */
 class not_found_handler final
 : public handler
 {
 public:
     /**
-     * Handler for returning 404 statuses.
+     * Constructor.
      * @param next Next handler in chain.
      */
     explicit not_found_handler(std::unique_ptr<handler> next = nullptr)
@@ -15,7 +18,7 @@ public:
     {}
 
     /**
-     * Handler to return 404 error.
+     * Handler.
      * @param req boost::beast::http::request<http::string_body>
      * @param res boost::beast::http::response<http::string_body>
      */
