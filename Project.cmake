@@ -2,7 +2,12 @@ set(PROJECT_NAME cpp-service)
 set(CMAKE_CXX_FLAGS_DEBUG "-O -ggdb")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-find_package(Boost 1.80 REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system filesystem program_options)
+find_library(ARGON2_LIBRARY argon2)
+#find_package(libpqxx REQUIRED)
+find_package(nlohmann_json REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SOURCE_DIR}/main.cpp)
 
@@ -41,5 +46,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     pqxx
     pq
     spdlog
-    yaml-cpp
+    yaml-cpp::yaml-cpp
 )
