@@ -46,5 +46,19 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     pqxx
     pq
     spdlog
-    yaml-cpp::yaml-cpp
+    yaml-cpp
 )
+
+# Define the Docker build command
+add_custom_target(docker_build
+    COMMAND docker buildx build -t cpp-service:0.0.1
+        --build-arg BUILD_NAME=cpp-service
+        --build-arg BUILD_REF=0.0.1
+        --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+        .
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Building Docker image"
+)
+
+# Add the custom target to the default build
+add_custom_target(docker DEPENDS docker_build)

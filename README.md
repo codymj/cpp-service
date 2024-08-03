@@ -10,3 +10,27 @@ A template for building a C++ web service.
 - [nlohmann/json](https://github.com/nlohmann/json)
 - [spdlog](https://github.com/gabime/spdlog)
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+
+## Build
+
+    $ mkdir -p build
+    $ cd build/ && cmake ..
+    $ cmake --build . --target docker
+
+## Run
+
+Assumes PostgreSQL is running on the local machine.
+
+    $ docker run -p 8080:8080 \
+        -e POSTGRES_PASS=$POSTGRES_PASS \
+        --rm --network="host" cpp-service:0.0.1 \
+        /app/properties.yml
+
+## TODO
+
+- Containerize PostgreSQL and seed data.
+- Implement structured JSON logging.
+- Write documentation.
+- Implement unit tests.
+- Implement JSON validation middleware.
+- ...
