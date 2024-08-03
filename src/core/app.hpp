@@ -4,6 +4,7 @@
 #include "service_registry.hpp"
 #include "store_registry.hpp"
 #include <config_manager.hpp>
+#include <filesystem>
 #include <postgres_connection.hpp>
 #include <memory>
 
@@ -13,7 +14,7 @@ public:
     /**
      * Initializes application.
      */
-    void initialize();
+    void initialize(std::filesystem::path const&);
 
     /**
      * Main application loop for the HTTP server.
@@ -25,7 +26,7 @@ private:
     /**
      * Loads application configuration properties.
      */
-    void load_configuration();
+    void load_configuration(std::filesystem::path const&);
 
     /**
      * Initializes logger.
