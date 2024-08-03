@@ -4,8 +4,9 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Boost REQUIRED COMPONENTS system filesystem program_options)
 find_library(ARGON2_LIBRARY argon2)
-#find_package(libpqxx REQUIRED)
+find_library(PQXX_LIBRARY libpqxx)
 find_package(nlohmann_json REQUIRED)
+find_package(PostgreSQL REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
