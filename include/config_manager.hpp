@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <fstream>
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
@@ -14,7 +15,7 @@ public:
      * Initialize configuration properties.
      * @param path Configuration file path.
      */
-    explicit config_manager(std::string const& path)
+    explicit config_manager(std::filesystem::path const& path)
     {
         load_configuration(path);
     }
@@ -115,7 +116,7 @@ private:
      * Loads the configuration file and sets properties.
      * @param path Path to properties.yml.
      */
-    void load_configuration(std::string const& path)
+    void load_configuration(std::filesystem::path const& path)
     {
         // Load configuration file.
         YAML::Node cfg = YAML::LoadFile(path);

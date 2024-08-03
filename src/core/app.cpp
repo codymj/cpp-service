@@ -12,33 +12,24 @@
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
-void app::initialize()
+void app::initialize(std::filesystem::path const& path)
 {
-    load_configuration();
+    load_configuration(path);
     init_logger();
     create_postgres_connection_pool();
 }
 
-void app::load_configuration()
+void app::load_configuration(std::filesystem::path const& path)
 {
     try
     {
-        m_config_manager = std::make_unique<config_manager>("properties.yml");
+        m_config_manager = std::make_unique<config_manager>(path);
     }
     catch (YAML::ParserException const& e)
     {
         SPDLOG_CRITICAL
         (
             "Error parsing configuration properties: {}",
-            e.what()
-        );
-        std::exit(EXIT_FAILURE);
-    }
-    catch (YAML::BadFile const& e)
-    {
-        SPDLOG_CRITICAL
-        (
-            "properties.yml does not exist: {}",
             e.what()
         );
         std::exit(EXIT_FAILURE);
