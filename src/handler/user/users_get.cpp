@@ -1,6 +1,8 @@
 #include "users_get.hpp"
+
+#include <quill/LogMacros.h>
+
 #include "util/json_marshaller.hpp"
-#include <spdlog/spdlog.h>
 
 http::message_generator users_get_handler::handle
 (
@@ -35,7 +37,7 @@ http::message_generator users_get_handler::handle
     catch (std::exception const& e)
     {
         // TODO: Create JSON error message
-        SPDLOG_ERROR("{}", e.what());
+        LOG_ERROR(m_logger, "{error}", e.what());
         res.chunked(true);
         res.result(http::status::internal_server_error);
         res.set(http::field::content_type, "application/json");

@@ -82,7 +82,7 @@ public:
      */
     [[nodiscard]] std::string trace_id() const
     {
-        return std::string("[" + get<std::string>("trace_id") + "]");
+        return std::string(get<std::string>("trace_id"));
     }
 
     /**

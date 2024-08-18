@@ -3,8 +3,10 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/asio/strand.hpp>
-#include <spdlog/async.h>
-#include <spdlog/spdlog.h>
+#include <quill/Frontend.h>
+#include <quill/Logger.h>
+#include <quill/LogMacros.h>
+
 #include "router.hpp"
 
 namespace beast = boost::beast;
@@ -31,35 +33,35 @@ public:
     {
         beast::error_code ec;
 
-        SPDLOG_INFO("Opening acceptor.");
+        LOG_INFO(m_logger, "Opening acceptor.");
         ec = m_acceptor.open(endpoint.protocol(), ec);
         if (ec)
         {
-            SPDLOG_ERROR("Error opening acceptor: {}", ec.message());
+            LOG_ERROR(m_logger, "Error opening acceptor: {error}", ec.message());
             return;
         }
 
-        SPDLOG_INFO("Setting reuse address on acceptor.");
+        LOG_INFO(m_logger, "Setting reuse address on acceptor.");
         ec = m_acceptor.set_option(net::socket_base::reuse_address(true), ec);
         if (ec)
         {
-            SPDLOG_ERROR("Error setting option: {}", ec.message());
+            LOG_ERROR(m_logger, "Error setting option: {error}", ec.message());
             return;
         }
 
-        SPDLOG_INFO("Binding acceptor.");
+        LOG_INFO(m_logger, "Binding acceptor.");
         ec = m_acceptor.bind(endpoint, ec);
         if (ec)
         {
-            SPDLOG_ERROR("Error binding acceptor: {}", ec.message());
+            LOG_ERROR(m_logger, "Error binding acceptor: {error}", ec.message());
             return;
         }
 
-        SPDLOG_INFO("Listening on acceptor.");
+        LOG_INFO(m_logger, "Listening on acceptor.");
         ec = m_acceptor.listen(net::socket_base::max_listen_connections, ec);
         if (ec)
         {
-            SPDLOG_ERROR("Error listening on acceptor: {}", ec.message());
+            LOG_ERROR(m_logger, "Error listening on acceptor: {error}", ec.message());
             return;
         }
     }
@@ -82,6 +84,7 @@ private:
      */
     void on_accept(beast::error_code const& ec, tcp::socket socket);
 
+    quill::Logger* m_logger = quill::Frontend::get_logger("root");
     net::any_io_executor m_executor;
     tcp::acceptor m_acceptor;
     std::unique_ptr<router> m_router;

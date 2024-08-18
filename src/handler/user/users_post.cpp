@@ -1,7 +1,6 @@
 #include "users_post.hpp"
 #include "util/json_marshaller.hpp"
-#include <iostream>
-#include <spdlog/spdlog.h>
+#include <quill/LogMacros.h>
 
 http::message_generator users_post_handler::handle
 (
@@ -28,7 +27,7 @@ http::message_generator users_post_handler::handle
     }
     catch (std::runtime_error const& e)
     {
-        SPDLOG_ERROR("{}", e.what());
+        LOG_ERROR(m_logger, "{}", e.what());
         res.chunked(true);
         res.result(http::status::internal_server_error);
         res.set(http::field::content_type, "application/json");

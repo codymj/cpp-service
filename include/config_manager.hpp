@@ -2,7 +2,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
 /**

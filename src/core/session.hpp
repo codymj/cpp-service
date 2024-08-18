@@ -2,7 +2,8 @@
 
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <spdlog/async.h>
+#include <quill/Frontend.h>
+
 #include "router.hpp"
 
 namespace beast = boost::beast;
@@ -83,6 +84,11 @@ private:
      * HTTP response for this session.
      */
     http::response<http::string_body> m_res{};
+
+    /**
+     * Logger.
+     */
+    quill::Logger* m_logger = quill::Frontend::get_logger("root");
 
     /**
      * HTTP request router.

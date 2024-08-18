@@ -1,8 +1,8 @@
 #pragma once
 
 #include <handler.hpp>
+#include <quill/Logger.h>
 
-// TODO: Need to implement structured logging with JSON.
 class logger_middleware final
 : public handler
 {

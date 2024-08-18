@@ -4,9 +4,11 @@
 #include <boost/asio/thread_pool.hpp>
 #include <config_manager.hpp>
 #include <exception>
-#include <spdlog/async.h>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include <iostream>
+#include <quill/Backend.h>
+#include <quill/Frontend.h>
+#include <quill/LogMacros.h>
+#include <quill/sinks/JsonConsoleSink.h>
 #include "listener.hpp"
 
 namespace net = boost::asio;
@@ -27,69 +29,65 @@ void app::load_configuration(std::filesystem::path const& path)
     }
     catch (YAML::ParserException const& e)
     {
-        SPDLOG_CRITICAL
-        (
-            "Error parsing configuration properties: {}",
-            e.what()
-        );
+        std::cerr
+            << "Error parsing configuration properties: "
+            << e.what();
         std::exit(EXIT_FAILURE);
     }
     catch (YAML::BadConversion const& e)
     {
-        SPDLOG_CRITICAL
-        (
-            "Error converting property from properties.yml: {}",
-            e.what()
-        );
+        std::cerr
+            << "Error converting property from properties.yml: "
+            << e.what();
         std::exit(EXIT_FAILURE);
     }
     catch (std::exception const& e)
     {
-        SPDLOG_CRITICAL
-        (
-            "Unknown error while loading configuration properties: {}",
-            e.what()
-        );
+        std::cerr
+            << "Unknown error while loading configuration properties: "
+            << e.what();
         std::exit(EXIT_FAILURE);
     }
 }
 
-void app::init_logger() const
+void app::init_logger()
 {
+    // Start the backend thread
+    quill::BackendOptions const backend_options;
+    quill::Backend::start(backend_options);
+
+    // Create a json sink
+    auto sink = quill::Frontend::create_or_get_sink<quill::JsonConsoleSink>("sink");
+
+    m_logger = quill::Frontend::create_or_get_logger
+    (
+        "root",
+        std::move(sink),
+        "",
+        "%H:%M:%S.%Qms",
+        quill::Timezone::GmtTime
+    );
+
     try
     {
         std::string const level = m_config_manager->app_log_level();
 
         if (level == "trace")
-            spdlog::set_level(spdlog::level::trace);
+            m_logger->set_log_level(quill::LogLevel::TraceL1);
         else if (level == "warn")
-            spdlog::set_level(spdlog::level::warn);
+            m_logger->set_log_level(quill::LogLevel::Warning);
         else if (level == "error")
-            spdlog::set_level(spdlog::level::err);
+            m_logger->set_log_level(quill::LogLevel::Error);
         else if (level == "critical")
-            spdlog::set_level(spdlog::level::critical);
+            m_logger->set_log_level(quill::LogLevel::Critical);
         else
-            spdlog::set_level(spdlog::level::debug);
+            m_logger->set_log_level(quill::LogLevel::Debug);
     }
     catch (std::exception& e)
     {
-        SPDLOG_CRITICAL("Error initializing logger: {}", e.what());
+        LOG_CRITICAL(m_logger, "Error initializing logger: {error}", e.what());
         std::exit(EXIT_FAILURE);
     }
-
-    spdlog::init_thread_pool(8192, 1);
-    auto const console_sink =
-        std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    auto const logger = std::make_shared<spdlog::async_logger>
-    (
-        "logger",
-        std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
-        spdlog::thread_pool(),
-        spdlog::async_overflow_policy::block
-    );
-    register_logger(logger);
-    set_default_logger(logger);
-    logger->set_pattern("[%Y-%m-%d %T.%e] [%l] [%s:%#] %v");
 }
 
 void app::create_postgres_connection_pool()
@@ -126,9 +124,10 @@ void app::create_postgres_connection_pool()
     }
     catch (std::exception const& e)
     {
-        SPDLOG_CRITICAL
+        LOG_CRITICAL
         (
-            "Error in create_postgres_connection_pool: {}",
+            m_logger,
+            "Error in create_postgres_connection_pool: {error}",
             e.what()
         );
         std::exit(EXIT_FAILURE);
@@ -170,9 +169,10 @@ int app::main()
             std::move(m_router)
         )->run();
 
-        SPDLOG_INFO
+        LOG_INFO
         (
-            "Started {} v{} on port {}",
+            m_logger,
+            "Started application: {app} {version} {port}",
             m_config_manager->app_domain() + "." + m_config_manager->app_name(),
             m_config_manager->app_version(),
             m_config_manager->server_port()
@@ -182,9 +182,9 @@ int app::main()
         net::signal_set signals(ioc, SIGINT, SIGTERM);
         signals.async_wait
         (
-            [&ioc](beast::error_code const&, int)
+            [&](beast::error_code const&, int)
             {
-                SPDLOG_INFO("Stopping I/O context.");
+                LOG_INFO(m_logger, "Stopping I/O context.");
                 ioc.stop();
             }
         );
@@ -193,11 +193,11 @@ int app::main()
     }
     catch (beast::system_error const& e)
     {
-        SPDLOG_CRITICAL("Server error: {}", e.what());
+        LOG_CRITICAL(m_logger, "Server error: {error}", e.what());
         std::exit(EXIT_FAILURE);
     }
 
-    SPDLOG_INFO("Shutting down.");
+    LOG_INFO(m_logger, "Shutting down.");
 
     return EXIT_SUCCESS;
 }
