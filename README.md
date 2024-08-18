@@ -25,12 +25,3 @@ Assumes PostgreSQL is running on the local machine.
         -e POSTGRES_PASS=$POSTGRES_PASS \
         --rm --network="host" cpp-service:0.0.1 \
         /app/properties.yml
-
-## TODO
-
-- Containerize PostgreSQL and seed data.
-- Implement structured JSON logging.
-- Write documentation.
-- Implement unit tests.
-- Implement JSON validation middleware.
-- ...
