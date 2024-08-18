@@ -1,4 +1,7 @@
 #include "listener.hpp"
+
+#include <quill/LogMacros.h>
+
 #include "router.hpp"
 #include "session.hpp"
 
@@ -24,7 +27,7 @@ void listener::on_accept(beast::error_code const& ec, tcp::socket socket)
 {
     if (ec)
     {
-        SPDLOG_ERROR("listener::on_accept: {}", ec.message());
+        LOG_ERROR(m_logger, "listener::on_accept: {error}", ec.message());
         return;
     }
 

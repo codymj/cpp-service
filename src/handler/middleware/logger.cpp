@@ -1,6 +1,7 @@
 #include "logger.hpp"
 #include <context.hpp>
-#include <spdlog/spdlog.h>
+#include <quill/Frontend.h>
+#include <quill/LogMacros.h>
 
 http::message_generator logger_middleware::handle
 (
@@ -12,9 +13,11 @@ http::message_generator logger_middleware::handle
     auto const ctx = context::get_context();
 
     // Log request.
-    SPDLOG_INFO
+
+    LOG_INFO
     (
-        "{} {} {}",
+        quill::Frontend::get_logger("root"),
+        "{trace_id} {method} {target}",
         ctx->trace_id(),
         req.method_string().data(),
         req.target().data()

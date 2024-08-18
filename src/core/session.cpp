@@ -2,7 +2,7 @@
 #include "router.hpp"
 #include <boost/beast/version.hpp>
 #include <context.hpp>
-#include <spdlog/spdlog.h>
+#include <quill/LogMacros.h>
 
 void session::run()
 {
@@ -30,7 +30,7 @@ void session::on_read(beast::error_code const& ec, std::size_t const bytes_sent)
 
     if (ec)
     {
-        SPDLOG_ERROR("session::on_read: {}", ec.message());
+        LOG_ERROR(m_logger, "session::on_read: {}", ec.message());
         return;
     }
 
@@ -42,7 +42,7 @@ void session::on_read(beast::error_code const& ec, std::size_t const bytes_sent)
     route_key const rk{m_req.method(), m_req.target()};
     auto const handler = m_router->lookup_handler(rk);
 
-    SPDLOG_INFO("Routing request.");
+    LOG_INFO(m_logger, "Routing request.");
     do_write
     (
         handler->handle(std::move(m_req), std::move(m_res))
@@ -77,7 +77,7 @@ void session::on_write
 
     if (ec)
     {
-        SPDLOG_ERROR("session::on_write: {}", ec.message());
+        LOG_ERROR(m_logger, "session::on_write: {error}", ec.message());
         return;
     }
 
@@ -86,7 +86,7 @@ void session::on_write
         return do_close();
     }
 
-    SPDLOG_INFO("Response sent.");
+    LOG_INFO(m_logger, "Response sent.");
 
     do_read();
 }
@@ -99,6 +99,6 @@ void session::do_close()
 
     if (ec)
     {
-        SPDLOG_ERROR("session::do_close: {}", ec.message());
+        LOG_ERROR(m_logger, "session::do_close: {error}", ec.message());
     }
 }

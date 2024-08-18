@@ -4,6 +4,7 @@
 #include <connection_pool.hpp>
 #include <postgres_connection.hpp>
 #include <vector>
+#include <quill/Frontend.h>
 
 /**
  * Data store represented by a PostgreSQL database for storing User data.
@@ -33,6 +34,11 @@ public:
     void save_user(user const& user) const;
 
 private:
+    /**
+     * Logger.
+     */
+    quill::Logger* m_logger = quill::Frontend::get_logger("root");
+
     /**
      * PostgreSQL connection pool.
      */

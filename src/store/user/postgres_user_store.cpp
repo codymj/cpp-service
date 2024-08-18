@@ -2,7 +2,7 @@
 #include <context.hpp>
 #include <defer.hpp>
 #include <exception>
-#include <spdlog/spdlog.h>
+#include <quill/LogMacros.h>
 
 std::unique_ptr<std::vector<user>> postgres_user_store::get_users() const
 {
@@ -36,7 +36,7 @@ std::unique_ptr<std::vector<user>> postgres_user_store::get_users() const
     }
     catch (std::exception const& e)
     {
-        SPDLOG_ERROR("{}", e.what());
+        LOG_ERROR(m_logger, "{error}", e.what());
         throw;
     }
 
@@ -58,7 +58,7 @@ std::unique_ptr<std::vector<user>> postgres_user_store::get_users() const
         }
         catch (std::exception const& e)
         {
-            SPDLOG_ERROR("{}", e.what());
+            LOG_ERROR(m_logger, "{error}", e.what());
             throw;
         }
 
@@ -97,7 +97,7 @@ void postgres_user_store::save_user(user const& user) const
     }
     catch (std::exception& e)
     {
-        SPDLOG_ERROR("{}", e.what());
+        LOG_ERROR(m_logger, "{error}", e.what());
         throw;
     }
 }

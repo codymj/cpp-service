@@ -37,6 +37,11 @@ public:
 
 private:
     /**
+     * Logger.
+     */
+    quill::Logger* m_logger = quill::Frontend::get_logger("root");
+
+    /**
      * Service layer for User.
      */
     user_service* m_user_service;

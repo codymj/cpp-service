@@ -8,7 +8,7 @@ A template for building a C++ web service.
 - [libargon2](https://github.com/P-H-C/phc-winner-argon2)
 - [libpqxx](https://github.com/jtv/libpqxx)
 - [nlohmann/json](https://github.com/nlohmann/json)
-- [spdlog](https://github.com/gabime/spdlog)
+- [quill](https://github.com/odygrd/quill)
 - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
 
 ## Build

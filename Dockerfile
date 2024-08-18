@@ -25,9 +25,9 @@ RUN git clone --branch 7.9.1 https://github.com/jtv/libpqxx.git && \
     make -j16 && \
     make install
 
-# Build spdlog
-RUN git clone --branch v1.14.1 https://github.com/gabime/spdlog.git && \
-    cd spdlog && \
+# Build quill
+RUN git clone --branch v6.1.2 https://github.com/odygrd/quill.git && \
+    cd quill && \
     mkdir build && \
     cd build && \
     cmake .. && \

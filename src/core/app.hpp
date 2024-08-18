@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <postgres_connection.hpp>
 #include <memory>
+#include <quill/Logger.h>
 
 class app
 {
@@ -31,7 +32,7 @@ private:
     /**
      * Initializes logger.
      */
-    void init_logger() const;
+    void init_logger();
 
     /**
      * Creates the connection pool for the database with parameters from
@@ -45,4 +46,5 @@ private:
     std::unique_ptr<store_registry> m_store_registry;
     std::unique_ptr<service_registry> m_service_registry;
     std::unique_ptr<router> m_router;
+    quill::Logger* m_logger{};
 };

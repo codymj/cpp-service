@@ -2,6 +2,7 @@
 
 #include "../../service/user/user_service.hpp"
 #include <handler.hpp>
+#include <quill/Frontend.h>
 
 /**
  * Handler for POST /users.
@@ -36,6 +37,11 @@ public:
     ) override;
 
 private:
+    /**
+     * Logger.
+     */
+    quill::Logger* m_logger = quill::Frontend::get_logger("root");
+
     /**
      * Service layer for user.
      */
