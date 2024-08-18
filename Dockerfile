@@ -66,7 +66,6 @@ RUN apk add --no-cache libstdc++ libpq argon2-dev
 COPY --from=builder /usr/lib/libpq.so* /usr/local/lib
 COPY --from=builder /usr/local/lib/libpqxx*.a /usr/local/lib
 COPY --from=builder /usr/local/lib/libpqxx*.la /usr/local/lib
-COPY --from=builder /usr/local/lib/libspdlog*.so* /usr/local/lib
 COPY --from=builder /usr/local/lib/libyaml-cpp*.so* /usr/local/lib
 
 # Copy the built executable from the builder stage
