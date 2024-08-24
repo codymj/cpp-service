@@ -18,7 +18,6 @@ void app::initialize(std::filesystem::path const& path)
 {
     load_configuration(path);
     init_logger();
-    create_postgres_connection_pool();
 }
 
 void app::load_configuration(std::filesystem::path const& path)
@@ -52,11 +51,11 @@ void app::load_configuration(std::filesystem::path const& path)
 
 void app::init_logger()
 {
-    // Start the backend thread
+    // Start the backend thread.
     quill::BackendOptions const backend_options;
     quill::Backend::start(backend_options);
 
-    // Create a json sink
+    // Create a JSON sink.
     auto sink = quill::Frontend::create_or_get_sink<quill::JsonConsoleSink>("sink");
 
     m_logger = quill::Frontend::create_or_get_logger
@@ -90,56 +89,12 @@ void app::init_logger()
     }
 }
 
-void app::create_postgres_connection_pool()
-{
-    try
-    {
-        std::string const host = m_config_manager->database_host();
-        uint16_t const port = m_config_manager->database_port();
-        std::string const username = m_config_manager->database_username();
-        std::string const password = m_config_manager->database_password();
-        std::string const name = m_config_manager->database_name();
-        uint16_t const connection_timeout =
-            m_config_manager->database_connection_timeout();
-        uint16_t const pool_size =
-            m_config_manager->database_connection_pool_size();
-
-        // Build database connections.
-        std::vector<pqxx_ptr> connections;
-        connections.reserve(pool_size);
-
-        auto const cxn = postgres_connection
-        (
-            host, port, username, password, name, connection_timeout
-        );
-        for (auto i=0; i<pool_size; ++i)
-        {
-            connections.emplace_back(cxn.build());
-        }
-
-        m_pg_connection_pool = std::make_unique<connection_pool<pqxx_ptr>>
-        (
-            std::move(connections)
-        );
-    }
-    catch (std::exception const& e)
-    {
-        LOG_CRITICAL
-        (
-            m_logger,
-            "Error in create_postgres_connection_pool: {error}",
-            e.what()
-        );
-        std::exit(EXIT_FAILURE);
-    }
-}
-
 int app::main()
 {
     // Create data store registry to inject into service registry.
     m_store_registry = std::make_unique<store_registry>
     (
-        m_pg_connection_pool.get()
+        m_config_manager.get()
     );
 
     // Create service registry to inject into the router.
