@@ -17,7 +17,7 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 # Build libpqxx
-RUN git clone --branch 7.9.1 https://github.com/jtv/libpqxx.git && \
+RUN git clone --branch 7.10.0 https://github.com/jtv/libpqxx.git && \
     cd libpqxx && \
     mkdir build && \
     cd build && \
@@ -26,7 +26,7 @@ RUN git clone --branch 7.9.1 https://github.com/jtv/libpqxx.git && \
     make install
 
 # Build quill
-RUN git clone --branch v6.1.2 https://github.com/odygrd/quill.git && \
+RUN git clone --branch v8.0.0 https://github.com/odygrd/quill.git && \
     cd quill && \
     mkdir build && \
     cd build && \

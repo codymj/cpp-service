@@ -1,5 +1,7 @@
 #include "session.hpp"
 #include "router.hpp"
+#include <boost/beast/core/error.hpp>
+#include <boost/beast/http/error.hpp>
 #include <boost/beast/version.hpp>
 #include <context.hpp>
 #include <quill/LogMacros.h>
@@ -28,9 +30,11 @@ void session::on_read(beast::error_code const& ec, std::size_t const bytes_sent)
 {
     boost::ignore_unused(bytes_sent);
 
-    if (ec)
-    {
-        LOG_ERROR(m_logger, "session::on_read: {}", ec.message());
+    if (ec == beast::http::error::end_of_stream) {
+        return;
+    }
+    else if (ec) {
+        LOG_ERROR(m_logger, "session::on_read: {error}", ec.message());
         return;
     }
 

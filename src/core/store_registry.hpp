@@ -18,16 +18,16 @@ public:
      * @param config_manager Pointer to the configuration manager which is
      * managed in app.
      */
-    explicit store_registry(config_manager const* config_manager)
+    explicit store_registry(config_manager const* /*config_manager*/)
     {
         // Initialize database.
-        create_postgres_connection_pool(config_manager);
+        //create_postgres_connection_pool(config_manager);
 
         // Data stores get created here.
-        m_user_store = std::make_unique<postgres_user_store>
-        (
-            m_pg_connection_pool.get()
-        );
+        // m_user_store = std::make_unique<postgres_user_store>
+        // (
+        //     m_pg_connection_pool.get()
+        // );
     }
 
     /**

@@ -8,7 +8,7 @@
 #include <quill/Backend.h>
 #include <quill/Frontend.h>
 #include <quill/LogMacros.h>
-#include <quill/sinks/JsonConsoleSink.h>
+#include <quill/sinks/JsonSink.h>
 #include "listener.hpp"
 
 namespace net = boost::asio;
@@ -62,9 +62,11 @@ void app::init_logger()
     (
         "root",
         std::move(sink),
-        "",
-        "%H:%M:%S.%Qms",
-        quill::Timezone::GmtTime
+        quill::PatternFormatterOptions{
+            "",
+            "%H:%M:%S.%Qms",
+            quill::Timezone::GmtTime
+        }
     );
 
     try
