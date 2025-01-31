@@ -1,6 +1,6 @@
 #include "postgres_user_store.hpp"
 #include <context.hpp>
-#include <defer.hpp>
+#include <boost/scope_exit.hpp>
 #include <exception>
 #include <quill/LogMacros.h>
 
@@ -8,7 +8,9 @@ std::unique_ptr<std::vector<user>> postgres_user_store::get_users() const
 {
     // Rent a connection from pool.
     auto cxn = m_connection_pool->rent();
-    DEFER(m_connection_pool->free(std::move(cxn)));
+    BOOST_SCOPE_EXIT(&m_connection_pool, &cxn) {
+        m_connection_pool->free(std::move(cxn));
+    } BOOST_SCOPE_EXIT_END
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
@@ -72,7 +74,9 @@ void postgres_user_store::save_user(user const& user) const
 {
     // Rent a connection from pool.
     auto cxn = m_connection_pool->rent();
-    DEFER(m_connection_pool->free(std::move(cxn)));
+    BOOST_SCOPE_EXIT(&m_connection_pool, &cxn) {
+        m_connection_pool->free(std::move(cxn));
+    } BOOST_SCOPE_EXIT_END
 
     // Open a transaction.
     pqxx::work txn{*cxn, std::string{"txn"}};
