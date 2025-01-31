@@ -1,7 +1,5 @@
 #include "users_get.hpp"
-
 #include <quill/LogMacros.h>
-
 #include "util/json_marshaller.hpp"
 
 http::message_generator users_get_handler::handle

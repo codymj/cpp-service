@@ -6,11 +6,9 @@
 #include <quill/Frontend.h>
 #include <quill/Logger.h>
 #include <quill/LogMacros.h>
-
 #include "router.hpp"
 
 namespace beast = boost::beast;
-namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 

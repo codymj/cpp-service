@@ -1,5 +1,4 @@
 #include "store_registry.hpp"
-
 #include <quill/LogMacros.h>
 
 void store_registry::create_postgres_connection_pool

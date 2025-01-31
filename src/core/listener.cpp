@@ -1,7 +1,5 @@
 #include "listener.hpp"
-
 #include <quill/LogMacros.h>
-
 #include "router.hpp"
 #include "session.hpp"
 

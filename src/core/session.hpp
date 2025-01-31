@@ -3,7 +3,6 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <quill/Frontend.h>
-
 #include "router.hpp"
 
 namespace beast = boost::beast;

@@ -2,7 +2,12 @@
 
 #include "../../../store/user/user_model.hpp"
 #include "password_crypt.hpp"
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
 #include <nlohmann/json.hpp>
+
+namespace beast = boost::beast;
+namespace http = beast::http;
 
 class json_marshaller
 {
