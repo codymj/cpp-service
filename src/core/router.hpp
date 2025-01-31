@@ -56,7 +56,7 @@ public:
 
     /**
      * Gets the appropriate NewHandlerFunc from m_routes by RouteKey and then
-     * calls that function to return the provided HTTPRequestHandler*.
+     * calls that function to return the provided handler.
      * @return HTTPRequestHandler* to handle the request.
      */
     std::unique_ptr<handler> lookup_handler(route_key const& key);
@@ -75,8 +75,7 @@ private:
 
     /**
      * A map which uses a RouteKey as the key to a function that returns a new
-     * Poco::Net::HTTPRequestHandler*. Since Poco deletes the handlers, this
-     * function acts as an HTTPRequestHandler* factory.
+     * handler.
      */
     std::map<route_key, handler_func> m_routes{};
 
