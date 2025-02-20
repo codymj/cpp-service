@@ -1,11 +1,10 @@
 #pragma once
 
+#include "service_registry.hpp"
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <functional>
 #include <handler.hpp>
-#include <map>
-#include "service_registry.hpp"
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -13,7 +12,7 @@ namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
 using route_key = std::pair<http::verb, std::string>;
-using handler_func = std::function<std::unique_ptr<handler>()>;
+using handler_factory = std::function<std::unique_ptr<handler>()>;
 
 /**
  * The router acts as a typical HTTP request router which routes requests by
@@ -59,7 +58,7 @@ public:
      * calls that function to return the provided handler.
      * @return HTTPRequestHandler* to handle the request.
      */
-    std::unique_ptr<handler> lookup_handler(route_key const& key);
+    std::unique_ptr<handler> lookup_handler(route_key const& key) const;
 
 private:
 
@@ -77,7 +76,7 @@ private:
      * A map which uses a RouteKey as the key to a function that returns a new
      * handler.
      */
-    std::map<route_key, handler_func> m_routes{};
+    std::map<route_key, handler_factory> m_routes{};
 
     /**
      * Registry which contains all business services.

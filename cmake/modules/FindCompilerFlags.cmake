@@ -1,7 +1,8 @@
 # common compiler flags
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang" OR ${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
     # warnings as errors - https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Werror
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Werror")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Werror")
 
     # https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wall
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
@@ -21,13 +22,13 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang" OR ${CMAKE_CXX_COMPILER_ID} MATCHES 
     endif()
 
     # https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html#index-g
-    SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
+    SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -g")
 
     # SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
-    SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
+    SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb -fno-omit-frame-pointer")
 
     # EPX specific flags
-    SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
     # https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html#index-rdynamic
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")

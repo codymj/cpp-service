@@ -64,33 +64,9 @@ private:
      */
     void do_close();
 
-    /**
-     * Socket stream.
-     */
     beast::tcp_stream m_stream;
-
-    /**
-     * Read buffer.
-     */
     beast::flat_buffer m_buffer;
-
-    /**
-     * HTTP request for this session.
-     */
     http::request<http::string_body> m_req{};
-
-    /**
-     * HTTP response for this session.
-     */
-    http::response<http::string_body> m_res{};
-
-    /**
-     * Logger.
-     */
     quill::Logger* m_logger = quill::Frontend::get_logger("root");
-
-    /**
-     * HTTP request router.
-     */
     router* m_router;
 };

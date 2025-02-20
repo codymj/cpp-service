@@ -3,7 +3,7 @@
 #include <argon2.h>
 #include <random>
 #include <string>
-#include <vector>
+#include <stdexcept>
 
 /**
  * Simple utility class for hashing passwords.
@@ -51,7 +51,7 @@ public:
         );
 
         // Create container for the hash.
-        std::vector<char> encoded(encoded_length);
+        std::string encoded(encoded_length, '\0');
 
         // Hash the password.
         int const result = argon2id_hash_encoded
@@ -61,7 +61,7 @@ public:
             m_parallelism,
             password.c_str(),
             password.size(),
-            salt.data(),
+            salt.c_str(),
             salt.size(),
             m_hash_length,
             encoded.data(),
@@ -72,7 +72,7 @@ public:
             throw std::runtime_error(argon2_error_message(result));
         }
 
-        return encoded.data();
+        return encoded;
     }
 
     /**

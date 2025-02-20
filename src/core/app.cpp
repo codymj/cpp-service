@@ -1,4 +1,5 @@
 #include "app.hpp"
+#include "listener.hpp"
 #include <boost/beast/core.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/asio/thread_pool.hpp>
@@ -9,7 +10,6 @@
 #include <quill/Frontend.h>
 #include <quill/LogMacros.h>
 #include <quill/sinks/JsonSink.h>
-#include "listener.hpp"
 
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
@@ -84,7 +84,7 @@ void app::init_logger()
         else
             m_logger->set_log_level(quill::LogLevel::Debug);
     }
-    catch (std::exception& e)
+    catch (std::exception const& e)
     {
         LOG_CRITICAL(m_logger, "Error initializing logger: {error}", e.what());
         std::exit(EXIT_FAILURE);

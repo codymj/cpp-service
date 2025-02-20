@@ -1,8 +1,8 @@
 set(PROJECT_NAME cpp-service)
-set(CMAKE_CXX_FLAGS_DEBUG "-O -ggdb")
+#set(CMAKE_CXX_FLAGS_DEBUG "-O -ggdb")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-find_package(Boost REQUIRED COMPONENTS system filesystem program_options)
+find_package(Boost CONFIG)
 find_library(ARGON2_LIBRARY argon2)
 find_library(PQXX_LIBRARY libpqxx)
 find_package(nlohmann_json REQUIRED)
@@ -43,6 +43,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
+    Boost::boost
     argon2
     pqxx
     pq

@@ -126,7 +126,7 @@ private:
             m_database_password = db_pass_env;
         }
 
-        // Convert properites.
+        // Convert properties.
         m_app_domain = cfg["app"]["domain"].as<std::string>();
         m_app_name = cfg["app"]["name"].as<std::string>();
         m_app_version = cfg["app"]["version"].as<std::string>();
